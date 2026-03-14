@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认识数字身份 - 知识闯关</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", 宋体, Arial, sans-serif;
+        }
+        body {
+            background-color: #f0f8ff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .title {
+            text-align: center;
+            color: #2e86ab;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .rule {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2e86ab;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #eee;
+        }
+        .question h3 {
+            color: #1a5f7a;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .option {
+            font-size: 16px;
+            color: #333;
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            background-color: #f5f9ff;
+        }
+        .option.selected {
+            background-color: #2e86ab;
+            color: #fff;
+        }
+        .option.correct {
+            background-color: #4CAF50 !important;
+            color: #fff !important;
+        }
+        .option.wrong {
+            background-color: #f44336 !important;
+            color: #fff !important;
+        }
+        .option::before {
+            content: "●";
+            margin-right: 8px;
+        }
+        .submit-btn {
+            display: block;
+            width: 200px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background-color: #2e86ab;
+            color: #fff;
+            font-size: 18px;
+            border-radius: 8px;
+            margin: 30px auto;
+            cursor: pointer;
+            border: none;
+        }
+        .submit-btn:hover {
+            background-color: #1a5f7a;
+        }
+        .score-box {
+            text-align: center;
+            font-size: 24px;
+            color: #2e86ab;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+        .analysis {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            padding-left: 25px;
+            display: none;
+        }
+        /* 满分弹窗样式 */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .popup-content {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .popup-content h2 {
+            color: #ff9800;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        .popup-content p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .popup-btn {
+            padding: 10px 30px;
+            background-color: #2e86ab;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .popup-btn:hover {
+            background-color: #1a5f7a;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        @media screen and (max-width: 600px) {
+            .title {
+                font-size: 24px;
+            }
+            .question h3 {
+                font-size: 16px;
+            }
+            .option {
+                font-size: 14px;
+            }
+            .popup-content {
+                padding: 20px;
+                width: 90%;
+            }
+            .popup-content h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">知识闯关</h1>
+        <div class="rule">规则：每题10分，共100分，看看谁是知识小达人！</div>
+
+        <!-- 分数展示区 -->
+        <div class="score-box" id="scoreBox">
+            你的得分：<span id="score">0</span>分
+        </div>
+
+        <!-- 第1题 -->
+        <div class="question">
+            <h3>第一题：数字身份在网络世界里像什么？</h3>
+            <div class="option" data-question="1" data-answer="false">A. 玩具</div>
+            <div class="option" data-question="1" data-answer="true">B. 通行证</div>
+            <div class="option" data-question="1" data-answer="false">C. 装饰品</div>
+            <div class="option" data-question="1" data-answer="false">D. 面具</div>
+            <div class="analysis" id="analysis1">解析：数字身份是我们在网络世界的“通行证”，能证明我们的身份，让我们正常使用网络服务。</div>
+        </div>
+
+        <!-- 第2题 -->
+        <div class="question">
+            <h3>第二题：下列哪一项不属于数字身份？</h3>
+            <div class="option" data-question="2" data-answer="false">A. 微信号</div>
+            <div class="option" data-question="2" data-answer="false">B. 电子邮箱</div>
+            <div class="option" data-question="2" data-answer="true">C. 家里的门牌号</div>
+            <div class="option" data-question="2" data-answer="false">D. 游戏账号</div>
+            <div class="analysis" id="analysis2">解析：门牌号是现实生活中的地址标识，不属于网络世界的数字身份。</div>
+        </div>
+
+        <!-- 第3题 -->
+        <div class="question">
+            <h3>第三题：注册网络平台账号时，通常需要进行什么认证？</h3>
+            <div class="option" data-question="3" data-answer="false">A. 身高认证</div>
+            <div class="option" data-question="3" data-answer="false">B. 体重认证</div>
+            <div class="option" data-question="3" data-answer="true">C. 实名认证</div>
+            <div class="option" data-question="3" data-answer="false">D. 视力认证</div>
+            <div class="analysis" id="analysis3">解析：实名认证是网络安全的基石，能把数字身份和现实身份关联，保障网络行为可追溯。</div>
+        </div>
+
+        <!-- 第4题 -->
+        <div class="question">
+            <h3>第四题：实名认证的目的是什么？</h3>
+            <div class="option" data-question="4" data-answer="false">A. 为了收费</div>
+            <div class="option" data-question="4" data-answer="false">B. 限制上网</div>
+            <div class="option" data-question="4" data-answer="true">C. 关联现实身份，保障安全</div>
+            <div class="option" data-question="4" data-answer="false">D. 收集隐私</div>
+            <div class="analysis" id="analysis4">解析：实名认证的核心是关联现实身份，规范网络行为，保障用户和平台的安全，并非单纯收费或收集隐私。</div>
+        </div>
+
+        <!-- 第5题 -->
+        <div class="question">
+            <h3>第五题：关于数字身份的信用，说法正确的是？</h3>
+            <div class="option" data-question="5" data-answer="false">A. 网络是虚拟的，不用讲信用</div>
+            <div class="option" data-question="5" data-answer="false">B. 数字信用与现实信用无关</div>
+            <div class="option" data-question="5" data-answer="true">C. 数字信用会影响现实生活</div>
+            <div class="option" data-question="5" data-answer="false">D. 换个账号就可以重新开始</div>
+            <div class="analysis" id="analysis5">解析：数字信用和现实信用紧密关联，比如网购信用差会影响购物权限，甚至关联到现实中的征信。</div>
+        </div>
+
+        <!-- 第6题 -->
+        <div class="question">
+            <h3>第六题：游戏账号被盗，应该怎么做？</h3>
+            <div class="option" data-question="6" data-answer="false">A. 自认倒霉，重新开始</div>
+            <div class="option" data-question="6" data-answer="true">B. 通过官方渠道申诉找回</div>
+            <div class="option" data-question="6" data-answer="false">C. 去骂盗号的人，发泄情绪</div>
+            <div class="option" data-question="6" data-answer="false">D. 再注册一个新账号</div>
+            <div class="analysis" id="analysis6">解析：账号被盗后应通过平台官方申诉渠道找回，辱骂他人是不文明且无效的行为。</div>
+        </div>
+
+        <!-- 第7题 -->
+        <div class="question">
+            <h3>第七题：下列哪种行为会降低数字信用分？</h3>
+            <div class="option" data-question="7" data-answer="false">A. 按时支付</div>
+            <div class="option" data-question="7" data-answer="false">B. 文明发言</div>
+            <div class="option" data-question="7" data-answer="true">C. 恶意差评和退货</div>
+            <div class="option" data-question="7" data-answer="false">D. 举报不良信息</div>
+            <div class="analysis" id="analysis7">解析：恶意差评、退货属于不诚信的网络行为，会直接降低数字信用分；按时支付、文明发言、举报不良信息会提升信用分。</div>
+        </div>
+
+        <!-- 第8题 -->
+        <div class="question">
+            <h3>第八题：未成年人可以使用父母的身份证注册游戏账号吗？</h3>
+            <div class="option" data-question="8" data-answer="false">A. 可以，不受限制</div>
+            <div class="option" data-question="8" data-answer="true">B. 不可以，这是冒用身份</div>
+            <div class="option" data-question="8" data-answer="false">C. 只要父母不知道就行</div>
+            <div class="option" data-question="8" data-answer="false">D. 同学都这样，我也行</div>
+            <div class="analysis" id="analysis8">解析：冒用他人身份证注册账号是违规行为，数字身份具有唯一性，必须使用自己的真实信息。</div>
+        </div>
+
+        <!-- 第9题 -->
+        <div class="question">
+            <h3>第九题：网络发布信息应？</h3>
+            <div class="option" data-question="9" data-answer="false">A. 随意发布，反正没人认识</div>
+            <div class="option" data-question="9" data-answer="true">B. 遵守法律法规和道德规范</div>
+            <div class="option" data-question="9" data-answer="false">C. 只转发不原创</div>
+            <div class="option" data-question="9" data-answer="false">D. 专门转发谣言</div>
+            <div class="analysis" id="analysis9">解析：网络不是法外之地，发布信息必须遵守法律法规和道德规范，转发谣言、随意发布不良信息都要承担责任。</div>
+        </div>
+
+        <!-- 第10题 -->
+        <div class="question" style="border-bottom: none;">
+            <h3>第十题 · 核心概念回顾：数字身份有什么特点呀？</h3>
+            <div class="option" data-question="10" data-answer="false">A. 随意性</div>
+            <div class="option" data-question="10" data-answer="true">B. 唯一性</div>
+            <div class="option" data-question="10" data-answer="false">C. 模糊性</div>
+            <div class="option" data-question="10" data-answer="false">D. 临时性</div>
+            <div class="analysis" id="analysis10">解析：数字身份具有唯一性，一个账号对应一个真实的人，不能随意冒用或替换。</div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <button class="submit-btn" id="submitBtn">提交答案</button>
+
+        <div class="footer">
+            三年级信息科技 · 认识数字身份
+        </div>
+    </div>
+
+    <!-- 满分鼓励弹窗 -->
+    <div class="popup" id="fullScorePopup">
+        <div class="popup-content">
+            <h2>🎉 恭喜你！满分通关 🎉</h2>
+            <p>你真是数字身份小达人！对数字身份的知识掌握得超棒，继续加油哦～</p>
+            <button class="popup-btn" id="closePopupBtn">太棒啦！</button>
+        </div>
+    </div>
+
+    <script>
+        // 选中选项交互
+        const options = document.querySelectorAll('.option');
+        let selectedAnswers = {}; // 存储用户选中的答案
+
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // 获取当前题目编号
+                const questionNum = this.getAttribute('data-question');
+                // 清空当前题目的其他选中状态
+                document.querySelectorAll(`.option[data-question="${questionNum}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                // 选中当前选项
+                this.classList.add('selected');
+                // 记录用户答案
+                selectedAnswers[questionNum] = {
+                    isCorrect: this.getAttribute('data-answer') === 'true',
+                    element: this
+                };
+            });
+        });
+
+        // 提交答案计分
+        const submitBtn = document.getElementById('submitBtn');
+        const scoreBox = document.getElementById('scoreBox');
+        const scoreText = document.getElementById('score');
+        const fullScorePopup = document.getElementById('fullScorePopup');
+        const closePopupBtn = document.getElementById('closePopupBtn');
+
+        submitBtn.addEventListener('click', function() {
+            let score = 0;
+            // 遍历所有题目判分
+            for (let i = 1; i <= 10; i++) {
+                // 显示每道题的解析
+                document.getElementById(`analysis${i}`).style.display = 'block';
+                
+                // 如果用户没选这道题，直接跳过
+                if (!selectedAnswers[i]) continue;
+
+                const userAnswer = selectedAnswers[i];
+                // 标记正确/错误选项
+                if (userAnswer.isCorrect) {
+                    score += 10; // 每题10分
+                    userAnswer.element.classList.add('correct');
+                } else {
+                    userAnswer.element.classList.add('wrong');
+                    // 找到当前题的正确选项并标记
+                    document.querySelectorAll(`.option[data-question="${i}"][data-answer="true"]`).forEach(opt => {
+                        opt.classList.add('correct');
+                    });
+                }
+            }
+
+            // 显示分数
+            scoreBox.style.display = 'block';
+            scoreText.textContent = score;
+
+            // 满分弹出鼓励弹窗
+            if (score === 100) {
+                fullScorePopup.style.display = 'flex';
+            }
+
+            // 禁用提交按钮，防止重复提交
+            submitBtn.disabled = true;
+            submitBtn.style.backgroundColor = '#999';
+            submitBtn.style.cursor = 'not-allowed';
+        });
+
+        // 关闭满分弹窗
+        closePopupBtn.addEventListener('click', function() {
+            fullScorePopup.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
