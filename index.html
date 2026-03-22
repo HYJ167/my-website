@@ -3,719 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的数字身份实验室 - 纯本地版</title>
-    
+    <title>我的数字身份实验室</title>
     <style>
-        /* ================= 基础重置与色彩变量 ================= */
-        :root {
-            --primary: #3B82F6;
-            --primary-hover: #2563eb;
-            --secondary: #10B981;
-            --accent: #F59E0B;
-            --dark: #1F2937;
-            --light: #F3F4F6;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background-color: #F0F9FF;
-            background-image: radial-gradient(#DBEAFE 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: var(--gray-700);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* 隐藏滚动条但保留功能 */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* ================= 布局样式 ================= */
-        .header {
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            z-index: 10;
-            position: relative;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            max-width: 1280px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            max-width: 800px;
             margin: 0 auto;
-            width: 100%;
-            padding: 16px;
-            gap: 24px;
+            padding: 20px;
+            line-height: 1.6;
         }
-
-        /* ================= 组件样式 ================= */
-        .badge-container { display: flex; align-items: center; gap: 16px; background: var(--gray-50); padding: 8px 16px; border-radius: 9999px; border: 1px solid var(--gray-100); }
-        .badge { width: 24px; height: 24px; border-radius: 50%; background: var(--gray-200); color: var(--gray-400); display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.3s; }
-        .badge.active { background: #facc15; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.1); }
-
-        .sidebar { width: 80px; display: flex; flex-direction: column; gap: 16px; padding: 16px 0; }
-        .nav-item {
-            width: 56px; height: 56px; border-radius: 16px; background: white; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .nav-item:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(-2px); }
-        .nav-item.active {
-            background: linear-gradient(135deg, #3B82F6, #60A5FA);
-            transform: translateX(8px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
         }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
-            border-radius: 24px;
-            padding: 32px;
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
         }
-
-        .editor-area { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
-        
-        .avatar-option {
-            width: 64px; height: 64px; border-radius: 50%; cursor: pointer; object-fit: cover;
-            background: var(--gray-100); border: 3px solid transparent; transition: all 0.2s ease;
+        .status {
+            text-align: center;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e8f8f5;
+            border-radius: 5px;
         }
-        .avatar-option:hover { transform: scale(1.05); }
-        .avatar-option.selected {
-            border-color: var(--primary); transform: scale(1.1);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
         }
-
-        .input-group { margin-bottom: 20px; transition: all 0.3s ease; }
-        .input-group label { display: block; font-size: 14px; font-weight: 500; color: var(--gray-700); margin-bottom: 4px; transition: color 0.3s; }
-        .input-group:focus-within label { color: var(--primary); }
-        .input-control {
-            width: 100%; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--gray-200);
-            background: rgba(255,255,255,0.5); transition: all 0.3s ease; font-family: inherit; font-size: 14px;
+        .btn:hover {
+            background-color: #2980b9;
         }
-        .input-control:focus {
-            background: white; border-color: var(--primary); outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        .tip {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
         }
-        .input-control[readonly] { background: var(--gray-100); color: var(--gray-500); cursor: not-allowed; }
-
-        .btn-action {
-            padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
-        }
-        .btn-positive { background: white; color: #2563eb; border-color: #bfdbfe; }
-        .btn-positive:hover { background: #eff6ff; }
-        .btn-negative { background: white; color: #ef4444; border-color: #fecaca; }
-        .btn-negative:hover { background: #fef2f2; }
-
-        .btn-generate {
-            background: linear-gradient(to right, #3B82F6, #2563eb); color: white; padding: 12px 32px;
-            border-radius: 12px; font-weight: 500; border: none; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); transition: all 0.2s; display: flex; align-items: center; gap: 8px;
-        }
-        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4); }
-        .btn-generate:active { transform: scale(0.95); }
-
-        /* 预览卡片区域 */
-        .preview-area { width: 380px; display: flex; flex-direction: column; gap: 24px; }
-        .card-wrapper { flex: 1; display: flex; items-center; justify-content: center; position: relative; }
-        .card-bg-deco1 { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(219,234,254,0.5), rgba(243,232,255,0.5)); border-radius: 24px; transform: rotate(3deg); z-index: 0; }
-        .card-bg-deco2 { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(209,250,229,0.5), rgba(219,234,254,0.5)); border-radius: 24px; transform: rotate(-2deg); z-index: 0; }
-        
-        .card-preview {
-            width: 100%; background: white; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            border: 1px solid var(--gray-100); position: relative; z-index: 10; overflow: hidden;
-            transform-style: preserve-3d; transform-origin: center;
-        }
-        
-        .card-header { height: 120px; transition: background 0.5s; position: relative; overflow: hidden; }
-        .card-avatar-wrap { position: relative; width: 96px; height: 96px; margin: -48px auto 16px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background: white; z-index: 2; }
-        .card-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .verified-badge { position: absolute; bottom: 0; right: 0; background: #10B981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; display: none; }
-
-        .card-body { padding: 0 24px 24px; text-align: center; }
-        .card-name { font-size: 20px; font-weight: bold; color: var(--gray-800); }
-        .card-tag { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--gray-100); font-size: 12px; color: var(--gray-500); margin: 8px 0; }
-        .card-bio { font-size: 14px; color: var(--gray-500); line-height: 1.5; margin-bottom: 24px; }
-        
-        .card-stats { border-top: 1px solid var(--gray-100); padding-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .stat-item { text-align: center; }
-        .stat-label { font-size: 12px; color: var(--gray-400); margin-bottom: 4px; }
-        .stat-val { font-size: 18px; font-weight: bold; color: var(--gray-800); }
-        
-        .card-footer { background: var(--gray-50); padding: 12px 24px; display: flex; justify-content: space-between; font-size: 12px; color: var(--gray-400); }
-
-        .tip-box { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 4px solid #facc15; display: flex; gap: 12px; }
-        
-        /* 弹窗 Toast */
-        .toast {
-            position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
-            padding: 12px 24px; border-radius: 9999px; font-weight: 500; color: white;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1); opacity: 0; z-index: 100; pointer-events: none;
-        }
-        .toast-success { background: #10B981; }
-        .toast-error { background: #EF4444; }
-
-        /* 粒子容器 */
-        .particle { position: absolute; border-radius: 50%; pointer-events: none; z-index: 50; }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3B82F6, #60A5FA); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);">ID</div>
-            <h1 style="font-size: 20px; font-weight: bold; color: var(--gray-800);">我的数字身份实验室</h1>
-        </div>
+    <div class="container">
+        <h1>我的数字身份实验室</h1>
         
-        <div class="badge-container">
-            <span style="font-size: 12px; color: var(--gray-500); font-weight: 500;">数字公民之路:</span>
-            <div style="display: flex; gap: 8px;">
-                <div id="badge-social" class="badge" title="社交达人">💬</div>
-                <div id="badge-shopping" class="badge" title="诚信卫士">🛒</div>
-                <div id="badge-email" class="badge" title="沟通专家">📧</div>
-                <div id="badge-school" class="badge" title="实名认证">🎓</div>
-            </div>
+        <div class="section">
+            <h2>ID: 我的数字身份实验室</h2>
+            <p><strong>数字公民之路:</strong> 💬 🛒  🎓</p>
         </div>
-    </header>
 
-    <main class="main-content">
-        
-        <nav class="sidebar">
-            <button onclick="app.switchScene('social')" id="nav-social" class="nav-item active" title="社交平台">
-                <img id="icon-social" class="w-8 h-8 pointer-events-none" style="width: 32px; height: 32px;">
-            </button>
-            <button onclick="app.switchScene('shopping')" id="nav-shopping" class="nav-item" title="购物网站">
-                <img id="icon-shopping" class="w-8 h-8 pointer-events-none" style="width: 32px; height: 32px;">
-            </button>
-            <button onclick="app.switchScene('email')" id="nav-email" class="nav-item" title="电子邮箱">
-                <img id="icon-email" class="w-8 h-8 pointer-events-none" style="width: 32px; height: 32px;">
-            </button>
-            <button onclick="app.switchScene('school')" id="nav-school" class="nav-item" title="学校系统">
-                <img id="icon-school" class="w-8 h-8 pointer-events-none" style="width: 32px; height: 32px;">
-            </button>
-        </nav>
+        <div class="section">
+            <h3>社交平台账号</h3>
+            <p>在这里，你可以展示个性，但要注意保护隐私哦。</p>
+            <ul>
+                <li>选择头像昵称 / 用户名</li>
+                <li>个性签名 / 简介</li>
+            </ul>
+        </div>
 
-        <section class="editor-area glass-panel no-scrollbar">
-            <div style="margin-bottom: 24px;">
-                <h2 id="scene-title" style="font-size: 24px; font-weight: bold; color: var(--gray-800); margin-bottom: 8px;">社交平台账号</h2>
-                <p id="scene-desc" style="color: var(--gray-500); font-size: 14px;">在这里，你可以展示个性，但要注意保护隐私哦。</p>
-            </div>
+        <div class="section">
+            <h3>🎮 场景模拟</h3>
+            <p>试试点击按钮，看看会发生什么？</p>
+        </div>
 
-            <div style="margin-bottom: 32px;">
-                <label style="display: block; font-size: 14px; font-weight: 500; color: var(--gray-700); margin-bottom: 12px;">选择头像</label>
-                <div style="display: flex; gap: 16px;" id="avatar-container">
-                    </div>
-            </div>
+        <div class="status">
+            系统状态: 在线 ✨
+        </div>
 
-            <div style="flex: 1;">
-                <div class="input-group">
-                    <label>昵称 / 用户名</label>
-                    <input type="text" id="input-name" class="input-control" placeholder="给自己起个名字吧" oninput="app.saveCurrentData()">
-                </div>
+        <a href="#" class="btn" onclick="alert('身份卡片生成成功！\nID: 839201\n角色: 数字公民')">生成身份卡片</a>
 
-                <div class="input-group">
-                    <label>个性签名 / 简介</label>
-                    <textarea id="input-bio" rows="2" class="input-control" style="resize: none;" placeholder="介绍一下自己..." oninput="app.saveCurrentData()"></textarea>
-                </div>
+        <div class="section" style="text-align: center;">
+            <h3>未命名用户</h3>
+            <p><strong>数字公民</strong></p>
+            <p style="color: #7f8c8d;">暂无个性签名</p>
+            <p style="font-size: 0.8em; color: #95a5a6;">Social AppID: 839201</p>
+        </div>
 
-                <div id="dynamic-fields"></div>
+        <div class="tip">
+            💡 <strong>知识小贴士</strong><br>
+            数字身份是我们在网络世界的通行证，要保护好自己的账号安全哦！
+        </div>
+    </div>
 
-                <div style="margin-top: 24px; background: #EFF6FF; border-radius: 16px; padding: 16px; border: 1px solid #BFDBFE;">
-                    <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                        <span>🎮 场景模拟</span>
-                        <span style="font-size: 12px; font-weight: normal; color: #2563eb; background: white; padding: 2px 8px; border-radius: 999px;">试试点击按钮，看看会发生什么？</span>
-                    </h3>
-                    <div id="action-buttons" style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        </div>
-                </div>
-            </div>
-
-            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 12px; color: var(--gray-400); display: flex; align-items: center; gap: 4px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80;"></span>
-                    系统状态: 在线
-                </div>
-                <button id="generate-btn" onclick="app.generateCard()" class="btn-generate">
-                    <span id="generate-text">✨ 生成身份卡片</span>
-                </button>
-            </div>
-        </section>
-
-        <section class="preview-area">
-            <div class="card-wrapper">
-                <div class="card-bg-deco1"></div>
-                <div class="card-bg-deco2"></div>
-                
-                <div id="card-preview" class="card-preview">
-                    <div id="card-header-bg" class="card-header" style="background: linear-gradient(to right, #60A5FA, #3B82F6);"></div>
-                    
-                    <div class="card-body">
-                        <div class="card-avatar-wrap">
-                            <img id="preview-avatar" src="">
-                            <div id="verified-badge" class="verified-badge" title="已实名认证">✓</div>
-                        </div>
-
-                        <h3 id="preview-name" class="card-name">未命名用户</h3>
-                        <div id="preview-tag" class="card-tag">数字公民</div>
-                        <p id="preview-bio" class="card-bio">暂无个性签名</p>
-
-                        <div id="preview-stats" class="card-stats">
-                            </div>
-                    </div>
-                    
-                    <div class="card-footer">
-                        <span id="platform-name">Social App</span>
-                        <span>ID: <span id="random-id">839201</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tip-box">
-                <div style="font-size: 24px;">💡</div>
-                <div>
-                    <h4 style="font-weight: bold; font-size: 14px; color: var(--gray-800); margin-bottom: 4px;">知识小贴士</h4>
-                    <p id="tip-content" style="font-size: 12px; color: var(--gray-500); line-height: 1.5;">
-                        数字身份是我们在网络世界的通行证，要保护好自己的账号安全哦！
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // ================= 内置纯代码生成的 SVG 图形素材 =================
-        // 用于替换外部图片链接，保证离线可用。
-        const SVG_ASSETS = {
-            avatars: [
-                "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23DBEAFE'/%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' dominant-baseline='central'%3E👦%3C/text%3E%3C/svg%3E",
-                "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FCE7F3'/%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' dominant-baseline='central'%3E👧%3C/text%3E%3C/svg%3E",
-                "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23D1FAE5'/%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' dominant-baseline='central'%3E🤖%3C/text%3E%3C/svg%3E",
-                "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FEF3C7'/%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' dominant-baseline='central'%3E🦊%3C/text%3E%3C/svg%3E"
-            ],
-            icons: {
-                social: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23EFF6FF'/%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dominant-baseline='central'%3E💬%3C/text%3E%3C/svg%3E",
-                shopping: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FEF2F2'/%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dominant-baseline='central'%3E🛒%3C/text%3E%3C/svg%3E",
-                email: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23F5F3FF'/%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dominant-baseline='central'%3E📧%3C/text%3E%3C/svg%3E",
-                school: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ECFDF5'/%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dominant-baseline='central'%3E🎓%3C/text%3E%3C/svg%3E"
-            }
-        };
-
-        // 场景配置数据
-        const SCENES = {
-            social: {
-                title: "社交平台账号",
-                desc: "在这里，你可以展示个性，但要注意保护隐私哦。",
-                color: "linear-gradient(to right, #60A5FA, #3B82F6)",
-                platformName: "WeChat / QQ",
-                tip: "在社交平台上，我们的言行举止都代表着自己的数字形象。发布信息要文明，不信谣不传谣。",
-                fields: [ { label: "兴趣标签", id: "hobby", placeholder: "例如：编程、绘画、足球", type: "text" } ],
-                stats: [ { label: "关注", value: "0" }, { label: "粉丝", value: "0" } ],
-                actions: [
-                    { label: "✨ 分享学习心得", type: "positive", handler: "socialPost" },
-                    { label: "🚫 转发虚假谣言", type: "negative", handler: "socialRumor" }
-                ]
-            },
-            shopping: {
-                title: "购物网站账号",
-                desc: "诚信是金！良好的信用记录能让你享受更多便利。",
-                color: "linear-gradient(to right, #FB923C, #EF4444)",
-                platformName: "Taobao / JD",
-                tip: "购物网站的数字身份具有'信用价值'。按时付款、诚信交易可以提高信用分，享受先用后付等权益。",
-                fields: [ { label: "收货城市", id: "city", placeholder: "例如：北京", type: "text" } ],
-                stats: [ { label: "信用分", value: "650", highlight: true }, { label: "等级", value: "V1" } ],
-                actions: [
-                    { label: "✅ 按时履约付款", type: "positive", handler: "shopPay" },
-                    { label: "❌ 恶意差评退单", type: "negative", handler: "shopBad" }
-                ]
-            },
-            email: {
-                title: "电子邮箱账号",
-                desc: "正式的沟通工具，通常用于注册其他服务。",
-                color: "linear-gradient(to right, #818CF8, #9333EA)",
-                platformName: "Email Service",
-                tip: "邮箱账号常作为找回密码的关键。设置复杂的密码，并定期更换，是保护数字身份的好习惯。",
-                fields: [ { label: "邮箱地址", id: "email_addr", placeholder: "example@email.com", type: "text" } ],
-                stats: [ { label: "未读邮件", value: "2" }, { label: "联系人", value: "15" } ],
-                actions: [
-                    { label: "🔒 设置复杂密码", type: "positive", handler: "emailSecure" },
-                    { label: "📨 发送垃圾邮件", type: "negative", handler: "emailSpam" }
-                ]
-            },
-            school: {
-                title: "学校学籍系统",
-                desc: "这是最权威的数字身份，与现实身份严格对应。",
-                color: "linear-gradient(to right, #34D399, #0D9488)",
-                platformName: "Smart Education",
-                tip: "学校账号需要'实名认证'。这意味着数字身份与现实中的你是一一对应的，具有唯一性。",
-                fields: [
-                    { label: "学校名称", id: "school_name", placeholder: "请输入你的学校", type: "text" },
-                    { label: "学籍号 (模拟)", id: "student_id", placeholder: "G2023...", type: "text", readonly: true, value: "G" + Math.floor(Math.random()*100000000) }
-                ],
-                stats: [ { label: "班级", value: "三年级" }, { label: "状态", value: "在籍", color: "#10B981" } ],
-                actions: [
-                    { label: "📸 进行人脸识别认证", type: "positive", handler: "schoolVerify" }
-                ]
-            }
-        };
-
-        class App {
-            constructor() {
-                this.currentScene = 'social';
-                this.data = {
-                    social: { name: '', bio: '', avatar: SVG_ASSETS.avatars[0], hobby: '' },
-                    shopping: { name: '', bio: '', avatar: SVG_ASSETS.avatars[1], city: '' },
-                    email: { name: '', bio: '', avatar: SVG_ASSETS.avatars[2], email_addr: '' },
-                    school: { name: '', bio: '', avatar: SVG_ASSETS.avatars[3], school_name: '', student_id: 'G' + Math.floor(Math.random()*100000000) }
-                };
-                this.achievements = new Set();
-                this.init();
-            }
-
-            init() {
-                // 初始化侧边栏图标
-                document.getElementById('icon-social').src = SVG_ASSETS.icons.social;
-                document.getElementById('icon-shopping').src = SVG_ASSETS.icons.shopping;
-                document.getElementById('icon-email').src = SVG_ASSETS.icons.email;
-                document.getElementById('icon-school').src = SVG_ASSETS.icons.school;
-
-                // 初始化头像选项
-                const avatarContainer = document.getElementById('avatar-container');
-                SVG_ASSETS.avatars.forEach(src => {
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.className = 'avatar-option';
-                    img.onclick = () => this.selectAvatar(src);
-                    avatarContainer.appendChild(img);
-                });
-
-                this.renderScene();
-                this.updatePreview();
-            }
-
-            // 互动处理函数 (使用原生动画替代 Anime.js)
-            handleAction(type) {
-                const card = document.getElementById('card-preview');
-                const badge = document.getElementById('verified-badge');
-                
-                if (type === 'shopPay') {
-                    this.showToast('✅ 信用极好！已升级为金牌会员', 'success');
-                    document.getElementById('card-header-bg').style.background = 'linear-gradient(to right, #FBBF24, #D97706)';
-                } else if (type === 'shopBad') {
-                    this.showToast('⚠️ 违规操作！信用分大幅下降', 'error');
-                    card.style.filter = 'grayscale(0.8)';
-                    setTimeout(() => card.style.filter = 'none', 2000);
-                } else if (type === 'socialPost') {
-                    this.showToast('✨ 传播正能量，粉丝 +10', 'success');
-                } else if (type === 'socialRumor') {
-                    this.showToast('🚫 警告！传播谣言已被系统禁言', 'error');
-                    const overlay = document.createElement('div');
-                    overlay.style.cssText = 'position:absolute; inset:0; background:rgba(31,41,55,0.8); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:24px; z-index:20;';
-                    overlay.innerText = '🚫 账号封禁';
-                    card.appendChild(overlay);
-                    setTimeout(() => overlay.remove(), 2000);
-                } else if (type === 'emailSecure') {
-                    this.showToast('🔒 密码强度：高！账号更安全了', 'success');
-                    const shield = document.createElement('div');
-                    shield.style.cssText = 'position:absolute; top:16px; right:16px; font-size:36px; z-index:20;';
-                    shield.innerText = '🛡️';
-                    card.appendChild(shield);
-                    shield.animate([
-                        { transform: 'scale(0)', opacity: 0 },
-                        { transform: 'scale(1.5)', opacity: 1, offset: 0.5 },
-                        { transform: 'scale(1)', opacity: 1 }
-                    ], { duration: 800, easing: 'ease-out' }).onfinish = () => setTimeout(() => shield.remove(), 1000);
-                } else if (type === 'emailSpam') {
-                    this.showToast('⚠️ 发送垃圾邮件被系统拦截！', 'error');
-                    const warning = document.createElement('div');
-                    warning.style.cssText = 'position:absolute; inset:0; background:rgba(239,68,68,0.2); display:flex; align-items:center; justify-content:center; z-index:20;';
-                    warning.innerHTML = '<div style="background:white; padding:16px; border-radius:12px; box-shadow:0 10px 15px rgba(0,0,0,0.1); color:#ef4444; font-weight:bold;">🚫 违规操作警告</div>';
-                    card.appendChild(warning);
-                    warning.animate([ { opacity: 0 }, { opacity: 1 } ], { duration: 300, direction: 'alternate', iterations: 4 }).onfinish = () => warning.remove();
-                } else if (type === 'schoolVerify') {
-                    const btn = event.currentTarget;
-                    btn.innerHTML = '⏳ 正在扫描人脸...';
-                    btn.disabled = true;
-                    
-                    const scanLine = document.createElement('div');
-                    scanLine.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:4px; background:#4ade80; box-shadow:0 0 10px #4ade80; z-index:30;';
-                    card.appendChild(scanLine);
-                    
-                    scanLine.animate([ { top: '0%' }, { top: '100%' } ], { duration: 1500, direction: 'alternate', iterations: 2, easing: 'ease-in-out' }).onfinish = () => {
-                        scanLine.remove();
-                        btn.innerHTML = '✅ 认证通过';
-                        this.showToast('🎉 实名认证成功！', 'success');
-                        badge.style.display = 'flex';
-                        badge.style.background = '#10B981';
-                    };
-                }
-            }
-
-            showToast(msg, type) {
-                const toast = document.createElement('div');
-                toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
-                toast.innerText = msg;
-                document.body.appendChild(toast);
-                
-                toast.animate([
-                    { transform: 'translateX(-50%) translateY(-20px)', opacity: 0 },
-                    { transform: 'translateX(-50%) translateY(0)', opacity: 1 }
-                ], { duration: 400, fill: 'forwards', easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' });
-
-                setTimeout(() => {
-                    toast.animate([
-                        { transform: 'translateX(-50%) translateY(0)', opacity: 1 },
-                        { transform: 'translateX(-50%) translateY(-20px)', opacity: 0 }
-                    ], { duration: 300, fill: 'forwards', easing: 'ease-in' }).onfinish = () => toast.remove();
-                }, 2000);
-            }
-
-            switchScene(sceneKey) {
-                this.saveCurrentData();
-                this.currentScene = sceneKey;
-                
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                document.getElementById(`nav-${sceneKey}`).classList.add('active');
-                
-                const card = document.getElementById('card-preview');
-                card.animate([
-                    { transform: 'rotateY(0deg)' },
-                    { transform: 'rotateY(90deg)' }
-                ], { duration: 200, easing: 'ease-in', fill: 'forwards' }).onfinish = () => {
-                    this.renderScene();
-                    this.updatePreview();
-                    card.animate([
-                        { transform: 'rotateY(-90deg)' },
-                        { transform: 'rotateY(0deg)' }
-                    ], { duration: 300, easing: 'ease-out', fill: 'forwards' });
-                };
-            }
-
-            saveCurrentData() {
-                const data = this.data[this.currentScene];
-                data.name = document.getElementById('input-name').value;
-                data.bio = document.getElementById('input-bio').value;
-                
-                SCENES[this.currentScene].fields.forEach(field => {
-                    const el = document.getElementById(`input-${field.id}`);
-                    if(el) data[field.id] = el.value;
-                });
-                this.updatePreview();
-            }
-
-            renderScene() {
-                const config = SCENES[this.currentScene];
-                const data = this.data[this.currentScene];
-
-                document.getElementById('scene-title').innerText = config.title;
-                document.getElementById('scene-desc').innerText = config.desc;
-                document.getElementById('tip-content').innerText = config.tip;
-                document.getElementById('input-name').value = data.name;
-                document.getElementById('input-bio').value = data.bio;
-
-                document.querySelectorAll('.avatar-option').forEach(img => {
-                    if(img.src === data.avatar) img.classList.add('selected');
-                    else img.classList.remove('selected');
-                });
-
-                const dynamicContainer = document.getElementById('dynamic-fields');
-                dynamicContainer.innerHTML = '';
-                
-                config.fields.forEach(field => {
-                    const div = document.createElement('div');
-                    div.className = 'input-group';
-                    const isReadOnly = field.readonly ? 'readonly' : '';
-                    div.innerHTML = `
-                        <label>${field.label}</label>
-                        <input type="text" id="input-${field.id}" 
-                            class="input-control" 
-                            placeholder="${field.placeholder}" 
-                            value="${data[field.id] || field.value || ''}"
-                            ${isReadOnly}
-                            oninput="app.saveCurrentData()">
-                    `;
-                    dynamicContainer.appendChild(div);
-                });
-
-                const actionContainer = document.getElementById('action-buttons');
-                actionContainer.innerHTML = '';
-                if (config.actions) {
-                    config.actions.forEach(action => {
-                        const btn = document.createElement('button');
-                        btn.className = `btn-action ${action.type === 'positive' ? 'btn-positive' : 'btn-negative'}`;
-                        btn.innerText = action.label;
-                        btn.onclick = () => this.handleAction(action.handler);
-                        actionContainer.appendChild(btn);
-                    });
-                }
-
-                document.getElementById('card-header-bg').style.background = config.color;
-                document.getElementById('platform-name').innerText = config.platformName;
-            }
-
-            selectAvatar(src) {
-                this.data[this.currentScene].avatar = src;
-                document.querySelectorAll('.avatar-option').forEach(img => {
-                    if(img.src === src) img.classList.add('selected');
-                    else img.classList.remove('selected');
-                });
-                this.updatePreview();
-            }
-
-            updatePreview() {
-                const data = this.data[this.currentScene];
-                const config = SCENES[this.currentScene];
-
-                document.getElementById('preview-name').innerText = data.name || '未命名用户';
-                document.getElementById('preview-bio').innerText = data.bio || '暂无个性签名';
-                document.getElementById('preview-avatar').src = data.avatar;
-                
-                const badge = document.getElementById('verified-badge');
-                if (this.currentScene === 'school' || this.currentScene === 'shopping') {
-                    badge.style.display = 'flex';
-                    badge.style.background = this.currentScene === 'school' ? '#10B981' : '#F59E0B';
-                } else {
-                    badge.style.display = 'none';
-                }
-
-                const tagMap = { social: '社交达人', shopping: '诚信买家', email: '商务精英', school: '在校学生' };
-                document.getElementById('preview-tag').innerText = tagMap[this.currentScene];
-
-                const statsContainer = document.getElementById('preview-stats');
-                statsContainer.innerHTML = '';
-                
-                const dynamicFieldDiv = document.createElement('div');
-                dynamicFieldDiv.style.cssText = 'grid-column: span 2; margin-bottom: 8px; font-size: 12px; color: var(--gray-500); background: var(--gray-50); padding: 8px; border-radius: 8px;';
-                
-                let dynamicContent = '';
-                if (this.currentScene === 'social') dynamicContent = `🏷️ 兴趣: ${data.hobby || '未填写'}`;
-                else if (this.currentScene === 'shopping') dynamicContent = `📍 城市: ${data.city || '未填写'}`;
-                else if (this.currentScene === 'email') dynamicContent = `📧 邮箱: ${data.email_addr || '未填写'}`;
-                else if (this.currentScene === 'school') dynamicContent = `🏫 学校: ${data.school_name || '未填写'}`;
-                
-                dynamicFieldDiv.innerText = dynamicContent;
-                statsContainer.appendChild(dynamicFieldDiv);
-                
-                config.stats.forEach(stat => {
-                    const div = document.createElement('div');
-                    div.className = 'stat-item';
-                    const colorStyle = stat.color ? `color: ${stat.color};` : (stat.highlight ? 'color: #F59E0B;' : '');
-                    div.innerHTML = `
-                        <div class="stat-label">${stat.label}</div>
-                        <div class="stat-val" style="${colorStyle}">${stat.value}</div>
-                    `;
-                    statsContainer.appendChild(div);
-                });
-            }
-
-            generateCard() {
-                this.saveCurrentData();
-                this.updatePreview();
-
-                const btn = document.getElementById('generate-btn');
-                const textSpan = document.getElementById('generate-text');
-                const originalText = textSpan.innerText;
-                
-                textSpan.innerText = '⏳ 生成中...';
-                btn.disabled = true;
-
-                setTimeout(() => {
-                    textSpan.innerText = '✨ 生成成功';
-                    btn.style.background = 'linear-gradient(to right, #FBBF24, #D97706)';
-                    
-                    this.unlockAchievement(this.currentScene);
-
-                    const card = document.getElementById('card-preview');
-                    
-                    // 卡片高光跳动
-                    card.animate([
-                        { transform: 'scale(1)', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' },
-                        { transform: 'scale(1.05)', boxShadow: '0 0 60px rgba(251, 191, 36, 0.6)' },
-                        { transform: 'scale(1)', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }
-                    ], { duration: 1000, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' });
-
-                    // 扫光效果
-                    const shine = document.createElement('div');
-                    shine.style.cssText = 'position:absolute; inset:0; background:linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent); transform:skewX(-12deg) translateX(-150%); z-index:20; pointer-events:none;';
-                    card.appendChild(shine);
-                    
-                    shine.animate([ { transform: 'skewX(-12deg) translateX(-150%)' }, { transform: 'skewX(-12deg) translateX(200%)' } ], { duration: 800, easing: 'ease-in-out' }).onfinish = () => shine.remove();
-
-                    // 粒子爆炸
-                    this.createParticles(card);
-
-                    setTimeout(() => {
-                        textSpan.innerText = originalText;
-                        btn.disabled = false;
-                        btn.style.background = '';
-                    }, 2000);
-                }, 600);
-            }
-
-            createParticles(element) {
-                const rect = element.getBoundingClientRect();
-                for (let i = 0; i < 30; i++) {
-                    const p = document.createElement('div');
-                    const colors = ['#FBBF24', '#FCD34D', '#FFFFFF'];
-                    p.className = 'particle';
-                    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    p.style.left = (rect.width / 2) + 'px';
-                    p.style.top = (rect.height / 2) + 'px';
-                    
-                    const size = Math.random() * 6 + 4;
-                    p.style.width = size + 'px';
-                    p.style.height = size + 'px';
-                    
-                    element.appendChild(p);
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const velocity = 80 + Math.random() * 100;
-                    
-                    p.animate([
-                        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                        { transform: `translate(${Math.cos(angle)*velocity}px, ${Math.sin(angle)*velocity}px) scale(0)`, opacity: 0 }
-                    ], { duration: 600 + Math.random() * 500, easing: 'ease-out' }).onfinish = () => p.remove();
-                }
-            }
-
-            unlockAchievement(scene) {
-                if (!this.achievements.has(scene)) {
-                    this.achievements.add(scene);
-                    const badge = document.getElementById(`badge-${scene}`);
-                    badge.classList.add('active');
-                    
-                    badge.animate([
-                        { transform: 'scale(1) rotate(0)' },
-                        { transform: 'scale(1.5) rotate(180deg)' },
-                        { transform: 'scale(1.1) rotate(360deg)' }
-                    ], { duration: 1000, easing: 'ease-out' });
-
-                    if (this.achievements.size === 4) {
-                        setTimeout(() => this.showToast('🏆 恭喜！你已集齐所有徽章，成为优秀数字公民！', 'success'), 1000);
-                    }
-                }
-            }
-        }
-
-        // 启动应用
-        window.app = new App();
-    </script>
 </body>
 </html>
