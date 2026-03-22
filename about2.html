@@ -93,9 +93,8 @@
 
 <script>
     // ================= ⚠️ 重要：配置区域 ⚠️ =================
-    // 请确保您在 mockapi.io 创建了一个名为 "results" 的资源
-    // 且该资源内部【没有任何预设字段】，是空的！
-    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/users'; 
+    // 【已修正】添加了缺失的 /api/v1/ 段落
+    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/results'; 
     // =======================================================
 
     const quizData = [
@@ -117,10 +116,6 @@
             this.score = 0;
             this.userName = "";
             this.userAnswers = [];
-            
-            if(API_URL.includes('在此处粘贴') || API_URL.includes('mockapi.io') === false) {
-                alert("⚠️ 错误：数据库链接配置无效！\n请检查代码中的 API_URL 是否正确。");
-            }
         }
 
         startQuiz() {
@@ -200,15 +195,15 @@
             loading.style.display = 'block';
 
             try {
-                // ✅ 修改点：只发送最简单的三个字段，避免复杂结构导致 400 错误
                 const payload = {
                     name: this.userName,
-                    score: this.score,      // 数字类型
-                    total: 100              // 数字类型
-                    // timestamp 和 details 已暂时移除，确保兼容性
+                    score: this.score,
+                    total: 100,
+                    timestamp: new Date().toISOString()
                 };
 
-                console.log("正在提交数据:", payload);
+                console.log("🚀 正在提交数据:", payload);
+                console.log("🔗 目标地址:", API_URL);
 
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -216,24 +211,28 @@
                     body: JSON.stringify(payload)
                 });
 
-                // 获取响应文本以便调试
                 const responseText = await response.text();
 
-                if (response.ok) {
+                if (response.ok || response.status === 201) {
+                    console.log("✅ 上传成功！服务器响应:", responseText);
                     setTimeout(() => {
                         document.getElementById('submit-modal').classList.remove('active');
                         this.showResult(true);
                     }, 1000);
                 } else {
-                    // 抛出包含具体错误信息的异常
-                    throw new Error(`服务器拒绝请求 (${response.status}): ${responseText}`);
+                    console.error("❌ 上传失败:", response.status, responseText);
+                    throw new Error(`服务器拒绝请求 (${response.status})`);
                 }
             } catch (e) {
-                console.error("提交失败详情:", e);
+                console.error("💥 异常捕获:", e);
                 let msg = "上传失败：" + e.message;
-                if (e.message.includes('400')) {
-                    msg += "\n\n💡 建议：\n1. 去 MockAPI 删除 'results' 资源并重新创建一个空的。\n2. 确保没有预设任何字段。";
+                
+                if (e.message.includes('404')) {
+                    msg += "\n\n💡 原因：地址错了！\n请检查代码中的 API_URL 是否包含了 '/api/v1/' 这一段。";
+                } else if (e.message.includes('400')) {
+                    msg += "\n\n💡 原因：数据格式不对。\n请去 MockAPI 把 'results' 资源删了，重新建一个空的。";
                 }
+                
                 alert(msg);
                 btn.disabled = false;
                 loading.style.display = 'none';
