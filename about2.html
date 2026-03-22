@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认识数字身份 - 知识闯关</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338ca;
+            --success: #10B981;
+            --error: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-sub: #6B7280;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+        
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(#E0E7FF 2px, transparent 2px);
+            background-size: 32px 32px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #818CF8);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .header h1 { font-size: 28px; margin-bottom: 8px; position: relative; z-index: 1; }
+        .header p { font-size: 14px; opacity: 0.9; position: relative; z-index: 1; }
+
+        .content { padding: 32px 24px; }
+
+        .screen { display: none; animation: fadeIn 0.4s ease-out; }
+        .screen.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 开始界面 */
+        .input-group { margin-bottom: 24px; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
+        .input-control {
+            width: 100%; padding: 12px 16px; border: 2px solid #E5E7EB; border-radius: 12px;
+            font-size: 16px; transition: all 0.3s; outline: none;
+        }
+        .input-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-primary:active { transform: translateY(0); }
+
+        /* 答题界面 */
+        .progress-bar {
+            height: 6px; background: #E5E7EB; border-radius: 3px; margin-bottom: 24px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease;
+        }
+
+        .question-card { margin-bottom: 24px; }
+        .question-text { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn {
+            padding: 16px; border: 2px solid #E5E7EB; border-radius: 12px;
+            background: white; text-align: left; cursor: pointer; transition: all 0.2s;
+            font-size: 15px; color: var(--text-main); position: relative; overflow: hidden;
+        }
+        .option-btn:hover { border-color: var(--primary); background: #EEF2FF; }
+        .option-btn.selected { border-color: var(--primary); background: #EEF2FF; font-weight: 600; }
+        .option-btn.correct { border-color: var(--success); background: #ECFDF5; color: #065F46; }
+        .option-btn.wrong { border-color: var(--error); background: #FEF2F2; color: #991B1B; }
+
+        .feedback-box {
+            margin-top: 20px; padding: 16px; border-radius: 12px;
+            background: #F3F4F6; display: none; animation: slideUp 0.3s ease;
+        }
+        .feedback-box.show { display: block; }
+        .feedback-title { font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .feedback-title.correct { color: var(--success); }
+        .feedback-title.wrong { color: var(--error); }
+        .feedback-text { font-size: 14px; color: var(--text-sub); line-height: 1.5; }
+
+        .nav-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .btn-next { flex: 1; background: var(--primary); color: white; }
+        .btn-next:disabled { background: #D1D5DB; cursor: not-allowed; transform: none; }
+
+        /* 结果界面 */
+        .result-icon { font-size: 64px; margin-bottom: 16px; display: block; text-align: center; }
+        .score-display { text-align: center; margin-bottom: 24px; }
+        .score-number { font-size: 48px; font-weight: 800; color: var(--primary); }
+        .score-label { font-size: 16px; color: var(--text-sub); }
+        
+        .badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+        .badge-item {
+            padding: 12px; border-radius: 12px; background: #F9FAFB; border: 1px solid #E5E7EB;
+            text-align: center; font-size: 14px; font-weight: 600; color: var(--text-sub);
+        }
+        .badge-item.unlocked { background: #ECFDF5; border-color: var(--success); color: #065F46; }
+
+        .footer {
+            text-align: center; padding: 16px; background: #F9FAFB; border-top: 1px solid #E5E7EB;
+            font-size: 12px; color: var(--text-sub);
+        }
+
+        /* 粒子效果 */
+        .confetti { position: fixed; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; z-index: 999; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎓 知识闯关</h1>
+        <p>规则：每题10分，共100分，看看谁是知识小达人！</p>
+    </div>
+
+    <div class="content">
+        <!-- 屏幕 1: 开始 -->
+        <div id="screen-start" class="screen active">
+            <div class="input-group">
+                <label for="student-id">💻 请输入电脑编号</label>
+                <input type="text" id="student-id" class="input-control" placeholder="例如：01, 02, A01..." maxlength="10">
+            </div>
+            <button onclick="app.startQuiz()" class="btn btn-primary">
+                <span>🚀 开始答题</span>
+            </button>
+        </div>
+
+        <!-- 屏幕 2: 答题 -->
+        <div id="screen-quiz" class="screen">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            
+            <div class="question-card">
+                <div id="question-text" class="question-text">题目加载中...</div>
+                <div id="options-container" class="options-grid"></div>
+            </div>
+
+            <div id="feedback" class="feedback-box">
+                <div id="feedback-title" class="feedback-title"></div>
+                <div id="feedback-text" class="feedback-text"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button id="btn-next" onclick="app.nextQuestion()" class="btn btn-next" disabled>
+                    下一题 ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- 屏幕 3: 结果 -->
+        <div id="screen-result" class="screen">
+            <div class="result-icon" id="result-icon">🏆</div>
+            <div class="score-display">
+                <div class="score-number" id="final-score">0</div>
+                <div class="score-label">你的得分</div>
+            </div>
+
+            <div id="badges-container" class="badge-grid"></div>
+
+            <div id="result-message" style="text-align: center; margin-bottom: 24px; font-size: 15px; color: var(--text-main); line-height: 1.6;"></div>
+
+            <button onclick="location.reload()" class="btn btn-primary">
+                🔄 数据已上传教师端
+            </button>
+        </div>
+    </div>
+
+    <div class="footer">
+        三年级信息科技 · 认识数字身份
+    </div>
+</div>
+
+<script>
+    // ================= 题目数据 (已更新为 Word 文档前 10 题) =================
+    const quizData = [
+        {
+            question: "1. 数字身份指的是什么？",
+            options: ["A. 现实生活中的身份证", "B. 个人或设备在网络上的在线身份", "C. 学校的学籍号码", "D. 家庭住址和电话"],
+            answer: "B",
+            explanation: "数字身份是指个人、组织或数字设备在网络上的在线身份，是我们在网络世界中的“通行证”，与现实生活中的身份证不同。"
+        },
+        {
+            question: "2. 注册网络账号时，以下哪种方式常用于实名认证？",
+            options: ["A. 填写家庭宠物名字", "B. 手机号验证或刷脸认证", "C. 写一封自我介绍信", "D. 上传一张风景照片"],
+            answer: "B",
+            explanation: "实名认证通常需要通过注册人的手机号进行验证，有的还需要刷脸认证，以确保数字身份与现实身份关联。"
+        },
+        {
+            question: "3. 数字身份为什么具有唯一性？",
+            options: ["A. 因为每个人可以注册很多账号", "B. 因为网络名称可以随意更改", "C. 因为实名认证后可以锁定现实中的个人", "D. 因为平台不记录用户信息"],
+            answer: "C",
+            explanation: "实名认证将数字身份与现实身份对应起来，一旦有违法违规行为，可以通过数字身份快速锁定现实中的个人，因此具有唯一性。"
+        },
+        {
+            question: "4. 小智妈妈能在网购后快速收到退款，主要是因为什么？",
+            options: ["A. 她买了很贵的衣服", "B. 她在购物网站的信用分高", "C. 她是店家的亲戚", "D. 她经常退货"],
+            answer: "B",
+            explanation: "信用分高代表她在该平台有良好的诚信记录，因此享有优先退款等权益，体现了数字身份的信用价值。"
+        },
+        {
+            question: "5. 以下哪种行为可能会损害数字身份的信用价值？",
+            options: ["A. 按时完成作业", "B. 在网络平台发布虚假信息", "C. 帮助同学解答问题", "D. 每天登录学习平台"],
+            answer: "B",
+            explanation: "发布虚假信息属于不诚信行为，可能导致账号被封禁或信用分降低，损害数字身份的信用价值。"
+        },
+        {
+            question: "6. 数字身份在网络世界中的作用类似于什么？",
+            options: ["A. 学校的学生证", "B. 网络世界中的“通行证”", "C. 家里的钥匙", "D. 公交卡"],
+            answer: "B",
+            explanation: "文中提到数字身份如同在网络世界中的“通行证”，用于开展各种在线活动。"
+        },
+        {
+            question: "7. 以下哪些属于数字身份？",
+            options: ["A. 社交平台账号", "B. 家庭户口本", "C. 纸质日记本", "D. 实体书包"],
+            answer: "A",
+            explanation: "社交平台账号是典型的数字身份。户口本是现实证件，日记本和书包是实物，不属于数字身份。"
+        },
+        {
+            question: "8. 为什么有些网友会被封号？",
+            options: ["A. 因为他们不常登录", "B. 因为他们发布虚假信息或不良内容", "C. 因为他们没有实名认证", "D. 因为他们用的是别人的账号"],
+            answer: "B",
+            explanation: "发布虚假信息或不良内容违反平台规定，属于失信行为，可能导致账号被封禁。"
+        },
+        {
+            question: "9. 数字身份的信用价值可以体现在以下哪些方面？",
+            options: ["A. 免押金租车、信用购物", "B. 获得更多游戏皮肤", "C. 免费看电影", "D. 不用写作业"],
+            answer: "A",
+            explanation: "信用价值高的用户可以在一些平台上享受免押金租车、先享后付等权益。"
+        },
+        {
+            question: "10. 注册数字身份时，实名认证的主要目的是什么？",
+            options: ["A. 让账号更好记", "B. 增加账号数量", "C. 关联现实身份，增强责任追溯", "D. 让账号更美观"],
+            answer: "C",
+            explanation: "实名认证将数字身份与现实身份关联起来，便于在发生违法违规行为时追溯责任。"
+        }
+    ];
+
+    class QuizApp {
+        constructor() {
+            this.currentQuestionIndex = 0;
+            this.score = 0;
+            this.studentId = '';
+            this.selectedOption = null;
+            this.hasAnswered = false;
+        }
+
+        startQuiz() {
+            const input = document.getElementById('student-id');
+            if (!input.value.trim()) {
+                alert('请先输入电脑编号哦！💻');
+                input.focus();
+                return;
+            }
+            this.studentId = input.value.trim();
+            this.switchScreen('screen-quiz');
+            this.renderQuestion();
+        }
+
+        switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        renderQuestion() {
+            this.hasAnswered = false;
+            this.selectedOption = null;
+            const q = quizData[this.currentQuestionIndex];
+            
+            // 更新进度条
+            const progress = ((this.currentQuestionIndex) / quizData.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+
+            // 渲染题目
+            document.getElementById('question-text').innerText = q.question;
+            
+            // 渲染选项
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => this.selectOption(idx, btn);
+                container.appendChild(btn);
+            });
+
+            // 重置反馈区
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('btn-next').disabled = true;
+            document.getElementById('btn-next').innerText = this.currentQuestionIndex === quizData.length - 1 ? '提交答案 📝' : '下一题 ➡️';
+        }
+
+        selectOption(idx, btnElement) {
+            if (this.hasAnswered) return;
+
+            // 移除其他选中状态
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            
+            // 设置当前选中
+            btnElement.classList.add('selected');
+            this.selectedOption = idx;
+            this.submitAnswer();
+        }
+
+        submitAnswer() {
+            if (this.hasAnswered) return;
+            this.hasAnswered = true;
+
+            const q = quizData[this.currentQuestionIndex];
+            const isCorrect = q.options[this.selectedOption].startsWith(q.answer);
+            const optionsEls = document.querySelectorAll('.option-btn');
+
+            // 标记正确/错误
+            if (isCorrect) {
+                this.score += 10;
+                optionsEls[this.selectedOption].classList.add('correct');
+                this.showFeedback(true, q.explanation);
+            } else {
+                optionsEls[this.selectedOption].classList.add('wrong');
+                // 找出正确答案并高亮
+                q.options.forEach((opt, idx) => {
+                    if (opt.startsWith(q.answer)) optionsEls[idx].classList.add('correct');
+                });
+                this.showFeedback(false, q.explanation);
+            }
+
+            document.getElementById('btn-next').disabled = false;
+        }
+
+        showFeedback(isCorrect, text) {
+            const box = document.getElementById('feedback');
+            const title = document.getElementById('feedback-title');
+            const content = document.getElementById('feedback-text');
+
+            title.className = `feedback-title ${isCorrect ? 'correct' : 'wrong'}`;
+            title.innerHTML = isCorrect ? '✅ 回答正确！' : '❌ 答错了哦';
+            content.innerText = text;
+            box.classList.add('show');
+        }
+
+        nextQuestion() {
+            this.currentQuestionIndex++;
+            if (this.currentQuestionIndex >= quizData.length) {
+                this.showResult();
+            } else {
+                this.renderQuestion();
+            }
+        }
+
+        showResult() {
+            this.switchScreen('screen-result');
+            document.getElementById('final-score').innerText = this.score;
+            
+            const icon = document.getElementById('result-icon');
+            const msg = document.getElementById('result-message');
+            const badgeContainer = document.getElementById('badges-container');
+
+            if (this.score === 100) {
+                icon.innerText = '🎉';
+                msg.innerHTML = `<strong>太棒啦！</strong><br>你真是数字身份小达人！对数字身份的知识掌握得超棒，继续加油哦～`;
+                this.startConfetti();
+            } else if (this.score >= 80) {
+                icon.innerText = '🌟';
+                msg.innerHTML = `<strong>非常优秀！</strong><br>你已经掌握了大部分知识，再复习一下就能满分啦！`;
+            } else if (this.score >= 60) {
+                icon.innerText = '👍';
+                msg.innerHTML = `<strong>及格啦！</strong><br>基础概念还不错，但要小心那些容易混淆的细节哦。`;
+            } else {
+                icon.innerText = '📚';
+                msg.innerHTML = `<strong>加油！</strong><br>没关系，多读几遍课本，下次一定能闯关成功！`;
+            }
+
+            // 生成徽章
+            badgeContainer.innerHTML = '';
+            const badges = [
+                { name: '答题勇士', condition: this.score > 0 },
+                { name: '信用专家', condition: this.score >= 60 },
+                { name: '安全卫士', condition: this.score >= 80 },
+                { name: '满分大神', condition: this.score === 100 }
+            ];
+
+            badges.forEach(b => {
+                const div = document.createElement('div');
+                div.className = `badge-item ${b.condition ? 'unlocked' : ''}`;
+                div.innerText = b.condition ? `🏅 ${b.name}` : `🔒 ${b.name}`;
+                badgeContainer.appendChild(div);
+            });
+        }
+
+        startConfetti() {
+            const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                conf.style.opacity = Math.random();
+                document.body.appendChild(conf);
+                
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+    }
+
+    const app = new QuizApp();
+</script>
+</body>
+</html>
