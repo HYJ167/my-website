@@ -93,9 +93,9 @@
 
 <script>
     // ================= ⚠️ 重要：配置区域 ⚠️ =================
-    // 请在此处填入你在 mockapi.io 创建的链接
-    // 格式示例：'https://xxxxx.mockapi.io/api/v1/scores'
-    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/scores'; 
+    // 请确保您在 mockapi.io 创建了一个名为 "results" 的资源
+    // 且该资源内部【没有任何预设字段】，是空的！
+    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/results'; 
     // =======================================================
 
     const quizData = [
@@ -118,9 +118,8 @@
             this.userName = "";
             this.userAnswers = [];
             
-            // 检查配置
-            if(API_URL.includes('在此处粘贴')) {
-                alert("⚠️ 错误：尚未配置数据库链接！\n请用记事本打开此文件，找到 'const API_URL' 并填入你的 MockAPI 链接。");
+            if(API_URL.includes('在此处粘贴') || API_URL.includes('mockapi.io') === false) {
+                alert("⚠️ 错误：数据库链接配置无效！\n请检查代码中的 API_URL 是否正确。");
             }
         }
 
@@ -201,17 +200,24 @@
             loading.style.display = 'block';
 
             try {
+                // ✅ 修改点：只发送最简单的三个字段，避免复杂结构导致 400 错误
+                const payload = {
+                    name: this.userName,
+                    score: this.score,      // 数字类型
+                    total: 100              // 数字类型
+                    // timestamp 和 details 已暂时移除，确保兼容性
+                };
+
+                console.log("正在提交数据:", payload);
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: this.userName,
-                        score: this.score,
-                        total: 100,
-                        timestamp: new Date().toLocaleString(),
-                        details: this.userAnswers
-                    })
+                    body: JSON.stringify(payload)
                 });
+
+                // 获取响应文本以便调试
+                const responseText = await response.text();
 
                 if (response.ok) {
                     setTimeout(() => {
@@ -219,11 +225,16 @@
                         this.showResult(true);
                     }, 1000);
                 } else {
-                    throw new Error("服务器响应错误");
+                    // 抛出包含具体错误信息的异常
+                    throw new Error(`服务器拒绝请求 (${response.status}): ${responseText}`);
                 }
             } catch (e) {
-                alert("上传失败：" + e.message + "\n请检查：1. 网络连接 2. API链接是否正确填写");
-                console.error(e);
+                console.error("提交失败详情:", e);
+                let msg = "上传失败：" + e.message;
+                if (e.message.includes('400')) {
+                    msg += "\n\n💡 建议：\n1. 去 MockAPI 删除 'results' 资源并重新创建一个空的。\n2. 确保没有预设任何字段。";
+                }
+                alert(msg);
                 btn.disabled = false;
                 loading.style.display = 'none';
             }
