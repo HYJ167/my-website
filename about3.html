@@ -19,7 +19,14 @@
         .live-dot { height: 10px; width: 10px; background: #10B981; border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         .empty-state { text-align: center; padding: 40px; color: #9CA3AF; }
-        button.refresh-btn { padding: 8px 15px; background: #4F46E5; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        button.refresh-btn { padding: 8px 15px; background: #4F46E5; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        button.refresh-btn:hover { background: #4338ca; }
+        
+        /* 详情弹窗样式 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .close-modal { float: right; cursor: pointer; font-size: 24px; color: #999; }
     </style>
 </head>
 <body>
@@ -46,35 +53,56 @@
     </table>
 </div>
 
+<!-- 详情弹窗 -->
+<div id="detail-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeDetailModal()">&times;</span>
+        <h2 style="margin-top:0; color:#4F46E5;">答题详情</h2>
+        <div id="detail-content" style="line-height: 1.6;"></div>
+        <button class="refresh-btn" style="width:100%; margin-top:20px;" onclick="closeDetailModal()">关闭</button>
+    </div>
+</div>
+
 <script>
     // ================= ⚠️ 重要：配置区域 ⚠️ =================
-    // 请在此处填入你在 mockapi.io 创建的链接 (必须与学生端一致)
-    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/scores'; 
+    // 必须与学生端的 API_URL 完全一致
+    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/results'; 
     // =======================================================
 
     let allData = [];
 
     async function loadData() {
-        if(API_URL.includes('在此处粘贴')) {
-            alert("⚠️ 错误：尚未配置数据库链接！\n请用记事本打开此文件，找到 'const API_URL' 并填入你的 MockAPI 链接。");
+        if(API_URL.includes('在此处粘贴') || !API_URL.includes('mockapi.io')) {
+            console.warn("⚠️ 警告：API URL 未配置或无效");
             return;
         }
 
         const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">加载中...</td></tr>';
+        // 如果是第一次加载且为空，显示加载中，否则保持旧数据不动（避免闪烁）
+        if (allData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">加载中...</td></tr>';
+        }
 
         try {
             const res = await fetch(API_URL);
-            if (!res.ok) throw new Error("网络响应错误");
+            if (!res.ok) throw new Error(`服务器响应错误: ${res.status}`);
             
             const data = await res.json();
-            allData = data;
+            
+            // 确保数据是数组
+            if (!Array.isArray(data)) {
+                throw new Error("返回的数据格式不是列表");
+            }
 
+            allData = data;
             renderTable();
             updateStats();
         } catch (e) {
             console.error("加载失败:", e);
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">加载失败，请检查链接是否正确或网络是否通畅<br>' + e.message + '</td></tr>';
+            if (allData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">加载失败<br><small>${e.message}</small><br>请检查：1. 网络 2. API链接 3. MockAPI资源是否存在</td></tr>`;
+            }
+            // 如果有旧数据，只是静默失败，不覆盖表格，体验更好
         }
     }
 
@@ -85,21 +113,36 @@
             return;
         }
 
-        // 按时间倒序 (假设后端返回顺序不确定，这里简单处理)
-        // MockAPI 默认返回可能是正序，我们 reverse 一下让最新的在上面
+        // 按提交顺序倒序（假设后提交的在后面，或者MockAPI默认ID递增）
+        // 为了看到最新的学生，我们反转数组
         const displayData = [...allData].reverse();
 
-        tbody.innerHTML = displayData.map(row => {
-            const percent = Math.round((row.score / (row.total || 100)) * 100);
-            const badgeClass = percent >= 60 ? 'badge-good' : 'badge-bad';
-            const timeStr = row.timestamp ? row.timestamp : '刚刚';
+        tbody.innerHTML = displayData.map((row, index) => {
+            // ✅ 安全获取数据，防止 undefined 报错
+            const name = row.name || '未知用户';
+            const score = typeof row.score === 'number' ? row.score : 0;
+            const total = typeof row.total === 'number' && row.total > 0 ? row.total : 100;
+            const percent = Math.round((score / total) * 100);
             
-            let detailBtn = `<button onclick="alert('答题详情:\\n${JSON.stringify(row.details || [], null, 2)}')" style="cursor:pointer; background:none; border:none; color:#4F46E5; font-weight:bold; text-decoration:underline;">查看</button>`;
+            const badgeClass = percent >= 60 ? 'badge-good' : 'badge-bad';
+            
+            // 处理时间：如果没有 timestamp 字段，显示 "刚刚" 或 "无记录"
+            const timeStr = row.timestamp ? row.timestamp : '<span style="color:#999">刚刚</span>';
+            
+            // 处理详情按钮：如果没有 details 字段，提示暂无详情
+            let detailBtn = '';
+            if (row.details && Array.isArray(row.details)) {
+                // 将原始数据编码，防止特殊字符破坏 HTML
+                const safeData = encodeURIComponent(JSON.stringify(row.details));
+                detailBtn = `<button onclick="showDetail('${safeData}', '${name}')" style="cursor:pointer; background:none; border:none; color:#4F46E5; font-weight:bold; text-decoration:underline;">查看</button>`;
+            } else {
+                detailBtn = `<span style="color:#ccc; font-size:12px;">暂无详情</span>`;
+            }
 
             return `
                 <tr>
-                    <td><strong>${row.name || '未知用户'}</strong></td>
-                    <td><span class="badge ${badgeClass}">${row.score}分</span></td>
+                    <td><strong>${name}</strong></td>
+                    <td><span class="badge ${badgeClass}">${score}分</span></td>
                     <td>${percent}%</td>
                     <td>${timeStr}</td>
                     <td>${detailBtn}</td>
@@ -111,14 +154,45 @@
     function updateStats() {
         document.getElementById('count').innerText = allData.length;
         if (allData.length > 0) {
-            const totalScore = allData.reduce((sum, item) => sum + (item.score || 0), 0);
-            const maxScore = Math.max(...allData.map(i => i.score || 0));
+            const totalScore = allData.reduce((sum, item) => sum + (typeof item.score === 'number' ? item.score : 0), 0);
+            const scores = allData.map(i => typeof i.score === 'number' ? i.score : 0);
+            const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+            
             document.getElementById('avg').innerText = Math.round(totalScore / allData.length);
             document.getElementById('highest').innerText = maxScore;
         } else {
             document.getElementById('avg').innerText = 0;
             document.getElementById('highest').innerText = 0;
         }
+    }
+
+    // 显示详情弹窗
+    function showDetail(encodedData, name) {
+        try {
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-content');
+            
+            let html = `<h3>学生：${name}</h3><ul style="padding-left:20px;">`;
+            data.forEach((item, idx) => {
+                const status = item.isCorrect ? '✅' : '❌';
+                html += `<li style="margin-bottom:8px;">
+                    <strong>第${idx+1}题:</strong> ${status}<br>
+                    <span style="color:#666; font-size:14px;">题目：${item.q}</span><br>
+                    <span style="color:#666; font-size:14px;">回答：${item.user}</span>
+                </li>`;
+            });
+            html += '</ul>';
+            
+            content.innerHTML = html;
+            modal.classList.add('active');
+        } catch (e) {
+            alert("解析详情失败");
+        }
+    }
+
+    function closeDetailModal() {
+        document.getElementById('detail-modal').classList.remove('active');
     }
 
     // 初始化加载
