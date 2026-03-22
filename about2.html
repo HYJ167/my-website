@@ -3,564 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>认识数字身份 - 知识闯关</title>
+    <title>数字身份大闯关 - 学生端</title>
     <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338ca;
-            --success: #10B981;
-            --error: #EF4444;
-            --warning: #F59E0B;
-            --bg: #F3F4F6;
-            --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-sub: #6B7280;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
-        
-        body {
-            background-color: var(--bg);
-            background-image: radial-gradient(#E0E7FF 2px, transparent 2px);
-            background-size: 32px 32px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 600px;
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary), #818CF8);
-            color: white;
-            padding: 32px 24px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .header h1 { font-size: 28px; margin-bottom: 8px; position: relative; z-index: 1; }
-        .header p { font-size: 14px; opacity: 0.9; position: relative; z-index: 1; }
-
-        .content { padding: 32px 24px; }
-
-        .screen { display: none; animation: fadeIn 0.4s ease-out; }
+        :root { --primary: #4F46E5; --success: #10B981; --bg: #F3F4F6; --card: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { background: var(--card); width: 100%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        .header { background: linear-gradient(135deg, var(--primary), #818CF8); color: white; padding: 30px; text-align: center; }
+        .content { padding: 30px; flex: 1; }
+        .screen { display: none; animation: fade 0.4s; }
         .screen.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 开始界面 */
-        .input-group { margin-bottom: 24px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
-        .input-control {
-            width: 100%; padding: 12px 16px; border: 2px solid #E5E7EB; border-radius: 12px;
-            font-size: 16px; transition: all 0.3s; outline: none;
-        }
-        .input-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-
-        .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 12px;
-            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #059669; transform: translateY(-2px); }
-
-        /* 答题界面 */
-        .progress-bar {
-            height: 6px; background: #E5E7EB; border-radius: 3px; margin-bottom: 24px; overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease;
-        }
-
-        .question-card { margin-bottom: 24px; }
-        .question-text { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
-
-        .options-grid { display: grid; gap: 12px; }
-        .option-btn {
-            padding: 16px; border: 2px solid #E5E7EB; border-radius: 12px;
-            background: white; text-align: left; cursor: pointer; transition: all 0.2s;
-            font-size: 15px; color: var(--text-main); position: relative; overflow: hidden;
-        }
-        .option-btn:hover { border-color: var(--primary); background: #EEF2FF; }
-        .option-btn.selected { border-color: var(--primary); background: #EEF2FF; font-weight: 600; }
-        .option-btn.correct { border-color: var(--success); background: #ECFDF5; color: #065F46; }
-        .option-btn.wrong { border-color: var(--error); background: #FEF2F2; color: #991B1B; }
-
-        .feedback-box {
-            margin-top: 20px; padding: 16px; border-radius: 12px;
-            background: #F3F4F6; display: none; animation: slideUp 0.3s ease;
-        }
-        .feedback-box.show { display: block; }
-        .feedback-title { font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .feedback-title.correct { color: var(--success); }
-        .feedback-title.wrong { color: var(--error); }
-        .feedback-text { font-size: 14px; color: var(--text-sub); line-height: 1.5; }
-
-        .nav-buttons { display: flex; gap: 12px; margin-top: 24px; }
-        .btn-next { flex: 1; background: var(--primary); color: white; }
-        .btn-next:disabled { background: #D1D5DB; cursor: not-allowed; transform: none; }
-
-        /* 结果界面 */
-        .result-icon { font-size: 64px; margin-bottom: 16px; display: block; text-align: center; }
-        .score-display { text-align: center; margin-bottom: 24px; }
-        .score-number { font-size: 48px; font-weight: 800; color: var(--primary); }
-        .score-label { font-size: 16px; color: var(--text-sub); }
+        @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
-        .badge-item {
-            padding: 12px; border-radius: 12px; background: #F9FAFB; border: 1px solid #E5E7EB;
-            text-align: center; font-size: 14px; font-weight: 600; color: var(--text-sub);
-        }
-        .badge-item.unlocked { background: #ECFDF5; border-color: var(--success); color: #065F46; }
-
-        .footer {
-            text-align: center; padding: 16px; background: #F9FAFB; border-top: 1px solid #E5E7EB;
-            font-size: 12px; color: var(--text-sub);
-        }
-
-        /* 弹窗样式 */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        .modal-content {
-            background: white; padding: 32px; border-radius: 20px;
-            width: 90%; max-width: 400px; text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-        .modal-icon { font-size: 48px; margin-bottom: 16px; display: block; }
-        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
-        .modal-desc { font-size: 14px; color: var(--text-sub); margin-bottom: 24px; line-height: 1.5; }
-        .modal-actions { display: flex; flex-direction: column; gap: 12px; }
-
-        /* 粒子效果 */
-        .confetti { position: fixed; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; z-index: 999; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+        input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 12px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+        input:focus { border-color: var(--primary); outline: none; }
+        
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        
+        .option { padding: 15px; border: 2px solid #eee; margin-bottom: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .option:hover { background: #f9fafb; border-color: #cbd5e1; }
+        .option.selected { border-color: var(--primary); background: #EEF2FF; color: var(--primary); font-weight: bold; }
+        .option.correct { border-color: var(--success); background: #ECFDF5; color: #065F46; }
+        .option.wrong { border-color: #EF4444; background: #FEF2F2; color: #991B1B; }
+        
+        .feedback { margin-top: 20px; padding: 15px; background: #f3f4f6; border-radius: 10px; display: none; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
+        .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .btn-success { background: var(--success); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>🎓 知识闯关</h1>
-        <p>规则：每题10分，共100分，看看谁是知识小达人！</p>
-    </div>
-
+    <div class="header"><h1>🎓 数字身份大闯关</h1><p>成绩实时同步给老师</p></div>
     <div class="content">
-        <!-- 屏幕 1: 开始 -->
-        <div id="screen-start" class="screen active">
-            <div class="input-group">
-                <label for="student-id">💻 请输入电脑编号</label>
-                <input type="text" id="student-id" class="input-control" placeholder="例如：01, 02, A01..." maxlength="10">
-            </div>
-            <button onclick="app.startQuiz()" class="btn btn-primary">
-                <span>🚀 开始答题</span>
-            </button>
+        <!-- 登录页 -->
+        <div id="screen-login" class="screen active">
+            <label style="font-weight:bold; display:block; margin-bottom:8px;">请输入你的姓名/学号：</label>
+            <input type="text" id="studentName" placeholder="例如：张三">
+            <button class="btn" onclick="app.startQuiz()">开始挑战 🚀</button>
         </div>
 
-        <!-- 屏幕 2: 答题 -->
+        <!-- 答题页 -->
         <div id="screen-quiz" class="screen">
-            <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
+            <div style="display:flex; justify-content:space-between; color:#666; margin-bottom:10px;">
+                <span id="q-progress">题目 1/10</span>
             </div>
-            
-            <div class="question-card">
-                <div id="question-text" class="question-text">题目加载中...</div>
-                <div id="options-container" class="options-grid"></div>
-            </div>
-
-            <div id="feedback" class="feedback-box">
-                <div id="feedback-title" class="feedback-title"></div>
-                <div id="feedback-text" class="feedback-text"></div>
-            </div>
-
-            <div class="nav-buttons">
-                <button id="btn-next" onclick="app.nextQuestion()" class="btn btn-next" disabled>
-                    下一题 ➡️
-                </button>
-            </div>
+            <h3 id="question-text" style="margin-bottom:20px;"></h3>
+            <div id="options-area"></div>
+            <div id="feedback-area" class="feedback"></div>
+            <button id="next-btn" class="btn" style="margin-top:20px;" onclick="app.nextQuestion()" disabled>下一题 ➡️</button>
         </div>
 
-        <!-- 屏幕 3: 结果 -->
-        <div id="screen-result" class="screen">
-            <div class="result-icon" id="result-icon">🏆</div>
-            <div class="score-display">
-                <div class="score-number" id="final-score">0</div>
-                <div class="score-label">你的得分</div>
-            </div>
-
-            <div id="badges-container" class="badge-grid"></div>
-
-            <div id="result-message" style="text-align: center; margin-bottom: 24px; font-size: 15px; color: var(--text-main); line-height: 1.6;"></div>
-            
-            <!-- 状态提示区域 -->
-            <div id="upload-status" style="text-align: center; font-weight: bold; color: var(--success); margin-bottom: 20px; display: none;">
-                ✅ 已上传闯关成绩！
-            </div>
-
-            <button onclick="location.reload()" class="btn btn-primary">
-                🔄 再玩一次
-            </button>
+        <!-- 提交中 -->
+        <div id="screen-submit" class="screen" style="text-align:center;">
+            <div style="font-size:40px;">📡</div>
+            <h3>正在上传数据到云端...</h3>
+            <p>请勿关闭页面</p>
         </div>
-    </div>
 
-    <div class="footer">
-        三年级信息科技 · 认识数字身份
+        <!-- 成功页 -->
+        <div id="screen-success" class="screen" style="text-align:center;">
+            <div style="font-size:60px;">🎉</div>
+            <h2>提交成功！</h2>
+            <div id="upload-status" style="color:var(--success); font-weight:bold; margin:10px 0;">✅ 已上传闯关成绩！</div>
+            <div style="font-size:24px; font-weight:bold; color:var(--primary);" id="final-score"></div>
+            <button onclick="location.reload()" class="btn" style="margin-top:20px;">再玩一次</button>
+        </div>
     </div>
 </div>
 
-<!-- 提交确认弹窗 -->
+<!-- 确认提交弹窗 -->
 <div id="submit-modal" class="modal-overlay">
     <div class="modal-content">
-        <span class="modal-icon">📤</span>
-        <div class="modal-title">闯关完成！</div>
-        <div class="modal-desc">
-            是否要将你的成绩 (<span id="modal-score" style="font-weight:bold; color:var(--primary)">0</span>分) 
-            提交到教师端？<br>提交后老师将能看到你的答题情况。
-        </div>
+        <div style="font-size:40px;">📤</div>
+        <h3>闯关完成！</h3>
+        <p>是否将成绩 (<span id="modal-score" style="font-weight:bold; color:var(--primary)">0</span>分) 提交给老师？</p>
         <div class="modal-actions">
-            <button id="btn-submit-confirm" onclick="app.submitToTeacher()" class="btn btn-success">
-                ✅ 确认提交
-            </button>
-            <button onclick="app.closeModalAndShowResult()" class="btn" style="background:#E5E7EB; color:#374151;">
-                ❌ 暂不提交
-            </button>
+            <button id="btn-submit-confirm" class="btn btn-success" onclick="app.submitToTeacher()">✅ 确认提交</button>
+            <button class="btn" style="background:#eee; color:#333;" onclick="app.closeModalAndShowResult()">❌ 暂不提交</button>
         </div>
-        <div id="submit-loading" style="display:none; margin-top:10px; font-size:13px; color:var(--text-sub);">
-            正在上传数据...
-        </div>
+        <p id="submit-loading" style="display:none; color:#666; font-size:12px; margin-top:10px;">正在上传...</p>
     </div>
 </div>
 
 <script>
-    // ================= 题目数据 =================
+    // ================= ⚠️ 重要：配置区域 ⚠️ =================
+    // 请在此处填入你在 mockapi.io 创建的链接
+    // 格式示例：'https://xxxxx.mockapi.io/api/v1/scores'
+    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/scores'; 
+    // =======================================================
+
     const quizData = [
-        {
-            question: "1. 数字身份指的是什么？",
-            options: ["A. 现实生活中的身份证", "B. 个人或设备在网络上的在线身份", "C. 学校的学籍号码", "D. 家庭住址和电话"],
-            answer: "B",
-            explanation: "数字身份是指个人、组织或数字设备在网络上的在线身份，是我们在网络世界中的“通行证”。"
-        },
-        {
-            question: "2. 注册网络账号时，以下哪种方式常用于实名认证？",
-            options: ["A. 填写家庭宠物名字", "B. 手机号验证或刷脸认证", "C. 写一封自我介绍信", "D. 上传一张风景照片"],
-            answer: "B",
-            explanation: "实名认证通常需要通过注册人的手机号进行验证，有的还需要刷脸认证。"
-        },
-        {
-            question: "3. 数字身份为什么具有唯一性？",
-            options: ["A. 因为每个人可以注册很多账号", "B. 因为网络名称可以随意更改", "C. 因为实名认证后可以锁定现实中的个人", "D. 因为平台不记录用户信息"],
-            answer: "C",
-            explanation: "实名认证将数字身份与现实身份对应起来，便于在发生违法违规行为时追溯责任。"
-        },
-        {
-            question: "4. 小智妈妈能在网购后快速收到退款，主要是因为什么？",
-            options: ["A. 她买了很贵的衣服", "B. 她在购物网站的信用分高", "C. 她是店家的亲戚", "D. 她经常退货"],
-            answer: "B",
-            explanation: "信用分高代表她在该平台有良好的诚信记录，因此享有优先退款等权益。"
-        },
-        {
-            question: "5. 以下哪种行为可能会损害数字身份的信用价值？",
-            options: ["A. 按时完成作业", "B. 在网络平台发布虚假信息", "C. 帮助同学解答问题", "D. 每天登录学习平台"],
-            answer: "B",
-            explanation: "发布虚假信息属于不诚信行为，可能导致账号被封禁或信用分降低。"
-        },
-        {
-            question: "6. 数字身份在网络世界中的作用类似于什么？",
-            options: ["A. 学校的学生证", "B. 网络世界中的“通行证”", "C. 家里的钥匙", "D. 公交卡"],
-            answer: "B",
-            explanation: "文中提到数字身份如同在网络世界中的“通行证”，用于开展各种在线活动。"
-        },
-        {
-            question: "7. 以下哪些属于数字身份？",
-            options: ["A. 社交平台账号", "B. 家庭户口本", "C. 纸质日记本", "D. 实体书包"],
-            answer: "A",
-            explanation: "社交平台账号是典型的数字身份。户口本是现实证件，日记本和书包是实物。"
-        },
-        {
-            question: "8. 为什么有些网友会被封号？",
-            options: ["A. 因为他们不常登录", "B. 因为他们发布虚假信息或不良内容", "C. 因为他们没有实名认证", "D. 因为他们用的是别人的账号"],
-            answer: "B",
-            explanation: "发布虚假信息或不良内容违反平台规定，属于失信行为，可能导致账号被封禁。"
-        },
-        {
-            question: "9. 数字身份的信用价值可以体现在以下哪些方面？",
-            options: ["A. 免押金租车、信用购物", "B. 获得更多游戏皮肤", "C. 免费看电影", "D. 不用写作业"],
-            answer: "A",
-            explanation: "信用价值高的用户可以在一些平台上享受免押金租车、先享后付等权益。"
-        },
-        {
-            question: "10. 注册数字身份时，实名认证的主要目的是什么？",
-            options: ["A. 让账号更好记", "B. 增加账号数量", "C. 关联现实身份，增强责任追溯", "D. 让账号更美观"],
-            answer: "C",
-            explanation: "实名认证将数字身份与现实身份关联起来，便于在发生违法违规行为时追溯责任。"
-        }
+        { q: "1. 数字身份指的是什么？", opts: ["A. 现实身份证", "B. 网络在线身份", "C. 学籍号", "D. 家庭住址"], ans: "B", exp: "数字身份是我们在网络世界中的通行证。" },
+        { q: "2. 注册账号时，常用于实名认证的方式？", opts: ["A. 宠物名", "B. 手机号或刷脸", "C. 自我介绍", "D. 风景照"], ans: "B", exp: "手机号和刷脸能确保身份真实。" },
+        { q: "3. 数字身份具有唯一性的原因？", opts: ["A. 可注册多号", "B. 名字可变", "C. 实名认证锁定真人", "D. 平台不记录"], ans: "C", exp: "实名认证让每个数字身份对应唯一的真人。" },
+        { q: "4. 小智妈妈网购快速退款因为？", opts: ["A. 衣服贵", "B. 信用分高", "C. 是亲戚", "D. 常退货"], ans: "B", exp: "高信用分代表诚信记录好。" },
+        { q: "5. 哪种行为损害信用价值？", opts: ["A. 按时作业", "B. 发布虚假信息", "C. 帮助同学", "D. 每天登录"], ans: "B", exp: "发布虚假信息是不诚信行为。" },
+        { q: "6. 数字身份的作用类似于？", opts: ["A. 学生证", "B. 网络通行证", "C. 钥匙", "D. 公交卡"], ans: "B", exp: "它是开展在线活动的凭证。" },
+        { q: "7. 以下属于数字身份的是？", opts: ["A. 社交账号", "B. 户口本", "C. 日记本", "D. 书包"], ans: "A", exp: "社交账号是典型的数字身份。" },
+        { q: "8. 网友被封号通常因为？", opts: ["A. 不常登录", "B. 发布虚假/不良信息", "C. 没实名", "D. 用别人号"], ans: "B", exp: "违规发布内容是主要原因。" },
+        { q: "9. 信用价值体现在？", opts: ["A. 免押金租车", "B. 游戏皮肤", "C. 免费电影", "D. 不写作业"], ans: "A", exp: "信用好可享受免押金等便利。" },
+        { q: "10. 实名认证的主要目的？", opts: ["A. 好记", "B. 增加数量", "C. 关联现实，责任追溯", "D. 美观"], ans: "C", exp: "便于追溯现实中的责任人。" }
     ];
 
     class QuizApp {
         constructor() {
-            this.currentQuestionIndex = 0;
+            this.currentIdx = 0;
             this.score = 0;
-            this.studentId = '';
-            this.selectedOption = null;
-            this.hasAnswered = false;
-            this.answersLog = []; // 记录答题详情
+            this.userName = "";
+            this.userAnswers = [];
+            
+            // 检查配置
+            if(API_URL.includes('在此处粘贴')) {
+                alert("⚠️ 错误：尚未配置数据库链接！\n请用记事本打开此文件，找到 'const API_URL' 并填入你的 MockAPI 链接。");
+            }
         }
 
         startQuiz() {
-            const input = document.getElementById('student-id');
-            if (!input.value.trim()) {
-                alert('请先输入电脑编号哦！💻');
-                input.focus();
-                return;
-            }
-            this.studentId = input.value.trim();
+            const nameInput = document.getElementById('studentName');
+            if (!nameInput.value.trim()) return alert("请先输入姓名！");
+            this.userName = nameInput.value.trim();
             this.switchScreen('screen-quiz');
-            this.renderQuestion();
+            this.loadQuestion();
         }
 
-        switchScreen(screenId) {
+        switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
 
-        renderQuestion() {
-            this.hasAnswered = false;
-            this.selectedOption = null;
-            const q = quizData[this.currentQuestionIndex];
-            
-            const progress = ((this.currentQuestionIndex) / quizData.length) * 100;
-            document.getElementById('progress-fill').style.width = `${progress}%`;
+        loadQuestion() {
+            const data = quizData[this.currentIdx];
+            document.getElementById('q-progress').innerText = `题目 ${this.currentIdx + 1}/${quizData.length}`;
+            document.getElementById('question-text').innerText = data.q;
+            document.getElementById('feedback-area').style.display = 'none';
+            document.getElementById('next-btn').disabled = true;
 
-            document.getElementById('question-text').innerText = q.question;
-            
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('div');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => this.selectOption(idx, btn);
-                container.appendChild(btn);
+            const optsDiv = document.getElementById('options-area');
+            optsDiv.innerHTML = '';
+            data.opts.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerText = opt;
+                div.onclick = () => this.selectOption(div, opt);
+                optsDiv.appendChild(div);
             });
-
-            document.getElementById('feedback').classList.remove('show');
-            document.getElementById('btn-next').disabled = true;
-            document.getElementById('btn-next').innerText = this.currentQuestionIndex === quizData.length - 1 ? '完成答题 📝' : '下一题 ➡️';
         }
 
-        selectOption(idx, btnElement) {
-            if (this.hasAnswered) return;
+        selectOption(el, text) {
+            if (!document.getElementById('next-btn').disabled) return;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
 
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            btnElement.classList.add('selected');
-            this.selectedOption = idx;
-            this.submitAnswer();
-        }
+            const correctAns = quizData[this.currentIdx].ans;
+            const isCorrect = text.startsWith(correctAns);
+            if (isCorrect) this.score += 10;
 
-        submitAnswer() {
-            if (this.hasAnswered) return;
-            this.hasAnswered = true;
+            const fb = document.getElementById('feedback-area');
+            fb.style.display = 'block';
+            fb.innerHTML = `<strong>${isCorrect ? '✅ 正确' : '❌ 错误'}</strong><br>${quizData[this.currentIdx].exp}`;
+            fb.style.background = isCorrect ? '#ECFDF5' : '#FEF2F2';
+            fb.style.color = isCorrect ? '#065F46' : '#991B1B';
 
-            const q = quizData[this.currentQuestionIndex];
-            const isCorrect = q.options[this.selectedOption].startsWith(q.answer);
-            const optionsEls = document.querySelectorAll('.option-btn');
-
-            // 记录答题详情
-            this.answersLog.push({
-                question: q.question,
-                userAnswer: q.options[this.selectedOption],
-                correctAnswer: q.options.find(opt => opt.startsWith(q.answer)),
-                isCorrect: isCorrect
-            });
-
-            if (isCorrect) {
-                this.score += 10;
-                optionsEls[this.selectedOption].classList.add('correct');
-                this.showFeedback(true, q.explanation);
-            } else {
-                optionsEls[this.selectedOption].classList.add('wrong');
-                q.options.forEach((opt, idx) => {
-                    if (opt.startsWith(q.answer)) optionsEls[idx].classList.add('correct');
-                });
-                this.showFeedback(false, q.explanation);
-            }
-
-            document.getElementById('btn-next').disabled = false;
-        }
-
-        showFeedback(isCorrect, text) {
-            const box = document.getElementById('feedback');
-            const title = document.getElementById('feedback-title');
-            const content = document.getElementById('feedback-text');
-
-            title.className = `feedback-title ${isCorrect ? 'correct' : 'wrong'}`;
-            title.innerHTML = isCorrect ? '✅ 回答正确！' : '❌ 答错了哦';
-            content.innerText = text;
-            box.classList.add('show');
+            el.classList.add(isCorrect ? 'correct' : 'wrong');
+            this.userAnswers.push({ q: quizData[this.currentIdx].q, user: text, isCorrect: isCorrect });
+            document.getElementById('next-btn').disabled = false;
         }
 
         nextQuestion() {
-            this.currentQuestionIndex++;
-            if (this.currentQuestionIndex >= quizData.length) {
-                this.showSubmitModal(); // 修改：不再直接显示结果，而是弹出提交框
+            this.currentIdx++;
+            if (this.currentIdx >= quizData.length) {
+                this.showSubmitModal();
             } else {
-                this.renderQuestion();
+                this.loadQuestion();
             }
         }
 
-        // 显示提交确认弹窗
         showSubmitModal() {
             document.getElementById('modal-score').innerText = this.score;
             document.getElementById('submit-modal').classList.add('active');
         }
 
-        // 关闭弹窗并显示结果（不提交）
         closeModalAndShowResult() {
             document.getElementById('submit-modal').classList.remove('active');
             this.showResult(false);
         }
 
-        // 提交数据到教师端
         async submitToTeacher() {
             const btn = document.getElementById('btn-submit-confirm');
             const loading = document.getElementById('submit-loading');
-            
             btn.disabled = true;
-            btn.innerText = "提交中...";
-            loading.style.display = "block";
-
-            const payload = {
-                studentId: this.studentId,
-                score: this.score,
-                totalScore: 100,
-                timestamp: new Date().toISOString(),
-                details: this.answersLog
-            };
+            loading.style.display = 'block';
 
             try {
-                const response = await fetch('https://quickform.cn/api/c536siyczn', {
+                const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: this.userName,
+                        score: this.score,
+                        total: 100,
+                        timestamp: new Date().toLocaleString(),
+                        details: this.userAnswers
+                    })
                 });
 
                 if (response.ok) {
-                    // 提交成功
-                    document.getElementById('submit-modal').classList.remove('active');
-                    this.showResult(true); // 显示结果并标记已上传
+                    setTimeout(() => {
+                        document.getElementById('submit-modal').classList.remove('active');
+                        this.showResult(true);
+                    }, 1000);
                 } else {
-                    throw new Error('网络响应异常');
+                    throw new Error("服务器响应错误");
                 }
-            } catch (error) {
-                console.error('提交失败:', error);
-                alert('提交失败，请检查网络连接或联系老师。\n但你的成绩已本地保存。');
-                // 即使失败也显示结果，但不标记已上传
-                document.getElementById('submit-modal').classList.remove('active');
-                this.showResult(false);
-            } finally {
+            } catch (e) {
+                alert("上传失败：" + e.message + "\n请检查：1. 网络连接 2. API链接是否正确填写");
+                console.error(e);
                 btn.disabled = false;
-                btn.innerText = "✅ 确认提交";
-                loading.style.display = "none";
+                loading.style.display = 'none';
             }
         }
 
         showResult(isUploaded) {
-            this.switchScreen('screen-result');
-            document.getElementById('final-score').innerText = this.score;
-            
-            const icon = document.getElementById('result-icon');
-            const msg = document.getElementById('result-message');
-            const badgeContainer = document.getElementById('badges-container');
-            const uploadStatus = document.getElementById('upload-status');
-
-            // 控制上传状态显示
-            if (isUploaded) {
-                uploadStatus.style.display = 'block';
-            } else {
-                uploadStatus.style.display = 'none';
-            }
-
-            if (this.score === 100) {
-                icon.innerText = '🎉';
-                msg.innerHTML = `<strong>太棒啦！</strong><br>你真是数字身份小达人！对数字身份的知识掌握得超棒，继续加油哦～`;
-                this.startConfetti();
-            } else if (this.score >= 80) {
-                icon.innerText = '🌟';
-                msg.innerHTML = `<strong>非常优秀！</strong><br>你已经掌握了大部分知识，再复习一下就能满分啦！`;
-            } else if (this.score >= 60) {
-                icon.innerText = '👍';
-                msg.innerHTML = `<strong>及格啦！</strong><br>基础概念还不错，但要小心那些容易混淆的细节哦。`;
-            } else {
-                icon.innerText = '📚';
-                msg.innerHTML = `<strong>加油！</strong><br>没关系，多读几遍课本，下次一定能闯关成功！`;
-            }
-
-            // 生成徽章
-            badgeContainer.innerHTML = '';
-            const badges = [
-                { name: '答题勇士', condition: this.score > 0 },
-                { name: '信用专家', condition: this.score >= 60 },
-                { name: '安全卫士', condition: this.score >= 80 },
-                { name: '满分大神', condition: this.score === 100 }
-            ];
-
-            badges.forEach(b => {
-                const div = document.createElement('div');
-                div.className = `badge-item ${b.condition ? 'unlocked' : ''}`;
-                div.innerText = b.condition ? `🏅 ${b.name}` : `🔒 ${b.name}`;
-                badgeContainer.appendChild(div);
-            });
-        }
-
-        startConfetti() {
-            const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
-            for (let i = 0; i < 50; i++) {
-                const conf = document.createElement('div');
-                conf.className = 'confetti';
-                conf.style.left = Math.random() * 100 + 'vw';
-                conf.style.background = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                conf.style.opacity = Math.random();
-                document.body.appendChild(conf);
-                
-                setTimeout(() => conf.remove(), 4000);
-            }
+            this.switchScreen('screen-success');
+            document.getElementById('final-score').innerText = `得分：${this.score} / 100`;
+            document.getElementById('upload-status').style.display = isUploaded ? 'block' : 'none';
+            document.getElementById('upload-status').innerText = isUploaded ? '✅ 已上传闯关成绩！' : '⚠️ 成绩未上传';
         }
     }
 
