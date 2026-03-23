@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数字身份大闯关 - 学生端</title>
+    <title>数字身份大闯关 - 学生端 (JSONBin版)</title>
     <style>
         :root { --primary: #4F46E5; --success: #10B981; --bg: #F3F4F6; --card: #fff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
@@ -92,9 +92,13 @@
 </div>
 
 <script>
-    // ================= ⚠️ 重要：配置区域 ⚠️ =================
-    // 【已修正】添加了缺失的 /api/v1/ 段落
-    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/results'; 
+    // ================= ⚠️ 重要：配置区域 (JSONBin) ⚠️ =================
+    // 请在这里填入你在 JSONBin.io 获取的值
+    const BIN_ID = '69c0965eaa77b81da90c9aeb';       // 例如: '69c0965eaa77b81da90c9aeb'
+    const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';  // 例如: '$2a$10$xxxx...' (必须以 $ 开头)
+    
+    // 自动构建 API 地址
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     // =======================================================
 
     const quizData = [
@@ -194,42 +198,75 @@
             btn.disabled = true;
             loading.style.display = 'block';
 
+            // 检查配置是否填写
+            if (BIN_ID === '在此处填入你的_BIN_ID' || API_KEY === '在此处填入你的_Master_Key') {
+                alert("❌ 配置错误！\n请在代码第 138-139 行填入正确的 BIN_ID 和 API_KEY (Master Key)。");
+                btn.disabled = false;
+                loading.style.display = 'none';
+                return;
+            }
+
             try {
-                const payload = {
-                    name: this.userName,
-                    score: Number(this.score),
-                    total: 100,
-                };
-
-                console.log("🚀 正在提交数据:", payload);
-                console.log("🔗 目标地址:", API_URL);
-
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                // 1. 先获取当前云端的数据 (防止覆盖别人的数据)
+                // 注意：如果是第一个学生提交，云端可能是空数组 []
+                const getResponse = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: { 'X-Master-Key': API_KEY }
                 });
 
-                const responseText = await response.text();
+                if (!getResponse.ok) throw new Error("读取数据失败: " + getResponse.status);
+                
+                const getData = await getResponse.json();
+                let currentData = getData.record; // JSONBin v3 返回格式是 { record: [...] }
 
-                if (response.ok || response.status === 201) {
-                    console.log("✅ 上传成功！服务器响应:", responseText);
-                    setTimeout(() => {
-                        document.getElementById('submit-modal').classList.remove('active');
-                        this.showResult(true);
-                    }, 1000);
-                } else {
-                    console.error("❌ 上传失败:", response.status, responseText);
-                    throw new Error(`服务器拒绝请求 (${response.status})`);
+                // 确保是数组
+                if (!Array.isArray(currentData)) {
+                    currentData = [];
                 }
+
+                // 2. 添加新数据
+                const newRecord = {
+                    name: this.userName,
+                    score: this.score,
+                    total: 100,
+                    date: new Date().toLocaleString()
+                };
+                currentData.push(newRecord);
+
+                console.log("🚀 准备上传数据:", newRecord);
+                console.log("📦 完整数据包:", currentData);
+
+                // 3.  PUT 更新整个数组回云端
+                const putResponse = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': API_KEY 
+                    },
+                    body: JSON.stringify(currentData)
+                });
+
+                if (!putResponse.ok) {
+                    const errText = await putResponse.text();
+                    throw new Error(`上传失败 (${putResponse.status}): ${errText}`);
+                }
+
+                console.log("✅ 上传成功！");
+                setTimeout(() => {
+                    document.getElementById('submit-modal').classList.remove('active');
+                    this.showResult(true);
+                }, 1000);
+
             } catch (e) {
                 console.error("💥 异常捕获:", e);
                 let msg = "上传失败：" + e.message;
                 
-                if (e.message.includes('404')) {
-                    msg += "\n\n💡 原因：地址错了！\n请检查代码中的 API_URL 是否包含了 '/api/v1/' 这一段。";
+                if (e.message.includes('401')) {
+                    msg += "\n\n💡 原因：API_KEY (Master Key) 错误或未填写。";
+                } else if (e.message.includes('404')) {
+                    msg += "\n\n💡 原因：BIN_ID 错误或该 Bin 不存在。";
                 } else if (e.message.includes('400')) {
-                    msg += "\n\n💡 原因：数据格式不对。\n请去 MockAPI 把 'results' 资源删了，重新建一个空的。";
+                    msg += "\n\n💡 原因：数据格式问题，请检查云端数据是否被手动改坏了。";
                 }
                 
                 alert(msg);
