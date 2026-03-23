@@ -107,7 +107,7 @@
     <!-- 🆕 教学分析与建议模块 -->
     <div class="analysis-section" id="analysis-panel" style="display:none;">
         <div class="analysis-header">
-            <span>📊</span> 教学分析与智能建议
+            <span></span> 教学分析与智能建议
         </div>
         <div class="analysis-grid">
             <!-- 学情分析 -->
@@ -171,7 +171,7 @@
 
     let allData = [];
 
-    // 1. 🗑️ 清空数据逻辑
+    // 1. 🗑️ 清空数据逻辑 (已修复)
     function confirmClearData() {
         document.getElementById('clear-confirm-modal').classList.add('active');
     }
@@ -183,28 +183,46 @@
         btn.innerText = "清空中...";
 
         try {
-            // PUT 请求将数据覆盖为空数组 []
+            // 使用 PUT 方法覆盖整个 Bin 的内容为空数组 []
             const res = await fetch(API_URL, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
+                    'X-Master-Key': API_KEY,
+                    'X-Bin-Meta': 'false' // 优化：只更新数据，不返回元数据
                 },
-                body: JSON.stringify([]) 
+                body: JSON.stringify([]) // 发送空数组
             });
 
-            if (!res.ok) throw new Error("清空失败");
+            const result = await res.json();
+
+            if (!res.ok) {
+                // 如果失败，抛出具体错误信息
+                throw new Error(result.message || `HTTP Error ${res.status}`);
+            }
 
             // 成功后本地重置并刷新
             allData = [];
             renderTable();
             updateStats();
-            updateAnalysis(); // 更新分析面板
+            updateAnalysis();
+            
             document.getElementById('clear-confirm-modal').classList.remove('active');
-            alert("✅ 数据已清空！");
+            alert("✅ 数据已成功清空！");
             
         } catch (e) {
-            alert("❌ 清空失败：" + e.message);
+            console.error("清空详细错误:", e);
+            let errorMsg = " 清空失败：" + e.message;
+            
+            if (e.message.includes('401')) {
+                errorMsg += "\n\n原因：API Key 权限不足。\n请检查是否使用了 X-MASTER-KEY (而不是 Access Key)。";
+            } else if (e.message.includes('404')) {
+                errorMsg += "\n\n原因：找不到该 Bin。\n请检查 BIN_ID 是否正确。";
+            } else {
+                errorMsg += "\n\n可能原因：网络波动或 JSONBin 服务暂时不可用。";
+            }
+            
+            alert(errorMsg);
         } finally {
             btn.disabled = false;
             btn.innerText = originalText;
