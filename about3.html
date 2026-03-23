@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>教师数据监控看板</title>
+    <title>教师数据监控看板 (JSONBin版)</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #F3F4F6; padding: 20px; margin: 0; }
         .dashboard { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -33,8 +33,8 @@
 
 <div class="dashboard">
     <h1>
-        <span><span class="live-dot"></span>实时数据监控</span>
-        <button class="refresh-btn" onclick="loadData()">🔄 立即刷新</button>
+        <span><span class="live-dot"></span>实时数据监控 (JSONBin)</span>
+        <button class="refresh-btn" onclick="loadData()"> 立即刷新</button>
     </h1>
     
     <div class="stats">
@@ -64,45 +64,73 @@
 </div>
 
 <script>
-    // ================= ⚠️ 重要：配置区域 ⚠️ =================
-    // 必须与学生端的 API_URL 完全一致
-    const API_URL = 'https://69bfbe0b72ca04f3bcb91b38.mockapi.io/api/v1/users'; 
+    // ================= ⚠️ 重要：配置区域 (JSONBin) ⚠️ =================
+    // ⚠️ 必须与学生端填写的 BIN_ID 和 API_KEY 完全一致！
+    const BIN_ID = '69c0965eaa77b81da90c9aeb';       // 例如: '69c0965eaa77b81da90c9aeb'
+    const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';  // 例如: '$2a$10$xxxx...'
+    
+    // 自动构建 API 地址 (JSONBin v3)
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
     // =======================================================
 
     let allData = [];
 
     async function loadData() {
-        if(API_URL.includes('在此处粘贴') || !API_URL.includes('mockapi.io')) {
-            console.warn("⚠️ 警告：API URL 未配置或无效");
+        // 检查配置是否填写
+        if (BIN_ID === '在此处填入你的_BIN_ID' || API_KEY === '在此处填入你的_Master_Key') {
+            console.error("❌ 配置错误：请在代码中填入正确的 BIN_ID 和 API_KEY");
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">⚠️ 配置未完成<br>请在 HTML 代码第 106-107 行填入 BIN_ID 和 Master Key</td></tr>`;
             return;
         }
 
         const tbody = document.getElementById('table-body');
-        // 如果是第一次加载且为空，显示加载中，否则保持旧数据不动（避免闪烁）
+        // 如果是第一次加载且为空，显示加载中
         if (allData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">加载中...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">正在从云端加载数据...</td></tr>';
         }
 
         try {
-            const res = await fetch(API_URL);
-            if (!res.ok) throw new Error(`服务器响应错误: ${res.status}`);
+            // JSONBin 需要 header 携带 Master Key 才能读取私有 Bin
+            const res = await fetch(API_URL, {
+                method: 'GET',
+                headers: {
+                    'X-Master-Key': API_KEY
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(`服务器响应错误: ${res.status} (请检查 Key 是否正确)`);
+            }
             
-            const data = await res.json();
+            const jsonResponse = await res.json();
             
+            // JSONBin v3 返回格式是 { record: [...], metadata: {...} }
+            // 我们需要提取 record 部分
+            let data = jsonResponse.record;
+
             // 确保数据是数组
-            if (!Array.isArray(data)) {
-                throw new Error("返回的数据格式不是列表");
+            if (!data) {
+                data = []; // 如果云端是空的，初始化为空数组
+            } else if (!Array.isArray(data)) {
+                // 如果云端存的是单个对象而不是数组，强制转为数组
+                data = [data];
             }
 
             allData = data;
             renderTable();
             updateStats();
+
         } catch (e) {
             console.error("加载失败:", e);
             if (allData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">加载失败<br><small>${e.message}</small><br>请检查：1. 网络 2. API链接 3. MockAPI资源是否存在</td></tr>`;
+                let msg = e.message;
+                if (e.message.includes('401')) msg = "密钥错误 (401)";
+                if (e.message.includes('404')) msg = "找不到该 Bin (404)";
+                
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">加载失败<br><small>${msg}</small><br>请检查：1. BIN_ID 2. API_KEY (Master Key) 3. 网络连接</td></tr>`;
             }
-            // 如果有旧数据，只是静默失败，不覆盖表格，体验更好
+            // 如果有旧数据，静默失败，保持显示旧数据
         }
     }
 
@@ -113,12 +141,11 @@
             return;
         }
 
-        // 按提交顺序倒序（假设后提交的在后面，或者MockAPI默认ID递增）
-        // 为了看到最新的学生，我们反转数组
+        // 按提交顺序倒序（新提交的在后面，反转后最新的在最上面）
         const displayData = [...allData].reverse();
 
         tbody.innerHTML = displayData.map((row, index) => {
-            // ✅ 安全获取数据，防止 undefined 报错
+            // ✅ 安全获取数据
             const name = row.name || '未知用户';
             const score = typeof row.score === 'number' ? row.score : 0;
             const total = typeof row.total === 'number' && row.total > 0 ? row.total : 100;
@@ -126,14 +153,16 @@
             
             const badgeClass = percent >= 60 ? 'badge-good' : 'badge-bad';
             
-            // 处理时间：如果没有 timestamp 字段，显示 "刚刚" 或 "无记录"
-            const timeStr = row.timestamp ? row.timestamp : '<span style="color:#999">刚刚</span>';
+            // 时间处理：优先用 date 字段，没有则显示“刚刚”
+            const timeStr = row.date ? row.date : '<span style="color:#999">刚刚</span>';
             
-            // 处理详情按钮：如果没有 details 字段，提示暂无详情
+            // 详情按钮：检查是否有 userAnswers 或 details 字段
+            // 学生端代码里我们存的是 userAnswers 数组
+            const answersData = row.userAnswers || row.details; 
+            
             let detailBtn = '';
-            if (row.details && Array.isArray(row.details)) {
-                // 将原始数据编码，防止特殊字符破坏 HTML
-                const safeData = encodeURIComponent(JSON.stringify(row.details));
+            if (answersData && Array.isArray(answersData)) {
+                const safeData = encodeURIComponent(JSON.stringify(answersData));
                 detailBtn = `<button onclick="showDetail('${safeData}', '${name}')" style="cursor:pointer; background:none; border:none; color:#4F46E5; font-weight:bold; text-decoration:underline;">查看</button>`;
             } else {
                 detailBtn = `<span style="color:#ccc; font-size:12px;">暂无详情</span>`;
@@ -144,7 +173,7 @@
                     <td><strong>${name}</strong></td>
                     <td><span class="badge ${badgeClass}">${score}分</span></td>
                     <td>${percent}%</td>
-                    <td>${timeStr}</td>
+                    <td style="font-size:13px; color:#666;">${timeStr}</td>
                     <td>${detailBtn}</td>
                 </tr>
             `;
@@ -155,8 +184,10 @@
         document.getElementById('count').innerText = allData.length;
         if (allData.length > 0) {
             const totalScore = allData.reduce((sum, item) => sum + (typeof item.score === 'number' ? item.score : 0), 0);
-            const scores = allData.map(i => typeof i.score === 'number' ? i.score : 0);
-            const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+            const scores = allData.map(i => typeof i.score === 'number' ? item.score : 0);
+            // 修复 reduce 里的变量名错误
+            const validScores = allData.map(i => typeof i.score === 'number' ? i.score : 0);
+            const maxScore = validScores.length > 0 ? Math.max(...validScores) : 0;
             
             document.getElementById('avg').innerText = Math.round(totalScore / allData.length);
             document.getElementById('highest').innerText = maxScore;
@@ -175,11 +206,13 @@
             
             let html = `<h3>学生：${name}</h3><ul style="padding-left:20px;">`;
             data.forEach((item, idx) => {
-                const status = item.isCorrect ? '✅' : '❌';
-                html += `<li style="margin-bottom:8px;">
-                    <strong>第${idx+1}题:</strong> ${status}<br>
-                    <span style="color:#666; font-size:14px;">题目：${item.q}</span><br>
-                    <span style="color:#666; font-size:14px;">回答：${item.user}</span>
+                const status = item.isCorrect ? '✅ 正确' : '❌ 错误';
+                const qText = item.q || `第${idx+1}题`;
+                const uText = item.user || '未作答';
+                
+                html += `<li style="margin-bottom:12px; border-bottom:1px solid #f0f0f0; padding-bottom:8px;">
+                    <div style="font-weight:bold; color:#333;">${qText}</div>
+                    <div style="font-size:14px; margin-top:4px;">${status} &nbsp; 你的回答：${uText}</div>
                 </li>`;
             });
             html += '</ul>';
@@ -187,7 +220,7 @@
             content.innerHTML = html;
             modal.classList.add('active');
         } catch (e) {
-            alert("解析详情失败");
+            alert("解析详情失败：" + e.message);
         }
     }
 
