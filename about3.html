@@ -171,7 +171,7 @@
 
     let allData = [];
 
-    // 1. 🗑️ 清空数据逻辑 (已修复)
+    // 1. 🗑️ 清空数据逻辑 (✅ 已修复：使用 record: [])
     function confirmClearData() {
         document.getElementById('clear-confirm-modal').classList.add('active');
     }
@@ -183,21 +183,22 @@
         btn.innerText = "清空中...";
 
         try {
-            // 使用 PUT 方法覆盖整个 Bin 的内容为空数组 []
+            // 💡 关键修复：JSONBin 不允许 bin 为空，必须传 { record: [] }
             const res = await fetch(API_URL, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Master-Key': API_KEY,
-                    'X-Bin-Meta': 'false' // 优化：只更新数据，不返回元数据
+                    'X-Bin-Meta': 'false'
                 },
-                body: JSON.stringify([]) // 发送空数组
+                body: JSON.stringify({
+                    record: []  // 👈 正确格式！
+                })
             });
 
             const result = await res.json();
 
             if (!res.ok) {
-                // 如果失败，抛出具体错误信息
                 throw new Error(result.message || `HTTP Error ${res.status}`);
             }
 
@@ -258,7 +259,7 @@
         analysisHtml += `<div style="margin-top:8px;">及格率：<span class="tag ${passRate>=80?'tag-green':'tag-red'}">${passRate}%</span> | 优秀率：<span class="tag ${excellentRate>=50?'tag-green':'tag-blue'}">${excellentRate}%</span></div>`;
         
         if (avg >= 85) analysisHtml += `<div style="margin-top:10px; color:#059669;">🎉 <strong>整体掌握优秀：</strong>大部分学生对数字身份概念理解透彻。</div>`;
-        else if (avg >= 70) analysisHtml += `<div style="margin-top:10px; color:#D97706;">⚠️ <strong>整体掌握良好：</strong>基础知识扎实，但部分细节需加强。</div>`;
+        else if (avg >= 70) analysisHtml += `<div style="margin-top:10px; color:#D97706;">️ <strong>整体掌握良好：</strong>基础知识扎实，但部分细节需加强。</div>`;
         else analysisHtml += `<div style="margin-top:10px; color:#DC2626;">🚨 <strong>掌握情况欠佳：</strong>普遍存在概念混淆，需重点复习。</div>`;
 
         analysisText.innerHTML = analysisHtml;
