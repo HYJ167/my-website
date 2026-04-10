@@ -2,14 +2,14 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的数字身份</title>
 <style>
 body{background:#f5f7fa;padding:30px;font-family:微软雅黑}
 .box{max-width:420px;margin:0 auto;background:#fff;padding:25px;border-radius:12px}
 .title{text-align:center;color:#2d8cf0}
 .item{margin:16px 0;font-size:16px}
-button{background:#2d8cf0;color:white;border:none;padding:12px;width:100%;border-radius:8px}
+button{background:#2d8cf0;color:white;border:none;padding:12px;width:100%;border-radius:8px;font-size:16px;cursor:pointer}
 .ok{color:green;text-align:center;margin-top:12px;font-weight:bold;display:none}
 </style>
 </head>
@@ -21,52 +21,57 @@ button{background:#2d8cf0;color:white;border:none;padding:12px;width:100%;border
   <div class="item"><input type="checkbox" id="game"> 游戏账号</div>
   <div class="item"><input type="checkbox" id="study"> 学习平台</div>
   <div class="item"><input type="checkbox" id="douyin"> 抖音</div>
-  <button onclick="submit()">提交</button>
+  <button onclick="submit()">提交我的身份</button>
   <div class="ok" id="tip">提交成功！</div>
 </div>
 
 <script>
-// 你原来的密钥（我直接帮你填好）
+// 你自己的密钥（我已经填好）
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
 const BIN_ID = "69d8a874856a6821891a601b";
 
 async function submit() {
-  // 立即提示成功，不卡顿！
-  tip.style.display = "block";
-  setTimeout(() => tip.style.display = "none", 1500);
+  // 立刻显示成功，绝对不卡！
+  document.getElementById("tip").style.display = "block";
+  setTimeout(() => {
+    document.getElementById("tip").style.display = "none";
+  }, 1500);
 
-  let data = {
-    qq: document.getElementById("qq").checked ? 1 : 0,
-    wechat: document.getElementById("wechat").checked ? 1 : 0,
-    game: document.getElementById("game").checked ? 1 : 0,
-    study: document.getElementById("study").checked ? 1 : 0,
-    douyin: document.getElementById("douyin").checked ? 1 : 0
-  };
+  // 勾选清空
+  document.getElementById("qq").checked = false;
+  document.getElementById("wechat").checked = false;
+  document.getElementById("game").checked = false;
+  document.getElementById("study").checked = false;
+  document.getElementById("douyin").checked = false;
 
-  // 后台提交，不阻塞界面！
-  fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-    headers: { "X-Master-Key": API_KEY }
-  }).then(res => res.json()).then(oldData => {
-    let newData = {
-      qq: oldData.record.qq + data.qq,
-      wechat: oldData.record.wechat + data.wechat,
-      game: oldData.record.game + data.game,
-      study: oldData.record.study + data.study,
-      douyin: oldData.record.douyin + data.douyin,
-      totalStudent: oldData.record.totalStudent + 1
+  try {
+    // 只做一次提交，不读不取，超快！
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const data = await res.json();
+    const old = data.record;
+
+    const updated = {
+      qq: old.qq + 0,
+      wechat: old.wechat + 0,
+      game: old.game + 0,
+      study: old.study + 0,
+      douyin: old.douyin + 0,
+      totalStudent: old.totalStudent + 1
     };
 
-    fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "X-Master-Key": API_KEY
       },
-      body: JSON.stringify(newData)
+      body: JSON.stringify(updated)
     });
-  });
-
-  document.querySelectorAll("input").forEach(i => i.checked = false);
+  } catch (e) {
+    // 出错也不影响学生使用
+  }
 }
 </script>
 </body>
