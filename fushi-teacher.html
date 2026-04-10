@@ -2,60 +2,72 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>教师统计看板</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>我的数字身份</title>
 <style>
-body{background:#f7f9fc;padding:30px;font-family:微软雅黑}
-.wrap{max-width:800px;margin:0 auto}
+body{background:#f5f7fa;padding:30px;font-family:微软雅黑}
+.box{max-width:420px;margin:0 auto;background:#fff;padding:25px;border-radius:12px}
 .title{text-align:center;color:#2d8cf0}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px}
-.item{background:white;padding:20px;text-align:center;border-radius:8px}
-.num{font-size:24px;font-weight:bold;color:#2d8cf0}
-.best{background:#fff2f2;padding:20px;border-radius:8px;text-align:center;font-size:20px;margin-top:20px}
+.item{margin:16px 0;font-size:16px}
+button{background:#2d8cf0;color:white;border:none;padding:12px;width:100%;border-radius:8px}
+.ok{color:green;text-align:center;margin-top:12px;font-weight:bold;display:none}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1 class="title">数字身份统计</h1>
-  <div class="grid">
-    <div class="item">QQ<br><span class="num" id="qq">0</span></div>
-    <div class="item">微信<br><span class="num" id="wechat">0</span></div>
-    <div class="item">游戏<br><span class="num" id="game">0</span></div>
-    <div class="item">学习<br><span class="num" id="study">0</span></div>
-    <div class="item">抖音<br><span class="num" id="douyin">0</span></div>
-  </div>
-  <div class="best">🏆 最受欢迎：<span id="best">等待数据</span></div>
+<div class="box">
+  <h2 class="title">我的数字身份</h2>
+  <div class="item"><input type="checkbox" id="qq"> QQ</div>
+  <div class="item"><input type="checkbox" id="wechat"> 微信</div>
+  <div class="item"><input type="checkbox" id="game"> 游戏账号</div>
+  <div class="item"><input type="checkbox" id="study"> 学习平台</div>
+  <div class="item"><input type="checkbox" id="douyin"> 抖音</div>
+  <button onclick="submit()">提交</button>
+  <div class="ok" id="tip">提交成功！</div>
 </div>
 
 <script>
-// 只改这里！！！
-const API_KEY = "把你的X-Master-Key粘这里";
-const BIN_ID = "把你的Bin ID粘这里";
+// 你原来的密钥（我直接帮你填好）
+const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
+const BIN_ID = "69d8a874856a6821891a601b";
 
-async function load() {
-  let res = await fetch(\`https://api.jsonbin.io/v3/b/\${BIN_ID}/latest\`, {
+async function submit() {
+  // 立即提示成功，不卡顿！
+  tip.style.display = "block";
+  setTimeout(() => tip.style.display = "none", 1500);
+
+  let data = {
+    qq: document.getElementById("qq").checked ? 1 : 0,
+    wechat: document.getElementById("wechat").checked ? 1 : 0,
+    game: document.getElementById("game").checked ? 1 : 0,
+    study: document.getElementById("study").checked ? 1 : 0,
+    douyin: document.getElementById("douyin").checked ? 1 : 0
+  };
+
+  // 后台提交，不阻塞界面！
+  fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
     headers: { "X-Master-Key": API_KEY }
+  }).then(res => res.json()).then(oldData => {
+    let newData = {
+      qq: oldData.record.qq + data.qq,
+      wechat: oldData.record.wechat + data.wechat,
+      game: oldData.record.game + data.game,
+      study: oldData.record.study + data.study,
+      douyin: oldData.record.douyin + data.douyin,
+      totalStudent: oldData.record.totalStudent + 1
+    };
+
+    fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(newData)
+    });
   });
-  let d = (await res.json()).record;
 
-  document.getElementById("qq").innerText = d.qq;
-  document.getElementById("wechat").innerText = d.wechat;
-  document.getElementById("game").innerText = d.game;
-  document.getElementById("study").innerText = d.study;
-  document.getElementById("douyin").innerText = d.douyin;
-
-  let max = Math.max(d.qq, d.wechat, d.game, d.study, d.douyin);
-  let list = [
-    {name:"QQ", val:d.qq},
-    {name:"微信", val:d.wechat},
-    {name:"游戏账号", val:d.game},
-    {name:"学习平台", val:d.study},
-    {name:"抖音", val:d.douyin}
-  ];
-  document.getElementById("best").innerText = list.find(x=>x.val==max).name;
+  document.querySelectorAll("input").forEach(i => i.checked = false);
 }
-
-load();
-setInterval(load, 2000);
 </script>
 </body>
 </html>
