@@ -55,84 +55,66 @@ input[type="checkbox"]{width:22px;height:22px}
 </div>
 
 <script>
-const STORAGE = "identity_stats";
+// ====================== 你只需要填这里 ======================
+const BIN_ID = "你的JSONBin BIN_ID";
+const API_KEY = "你的JSONBin API_KEY";
+// ===========================================================
+
 const SUBMIT_PREFIX = "submitted_id_";
-let currentId = null;
 let currentNum = null;
 
-// 格式化两位数
 function formatTwoDigits(num) {
   return num.toString().padStart(2, '0');
 }
 
-// 检查是否提交过
 function isSubmitted(idStr) {
   return localStorage.getItem(SUBMIT_PREFIX + idStr) === "true";
 }
 
-// 绑定编号
 function bindId() {
   let val = document.getElementById("stuId").value.trim();
-  if (!val) {
-    alert("请输入编号！");
-    return;
-  }
-
+  if (!val) { alert("请输入编号！"); return; }
   let num = parseInt(val, 10);
-  if (isNaN(num) || num < 1 || num > 99) {
-    alert("请输入有效编号（01~99）");
-    return;
-  }
-
+  if (isNaN(num) || num < 1 || num > 99) { alert("请输入01~99的编号"); return; }
   let idStr = formatTwoDigits(num);
-  if (isSubmitted(idStr)) {
-    alert("该编号已提交，不能重复提交！");
-    return;
-  }
+  if (isSubmitted(idStr)) { alert("该编号已提交"); return; }
 
-  currentId = idStr;
   currentNum = num;
-
-  // 解锁
-  document.querySelectorAll("input[type='checkbox']").forEach(cb => {
-    cb.disabled = false;
-  });
+  document.querySelectorAll("input[type=checkbox]").forEach(c => c.disabled = false);
   document.getElementById("btn").disabled = false;
   document.getElementById("stuId").disabled = true;
   document.querySelector(".input-row button").disabled = true;
 }
 
-// 自动分4组
 function getGroup(num) {
   return (num - 1) % 4;
 }
 
-// 提交（修复卡顿）
-function submit() {
-  if (!currentId || currentNum === null) return;
-
+// 提交到 JSONBin
+async function submit() {
+  if (!currentNum) return;
   let btn = document.getElementById("btn");
   btn.disabled = true;
   btn.innerText = "提交中...";
 
-  // 立即执行，不延迟，不卡住
   try {
-    let data = JSON.parse(localStorage.getItem(STORAGE));
+    // 1. 获取云端数据
+    let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    let data = (await res.json()).record;
+
+    // 2. 初始化数据结构
     if (!data || !data.wx) {
       data = {
-        wx: [0, 0, 0, 0],
-        qq: [0, 0, 0, 0],
-        sp: [0, 0, 0, 0],
-        study: [0, 0, 0, 0],
-        music: [0, 0, 0, 0],
-        game: [0, 0, 0, 0],
-        art: [0, 0, 0, 0],
+        wx: [0,0,0,0], qq: [0,0,0,0], sp: [0,0,0,0],
+        study: [0,0,0,0], music: [0,0,0,0], game: [0,0,0,0], art: [0,0,0,0],
         totalStu: 0
       };
     }
 
+    // 3. 分组更新数据
     let g = getGroup(currentNum);
-
     if (a1.checked) data.wx[g]++;
     if (a2.checked) data.qq[g]++;
     if (a3.checked) data.sp[g]++;
@@ -140,17 +122,27 @@ function submit() {
     if (a5.checked) data.music[g]++;
     if (a6.checked) data.game[g]++;
     if (a7.checked) data.art[g]++;
-
     data.totalStu++;
 
-    localStorage.setItem(STORAGE, JSON.stringify(data));
-    localStorage.setItem(SUBMIT_PREFIX + currentId, "true");
+    // 4. 保存回 JSONBin
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(data)
+    });
 
+    // 5. 标记已提交
+    localStorage.setItem(SUBMIT_PREFIX + formatTwoDigits(currentNum), "true");
     document.getElementById("msg").style.display = "block";
     btn.innerText = "已提交";
+
   } catch (e) {
-    // 出错也能继续，绝不卡死
-    btn.innerText = "提交失败，请刷新";
+    console.error(e);
+    btn.innerText = "提交失败，请重试";
+    btn.disabled = false;
   }
 }
 </script>
