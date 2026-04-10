@@ -60,17 +60,17 @@ const SUBMIT_PREFIX = "submitted_id_";
 let currentId = null;
 let currentNum = null;
 
-// 格式化编号为两位数
+// 格式化两位数
 function formatTwoDigits(num) {
   return num.toString().padStart(2, '0');
 }
 
-// 检查是否已提交
+// 检查是否提交过
 function isSubmitted(idStr) {
   return localStorage.getItem(SUBMIT_PREFIX + idStr) === "true";
 }
 
-// 输入编号确定
+// 绑定编号
 function bindId() {
   let val = document.getElementById("stuId").value.trim();
   if (!val) {
@@ -78,7 +78,6 @@ function bindId() {
     return;
   }
 
-  // 转数字并格式化为两位
   let num = parseInt(val, 10);
   if (isNaN(num) || num < 1 || num > 99) {
     alert("请输入有效编号（01~99）");
@@ -103,12 +102,12 @@ function bindId() {
   document.querySelector(".input-row button").disabled = true;
 }
 
-// 分组
+// 自动分4组
 function getGroup(num) {
-  return (num - 1) % 4; // 0=1组,1=2组,2=3组,3=4组
+  return (num - 1) % 4;
 }
 
-// 提交
+// 提交（修复卡顿）
 function submit() {
   if (!currentId || currentNum === null) return;
 
@@ -116,34 +115,43 @@ function submit() {
   btn.disabled = true;
   btn.innerText = "提交中...";
 
-  let data = JSON.parse(localStorage.getItem(STORAGE)) || {
-    wx: [0,0,0,0],
-    qq: [0,0,0,0],
-    sp: [0,0,0,0],
-    study: [0,0,0,0],
-    music: [0,0,0,0],
-    game: [0,0,0,0],
-    art: [0,0,0,0],
-    totalStu: 0
-  };
+  // 立即执行，不延迟，不卡住
+  try {
+    let data = JSON.parse(localStorage.getItem(STORAGE));
+    if (!data || !data.wx) {
+      data = {
+        wx: [0, 0, 0, 0],
+        qq: [0, 0, 0, 0],
+        sp: [0, 0, 0, 0],
+        study: [0, 0, 0, 0],
+        music: [0, 0, 0, 0],
+        game: [0, 0, 0, 0],
+        art: [0, 0, 0, 0],
+        totalStu: 0
+      };
+    }
 
-  let g = getGroup(currentNum);
+    let g = getGroup(currentNum);
 
-  if (a1.checked) data.wx[g]++;
-  if (a2.checked) data.qq[g]++;
-  if (a3.checked) data.sp[g]++;
-  if (a4.checked) data.study[g]++;
-  if (a5.checked) data.music[g]++;
-  if (a6.checked) data.game[g]++;
-  if (a7.checked) data.art[g]++;
+    if (a1.checked) data.wx[g]++;
+    if (a2.checked) data.qq[g]++;
+    if (a3.checked) data.sp[g]++;
+    if (a4.checked) data.study[g]++;
+    if (a5.checked) data.music[g]++;
+    if (a6.checked) data.game[g]++;
+    if (a7.checked) data.art[g]++;
 
-  data.totalStu++;
+    data.totalStu++;
 
-  localStorage.setItem(STORAGE, JSON.stringify(data));
-  localStorage.setItem(SUBMIT_PREFIX + currentId, "true");
+    localStorage.setItem(STORAGE, JSON.stringify(data));
+    localStorage.setItem(SUBMIT_PREFIX + currentId, "true");
 
-  document.getElementById("msg").style.display = "block";
-  btn.innerText = "已提交";
+    document.getElementById("msg").style.display = "block";
+    btn.innerText = "已提交";
+  } catch (e) {
+    // 出错也能继续，绝不卡死
+    btn.innerText = "提交失败，请刷新";
+  }
 }
 </script>
 </body>
