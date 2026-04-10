@@ -2,159 +2,57 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>我的数字身份</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",Arial}
-body{background:#f7f9fc;padding:40px 20px;}
-.box{
-    max-width:600px;
-    margin:0 auto;
-    background:#fff;
-    padding:40px;
-    border-radius:16px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
-}
-.title{
-    text-align:center;
-    color:#4F46E5;
-    margin-bottom:30px;
-    font-size:28px;
-}
-.item{
-    margin:22px 0;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    font-size:20px;
-}
-input[type="checkbox"]{
-    width:26px;
-    height:26px;
-    accent-color:#4F46E5;
-}
-.btn{
-    background:#4F46E5;
-    color:#fff;
-    border:none;
-    padding:18px;
-    border-radius:10px;
-    font-size:20px;
-    cursor:pointer;
-    width:100%;
-    margin-top:25px;
-    transition: all 0.2s;
-}
-.btn:disabled{
-    background:#999;
-    cursor:not-allowed;
-}
-.tip{
-    text-align:center;
-    color:#10B981;
-    font-weight:bold;
-    font-size:20px;
-    margin-top:18px;
-    display:none;
-}
+*{box-sizing:border-box;font-family:"Microsoft YaHei"}
+body{background:#f7f9fc;padding:20px}
+.box{max-width:500px;margin:0 auto;background:white;border-radius:16px;padding:30px}
+h2{text-align:center;color:#4F46E5}
+.item{margin:16px 0;display:flex;align-items:center;gap:12px;font-size:18px}
+input{width:24px;height:24px}
+.btn{background:#4F46E5;color:white;border:none;width:100%;padding:16px;border-radius:12px;font-size:18px;margin-top:20px}
+.btn:disabled{background:#ccc}
+.ok{text-align:center;color:green;font-size:17px;margin-top:16px;display:none}
 </style>
 </head>
 <body>
 <div class="box">
-    <h2 class="title">我的数字身份</h2>
-    <div class="item">
-        <input type="checkbox" id="qq">
-        <label>QQ</label>
-    </div>
-    <div class="item">
-        <input type="checkbox" id="wechat">
-        <label>微信</label>
-    </div>
-    <div class="item">
-        <input type="checkbox" id="game">
-        <label>游戏账号</label>
-    </div>
-    <div class="item">
-        <input type="checkbox" id="study">
-        <label>学习平台</label>
-    </div>
-    <div class="item">
-        <input type="checkbox" id="douyin">
-        <label>抖音</label>
-    </div>
-    <button class="btn" id="submitBtn" onclick="submitData()">提交我的身份</button>
-    <div class="tip" id="msg">提交成功！</div>
+  <h2>我的数字身份</h2>
+  <div class="item"><input type="checkbox" id="a1"><label>微信账号</label></div>
+  <div class="item"><input type="checkbox" id="a2"><label>QQ账号</label></div>
+  <div class="item"><input type="checkbox" id="a3"><label>短视频账号</label></div>
+  <div class="item"><input type="checkbox" id="a4"><label>学习平台账号</label></div>
+  <div class="item"><input type="checkbox" id="a5"><label>音乐/听书账号</label></div>
+  <div class="item"><input type="checkbox" id="a6"><label>游戏账号</label></div>
+  <div class="item"><input type="checkbox" id="a7"><label>绘画/编程账号</label></div>
+  <button class="btn" id="btn" onclick="submit()">提交</button>
+  <div class="ok" id="tip">提交成功！</div>
 </div>
 
 <script>
-// 🔴 本地存储键名（全局唯一，教师端用同一个）
-const STORAGE_KEY = "digital_identity_stats";
+const STORAGE_KEY = "identity_stats";
+let btn = document.getElementById("btn");
+let tip = document.getElementById("tip");
 
-// 页面加载时，检查是否已经提交过
-window.onload = function() {
-    const hasSubmitted = localStorage.getItem("hasSubmitted");
-    if(hasSubmitted === "true") {
-        document.getElementById("submitBtn").disabled = true;
-        document.getElementById("submitBtn").innerText = "已提交";
-        document.getElementById("msg").style.display = "block";
-        document.getElementById("msg").innerText = "你已提交过，无需重复提交";
-    }
-};
+if(localStorage.getItem("submitted_stu")){
+  btn.disabled = true; btn.innerText = "已提交"; tip.style.display="block";
+}
 
-async function submitData(){
-    const btn = document.getElementById("submitBtn");
-    const msg = document.getElementById("msg");
+function submit(){
+  if(btn.disabled) return;
+  btn.disabled = true; btn.innerText = "提交中...";
 
-    // 🔥 双重防重复：状态锁+按钮禁用
-    if(btn.disabled) return;
-    btn.disabled = true;
-    btn.innerText = "提交中...";
+  let v1 = a1.checked?1:0, v2=a2.checked?1:0, v3=a3.checked?1:0;
+  let v4 = a4.checked?1:0, v5=a5.checked?1:0, v6=a6.checked?1:0, v7=a7.checked?1:0;
 
-    // 读取勾选状态
-    const qq = document.getElementById("qq").checked ? 1 : 0;
-    const wechat = document.getElementById("wechat").checked ? 1 : 0;
-    const game = document.getElementById("game").checked ? 1 : 0;
-    const study = document.getElementById("study").checked ? 1 : 0;
-    const douyin = document.getElementById("douyin").checked ? 1 : 0;
+  let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {n1:0,n2:0,n3:0,n4:0,n5:0,n6:0,n7:0,count:0};
+  d.n1+=v1;d.n2+=v2;d.n3+=v3;d.n4+=v4;d.n5+=v5;d.n6+=v6;d.n7+=v7;d.count+=1;
 
-    try{
-        // 1. 从本地存储读取当前统计数据
-        let currentData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-            qq:0, wechat:0, game:0, study:0, douyin:0, totalStudent:0
-        };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  localStorage.setItem("submitted_stu","true");
 
-        // 2. 累加新数据
-        currentData.qq += qq;
-        currentData.wechat += wechat;
-        currentData.game += game;
-        currentData.study += study;
-        currentData.douyin += douyin;
-        currentData.totalStudent += 1;
-
-        // 3. 写回本地存储（100%成功，无网络依赖）
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
-        // 标记当前学生已提交
-        localStorage.setItem("hasSubmitted", "true");
-
-        // 4. 提交成功
-        msg.style.display = "block";
-        msg.innerText = "提交成功！";
-        btn.innerText = "已提交";
-
-        // 通知教师端刷新数据
-        window.dispatchEvent(new StorageEvent('storage', {
-            key: STORAGE_KEY,
-            newValue: JSON.stringify(currentData)
-        }));
-
-    } catch (error) {
-        console.error("提交错误:", error);
-        msg.style.display = "block";
-        msg.style.color = "#EF4444";
-        msg.innerText = "提交失败，请重试";
-        btn.disabled = false;
-        btn.innerText = "提交我的身份";
-    }
+  tip.style.display="block"; btn.innerText="已提交";
 }
 </script>
 </body>
