@@ -2,57 +2,148 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的数字身份</title>
 <style>
 *{box-sizing:border-box;font-family:"Microsoft YaHei"}
 body{background:#f7f9fc;padding:20px}
-.box{max-width:500px;margin:0 auto;background:white;border-radius:16px;padding:30px}
-h2{text-align:center;color:#4F46E5}
-.item{margin:16px 0;display:flex;align-items:center;gap:12px;font-size:18px}
-input{width:24px;height:24px}
-.btn{background:#4F46E5;color:white;border:none;width:100%;padding:16px;border-radius:12px;font-size:18px;margin-top:20px}
+.box{max-width:500px;margin:0 auto;background:white;border-radius:16px;padding:28px}
+h2{text-align:center;color:#4F46E5;margin-bottom:20px}
+.input-row{
+  display:flex; gap:10px; margin-bottom:20px;
+  align-items:center; justify-content:center;
+}
+.input-row input{
+  width:140px; padding:12px; font-size:16px;
+  border:1px solid #ddd; border-radius:8px;
+  text-align:center;
+}
+.input-row button{
+  padding:12px 16px; background:#4F46E5; color:white;
+  border:none; border-radius:8px; cursor:pointer;
+}
+.item{margin:14px 0;display:flex;align-items:center;gap:12px;font-size:16px}
+input[type="checkbox"]{width:22px;height:22px}
+.btn{
+  background:#4F46E5;color:white;border:none;width:100%;
+  padding:16px;border-radius:12px;font-size:16px;
+  margin-top:20px;cursor:pointer;
+}
 .btn:disabled{background:#ccc}
-.ok{text-align:center;color:green;font-size:17px;margin-top:16px;display:none}
+.tip{text-align:center;color:green;margin-top:16px;font-size:16px;display:none}
 </style>
 </head>
 <body>
 <div class="box">
   <h2>我的数字身份</h2>
-  <div class="item"><input type="checkbox" id="a1"><label>微信账号</label></div>
-  <div class="item"><input type="checkbox" id="a2"><label>QQ账号</label></div>
-  <div class="item"><input type="checkbox" id="a3"><label>短视频账号</label></div>
-  <div class="item"><input type="checkbox" id="a4"><label>学习平台账号</label></div>
-  <div class="item"><input type="checkbox" id="a5"><label>音乐/听书账号</label></div>
-  <div class="item"><input type="checkbox" id="a6"><label>游戏账号</label></div>
-  <div class="item"><input type="checkbox" id="a7"><label>绘画/编程账号</label></div>
-  <button class="btn" id="btn" onclick="submit()">提交</button>
-  <div class="ok" id="tip">提交成功！</div>
+
+  <div class="input-row">
+    <input type="text" placeholder="请输入编号（如02）" id="stuId" maxlength="2" oninput="value=value.replace(/[^\d]/g,'')">
+    <button onclick="bindId()">确定</button>
+  </div>
+
+  <div class="item"><input type="checkbox" id="a1" disabled><label>微信账号</label></div>
+  <div class="item"><input type="checkbox" id="a2" disabled><label>QQ账号</label></div>
+  <div class="item"><input type="checkbox" id="a3" disabled><label>短视频账号</label></div>
+  <div class="item"><input type="checkbox" id="a4" disabled><label>学习平台账号</label></div>
+  <div class="item"><input type="checkbox" id="a5" disabled><label>音乐/听书账号</label></div>
+  <div class="item"><input type="checkbox" id="a6" disabled><label>游戏账号</label></div>
+  <div class="item"><input type="checkbox" id="a7" disabled><label>绘画/编程账号</label></div>
+
+  <button class="btn" id="btn" disabled onclick="submit()">提交</button>
+  <div class="tip" id="msg">提交成功！</div>
 </div>
 
 <script>
-const STORAGE_KEY = "identity_stats";
-let btn = document.getElementById("btn");
-let tip = document.getElementById("tip");
+const STORAGE = "identity_stats";
+const SUBMIT_PREFIX = "submitted_id_";
+let currentId = null;
+let currentNum = null;
 
-if(localStorage.getItem("submitted_stu")){
-  btn.disabled = true; btn.innerText = "已提交"; tip.style.display="block";
+// 格式化编号为两位数
+function formatTwoDigits(num) {
+  return num.toString().padStart(2, '0');
 }
 
-function submit(){
-  if(btn.disabled) return;
-  btn.disabled = true; btn.innerText = "提交中...";
+// 检查是否已提交
+function isSubmitted(idStr) {
+  return localStorage.getItem(SUBMIT_PREFIX + idStr) === "true";
+}
 
-  let v1 = a1.checked?1:0, v2=a2.checked?1:0, v3=a3.checked?1:0;
-  let v4 = a4.checked?1:0, v5=a5.checked?1:0, v6=a6.checked?1:0, v7=a7.checked?1:0;
+// 输入编号确定
+function bindId() {
+  let val = document.getElementById("stuId").value.trim();
+  if (!val) {
+    alert("请输入编号！");
+    return;
+  }
 
-  let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {n1:0,n2:0,n3:0,n4:0,n5:0,n6:0,n7:0,count:0};
-  d.n1+=v1;d.n2+=v2;d.n3+=v3;d.n4+=v4;d.n5+=v5;d.n6+=v6;d.n7+=v7;d.count+=1;
+  // 转数字并格式化为两位
+  let num = parseInt(val, 10);
+  if (isNaN(num) || num < 1 || num > 99) {
+    alert("请输入有效编号（01~99）");
+    return;
+  }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-  localStorage.setItem("submitted_stu","true");
+  let idStr = formatTwoDigits(num);
+  if (isSubmitted(idStr)) {
+    alert("该编号已提交，不能重复提交！");
+    return;
+  }
 
-  tip.style.display="block"; btn.innerText="已提交";
+  currentId = idStr;
+  currentNum = num;
+
+  // 解锁
+  document.querySelectorAll("input[type='checkbox']").forEach(cb => {
+    cb.disabled = false;
+  });
+  document.getElementById("btn").disabled = false;
+  document.getElementById("stuId").disabled = true;
+  document.querySelector(".input-row button").disabled = true;
+}
+
+// 分组
+function getGroup(num) {
+  return (num - 1) % 4; // 0=1组,1=2组,2=3组,3=4组
+}
+
+// 提交
+function submit() {
+  if (!currentId || currentNum === null) return;
+
+  let btn = document.getElementById("btn");
+  btn.disabled = true;
+  btn.innerText = "提交中...";
+
+  let data = JSON.parse(localStorage.getItem(STORAGE)) || {
+    wx: [0,0,0,0],
+    qq: [0,0,0,0],
+    sp: [0,0,0,0],
+    study: [0,0,0,0],
+    music: [0,0,0,0],
+    game: [0,0,0,0],
+    art: [0,0,0,0],
+    totalStu: 0
+  };
+
+  let g = getGroup(currentNum);
+
+  if (a1.checked) data.wx[g]++;
+  if (a2.checked) data.qq[g]++;
+  if (a3.checked) data.sp[g]++;
+  if (a4.checked) data.study[g]++;
+  if (a5.checked) data.music[g]++;
+  if (a6.checked) data.game[g]++;
+  if (a7.checked) data.art[g]++;
+
+  data.totalStu++;
+
+  localStorage.setItem(STORAGE, JSON.stringify(data));
+  localStorage.setItem(SUBMIT_PREFIX + currentId, "true");
+
+  document.getElementById("msg").style.display = "block";
+  btn.innerText = "已提交";
 }
 </script>
 </body>
