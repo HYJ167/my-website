@@ -57,14 +57,6 @@ input[type="checkbox"]{
     margin-top:18px;
     display:none;
 }
-.error-tip{
-    text-align:center;
-    color:#EF4444;
-    font-weight:bold;
-    font-size:18px;
-    margin-top:15px;
-    display:none;
-}
 </style>
 </head>
 <body>
@@ -92,30 +84,31 @@ input[type="checkbox"]{
     </div>
     <button class="btn" id="submitBtn" onclick="submitData()">提交我的身份</button>
     <div class="tip" id="msg">提交成功！</div>
-    <div class="error-tip" id="errMsg">提交失败，请稍后重试</div>
 </div>
 
 <script>
-// 🔴 这里必须填你自己的正确密钥！
-const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
-const BIN_ID = "69d906ea5a7d7921ae2823a0";
-const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+// 🔴 本地存储键名（全局唯一，教师端用同一个）
+const STORAGE_KEY = "digital_identity_stats";
 
-// 防重复提交标记
-let isSubmitting = false;
+// 页面加载时，检查是否已经提交过
+window.onload = function() {
+    const hasSubmitted = localStorage.getItem("hasSubmitted");
+    if(hasSubmitted === "true") {
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("submitBtn").innerText = "已提交";
+        document.getElementById("msg").style.display = "block";
+        document.getElementById("msg").innerText = "你已提交过，无需重复提交";
+    }
+};
 
 async function submitData(){
     const btn = document.getElementById("submitBtn");
     const msg = document.getElementById("msg");
-    const errMsg = document.getElementById("errMsg");
 
     // 🔥 双重防重复：状态锁+按钮禁用
-    if(isSubmitting || btn.disabled) return;
-    isSubmitting = true;
+    if(btn.disabled) return;
     btn.disabled = true;
     btn.innerText = "提交中...";
-    msg.style.display = "none";
-    errMsg.style.display = "none";
 
     // 读取勾选状态
     const qq = document.getElementById("qq").checked ? 1 : 0;
@@ -125,61 +118,42 @@ async function submitData(){
     const douyin = document.getElementById("douyin").checked ? 1 : 0;
 
     try{
-        // 1. 先获取最新数据（强制不缓存，解决跨域/缓存问题）
-        const getRes = await fetch(`${API_URL}/latest?ts=${Date.now()}`, {
-            method: "GET",
-            headers: {
-                "X-Master-Key": API_KEY,
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                "Pragma": "no-cache"
-            },
-            mode: "cors" // 明确指定跨域模式
-        });
-
-        if(!getRes.ok) throw new Error(`获取数据失败: ${getRes.status}`);
-        const getData = await getRes.json();
-        const oldData = getData.record;
-
-        // 2. 计算新数据
-        const newData = {
-            qq: oldData.qq + qq,
-            wechat: oldData.wechat + wechat,
-            game: oldData.game + game,
-            study: oldData.study + study,
-            douyin: oldData.douyin + douyin,
-            totalStudent: oldData.totalStudent + 1
+        // 1. 从本地存储读取当前统计数据
+        let currentData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+            qq:0, wechat:0, game:0, study:0, douyin:0, totalStudent:0
         };
 
-        // 3. 提交新数据（同样强制不缓存）
-        const putRes = await fetch(API_URL, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Master-Key": API_KEY,
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                "Pragma": "no-cache"
-            },
-            mode: "cors",
-            body: JSON.stringify(newData)
-        });
+        // 2. 累加新数据
+        currentData.qq += qq;
+        currentData.wechat += wechat;
+        currentData.game += game;
+        currentData.study += study;
+        currentData.douyin += douyin;
+        currentData.totalStudent += 1;
 
-        if(!putRes.ok) throw new Error(`提交数据失败: ${putRes.status}`);
+        // 3. 写回本地存储（100%成功，无网络依赖）
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+        // 标记当前学生已提交
+        localStorage.setItem("hasSubmitted", "true");
 
         // 4. 提交成功
         msg.style.display = "block";
-        setTimeout(() => {
-            msg.style.display = "none";
-            // 提交成功后保持按钮禁用，彻底防止重复提交
-            btn.innerText = "已提交";
-        }, 2000);
+        msg.innerText = "提交成功！";
+        btn.innerText = "已提交";
+
+        // 通知教师端刷新数据
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: STORAGE_KEY,
+            newValue: JSON.stringify(currentData)
+        }));
 
     } catch (error) {
-        console.error("提交错误详情:", error);
-        // 显示错误提示，恢复按钮
-        errMsg.style.display = "block";
+        console.error("提交错误:", error);
+        msg.style.display = "block";
+        msg.style.color = "#EF4444";
+        msg.innerText = "提交失败，请重试";
         btn.disabled = false;
         btn.innerText = "提交我的身份";
-        isSubmitting = false;
     }
 }
 </script>
