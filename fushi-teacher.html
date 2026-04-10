@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>教师统计看板</title>
 <style>
 body{background:#f7f9fc;padding:30px;font-family:微软雅黑}
@@ -33,24 +33,26 @@ body{background:#f7f9fc;padding:30px;font-family:微软雅黑}
 
 <script>
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
-const BIN_ID = "69d8a874856a601891a601b";
+const BIN_ID = "69d8a874856a6821891a601b";
 
 async function load() {
-  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-    headers: { "X-Master-Key": API_KEY }
-  });
-  let d = (await res.json()).record;
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const d = (await res.json()).record;
 
-  document.getElementById("qq").innerText = d.qq;
-  document.getElementById("wechat").innerText = d.wechat;
-  document.getElementById("game").innerText = d.game;
-  document.getElementById("study").innerText = d.study;
-  document.getElementById("douyin").innerText = d.douyin;
+    document.getElementById("qq").innerText = d.qq;
+    document.getElementById("wechat").innerText = d.wechat;
+    document.getElementById("game").innerText = d.game;
+    document.getElementById("study").innerText = d.study;
+    document.getElementById("douyin").innerText = d.douyin;
 
-  let max = Math.max(d.qq, d.wechat, d.game, d.study, d.douyin);
-  let list = ["QQ","微信","游戏账号","学习平台","抖音"];
-  let values = [d.qq,d.wechat,d.game,d.study,d.douyin];
-  document.getElementById("best").innerText = list[values.indexOf(max)];
+    const max = Math.max(d.qq, d.wechat, d.game, d.study, d.douyin);
+    const list = ["QQ", "微信", "游戏账号", "学习平台", "抖音"];
+    const values = [d.qq, d.wechat, d.game, d.study, d.douyin];
+    document.getElementById("best").innerText = list[values.indexOf(max)];
+  } catch (e) {}
 }
 
 load();
