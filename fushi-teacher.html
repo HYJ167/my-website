@@ -98,98 +98,73 @@ body{background:#f7f9fc;padding:30px;}
 </div>
 
 <script>
-// 你的密钥（保持不变）
-const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
-const BIN_ID = "69d8a874856a6821891a601b";
-const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const STORAGE_KEY = "digital_identity_stats";
 
-// 加载数据（修复：强制不缓存，读最新数据）
-async function loadData(){
-    try{
-        // 加时间戳，强制浏览器不缓存，每次读最新数据
-        let res = await fetch(`${API_URL}/latest?ts=${Date.now()}`,{
-            headers:{"X-Master-Key":API_KEY,"Cache-Control":"no-cache"}
-        });
-        let data = await res.json();
-        let d = data.record;
+// 加载数据函数
+function loadData(){
+    // 从本地存储读取数据
+    let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+        qq:0, wechat:0, game:0, study:0, douyin:0, totalStudent:0
+    };
 
-        // 渲染基础数据
-        document.getElementById("qq").innerText = d.qq;
-        document.getElementById("wechat").innerText = d.wechat;
-        document.getElementById("game").innerText = d.game;
-        document.getElementById("study").innerText = d.study;
-        document.getElementById("douyin").innerText = d.douyin;
-        document.getElementById("totalStu").innerText = d.totalStudent;
+    // 渲染基础数据
+    document.getElementById("qq").innerText = data.qq;
+    document.getElementById("wechat").innerText = data.wechat;
+    document.getElementById("game").innerText = data.game;
+    document.getElementById("study").innerText = data.study;
+    document.getElementById("douyin").innerText = data.douyin;
+    document.getElementById("totalStu").innerText = data.totalStudent;
 
-        // 1.求和：身份总数量（加法）
-        let totalNum = d.qq + d.wechat + d.game + d.study + d.douyin;
-        document.getElementById("totalNum").innerText = totalNum;
+    // 1.求和：身份总数量（加法）
+    let totalNum = data.qq + data.wechat + data.game + data.study + data.douyin;
+    document.getElementById("totalNum").innerText = totalNum;
 
-        // 2.除法求平均数（第二单元核心知识）
-        let avg = d.totalStudent > 0 ? (totalNum / d.totalStudent).toFixed(1) : 0;
-        document.getElementById("avg").innerText = avg;
+    // 2.除法求平均数
+    let avg = data.totalStudent > 0 ? (totalNum / data.totalStudent).toFixed(1) : 0;
+    document.getElementById("avg").innerText = avg;
 
-        // 3.数的大小比较：找最多/最少
-        let arr = [
-            {name:"QQ",val:d.qq},
-            {name:"微信",val:d.wechat},
-            {name:"游戏账号",val:d.game},
-            {name:"学习平台",val:d.study},
-            {name:"抖音",val:d.douyin}
-        ];
-        let maxVal = Math.max(...arr.map(i=>i.val));
-        let minVal = Math.min(...arr.map(i=>i.val));
-        let maxItem = arr.find(i=>i.val===maxVal)?.name;
-        let minItem = arr.find(i=>i.val===minVal)?.name;
+    // 3.数的大小比较：找最多/最少
+    let arr = [
+        {name:"QQ",val:data.qq},
+        {name:"微信",val:data.wechat},
+        {name:"游戏账号",val:data.game},
+        {name:"学习平台",val:data.study},
+        {name:"抖音",val:data.douyin}
+    ];
+    let maxVal = Math.max(...arr.map(i=>i.val));
+    let minVal = Math.min(...arr.map(i=>i.val));
+    let maxItem = arr.find(i=>i.val===maxVal)?.name;
+    let minItem = arr.find(i=>i.val===minVal)?.name;
 
-        document.getElementById("max").innerText = maxItem || "等待数据";
-        document.getElementById("min").innerText = minItem || "等待数据";
-        document.getElementById("best").innerText = maxItem || "等待统计";
-    }catch(e){
-        console.error("加载失败", e);
-    }
+    document.getElementById("max").innerText = maxItem || "等待数据";
+    document.getElementById("min").innerText = minItem || "等待数据";
+    document.getElementById("best").innerText = maxItem || "等待统计";
 }
 
-// 🔥 修复后的清空数据函数（彻底解决残留问题）
-async function clearData(){
+// 清空数据函数
+function clearData(){
     if(!confirm("⚠️ 确定要清空所有统计数据吗？此操作不可恢复！")) return;
-    try{
-        // 1. 先读最新数据，确保覆盖正确
-        let res = await fetch(`${API_URL}/latest?ts=${Date.now()}`,{
-            headers:{"X-Master-Key":API_KEY,"Cache-Control":"no-cache"}
-        });
-        let data = await res.json();
-        let old = data.record;
-
-        // 2. 强制覆盖为0，确保所有字段都重置
-        let emptyData = {
-            qq: 0,
-            wechat: 0,
-            game: 0,
-            study: 0,
-            douyin: 0,
-            totalStudent: 0
-        };
-
-        // 3. 提交清空，强制不缓存
-        await fetch(API_URL,{
-            method:"PUT",
-            headers:{"Content-Type":"application/json","X-Master-Key":API_KEY,"Cache-Control":"no-cache"},
-            body:JSON.stringify(emptyData)
-        });
-
-        // 4. 立刻强制刷新页面，彻底清除缓存
-        alert("✅ 数据已清空！页面将自动刷新");
-        location.reload();
-
-    }catch(e){
-        console.error("清空失败", e);
-        alert("❌ 清空失败，请检查网络或密钥");
-    }
+    // 清空统计数据
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        qq:0, wechat:0, game:0, study:0, douyin:0, totalStudent:0
+    }));
+    // 清空所有学生的提交标记（让学生可以重新提交）
+    localStorage.removeItem("hasSubmitted");
+    alert("✅ 数据已清空！");
+    loadData();
 }
 
-// 初始化加载 + 定时刷新
+// 初始化加载
 loadData();
+
+// 监听存储变化，学生提交后实时刷新
+window.addEventListener('storage', function(e) {
+    if(e.key === STORAGE_KEY) {
+        loadData();
+    }
+});
+
+// 定时刷新，确保数据同步
 setInterval(loadData, 2000);
 </script>
 </body>
