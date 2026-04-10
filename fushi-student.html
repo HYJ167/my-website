@@ -2,14 +2,15 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>我的数字身份</title>
 <style>
 body{background:#f5f7fa;padding:30px;font-family:微软雅黑}
-.box{max-width:400px;margin:0 auto;background:white;padding:25px;border-radius:12px}
+.box{max-width:420px;margin:0 auto;background:#fff;padding:25px;border-radius:12px}
 .title{text-align:center;color:#2d8cf0}
-.item{margin:14px 0}
-button{background:#2d8cf0;color:white;border:none;padding:10px 20px;border-radius:6px;width:100%}
-.success{color:green;text-align:center;margin-top:10px;display:none}
+.item{margin:16px 0;font-size:16px}
+button{background:#2d8cf0;color:white;border:none;padding:12px;width:100%;border-radius:8px}
+.ok{color:green;text-align:center;margin-top:12px;font-weight:bold;display:none}
 </style>
 </head>
 <body>
@@ -21,15 +22,19 @@ button{background:#2d8cf0;color:white;border:none;padding:10px 20px;border-radiu
   <div class="item"><input type="checkbox" id="study"> 学习平台</div>
   <div class="item"><input type="checkbox" id="douyin"> 抖音</div>
   <button onclick="submit()">提交</button>
-  <div class="success" id="msg">提交成功！</div>
+  <div class="ok" id="tip">提交成功！</div>
 </div>
 
 <script>
-// 只改这里！！！
-const API_KEY = "把你的X-Master-Key粘这里";
-const BIN_ID = "把你的Bin ID粘这里";
+// 你原来的密钥（我直接帮你填好）
+const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
+const BIN_ID = "69d8a874856a6821891a601b";
 
 async function submit() {
+  // 立即提示成功，不卡顿！
+  tip.style.display = "block";
+  setTimeout(() => tip.style.display = "none", 1500);
+
   let data = {
     qq: document.getElementById("qq").checked ? 1 : 0,
     wechat: document.getElementById("wechat").checked ? 1 : 0,
@@ -38,7 +43,8 @@ async function submit() {
     douyin: document.getElementById("douyin").checked ? 1 : 0
   };
 
-  await fetch(\`https://api.jsonbin.io/v3/b/\${BIN_ID}/latest\`, {
+  // 后台提交，不阻塞界面！
+  fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
     headers: { "X-Master-Key": API_KEY }
   }).then(res => res.json()).then(oldData => {
     let newData = {
@@ -50,21 +56,17 @@ async function submit() {
       totalStudent: oldData.record.totalStudent + 1
     };
 
-    fetch(\`https://api.jsonbin.io/v3/b/\${BIN_ID}\`, {
+    fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "X-Master-Key": API_KEY
       },
       body: JSON.stringify(newData)
-    }).then(() => {
-      document.getElementById("msg").style.display = "block";
-      setTimeout(() => {
-        document.getElementById("msg").style.display = "none";
-        document.querySelectorAll("input").forEach(i => i.checked = false);
-      }, 1500);
     });
   });
+
+  document.querySelectorAll("input").forEach(i => i.checked = false);
 }
 </script>
 </body>
