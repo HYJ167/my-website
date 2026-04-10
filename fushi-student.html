@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的数字身份</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei"}
+body{background:#f5f7fa;padding:30px;}
+.box{max-width:450px;margin:0 auto;background:#fff;padding:25px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.title{text-align:center;color:#2d8cf0;margin-bottom:20px;font-size:20px;}
+.item{margin:16px 0;display:flex;align-items:center;gap:10px;}
+label{font-size:16px;width:120px;}
+input[type="checkbox"]{width:20px;height:20px;}
+.btn{background:#2d8cf0;color:#fff;border:none;padding:10px 25px;border-radius:6px;font-size:16px;cursor:pointer;width:100%;margin-top:10px;}
+.tip{text-align:center;color:#00c48c;font-weight:bold;margin-top:10px;display:none;}
+</style>
+</head>
+<body>
+<div class="box">
+    <h2 class="title">我的数字身份</h2>
+    <div class="item">
+        <input type="checkbox" id="qq">
+        <label>QQ</label>
+    </div>
+    <div class="item">
+        <input type="checkbox" id="wechat">
+        <label>微信</label>
+    </div>
+    <div class="item">
+        <input type="checkbox" id="game">
+        <label>游戏账号</label>
+    </div>
+    <div class="item">
+        <input type="checkbox" id="study">
+        <label>学习平台</label>
+    </div>
+    <div class="item">
+        <input type="checkbox" id="douyin">
+        <label>抖音</label>
+    </div>
+    <button class="btn" onclick="submitData()">提交我的身份</button>
+    <div class="tip" id="msg">提交成功！</div>
+</div>
+
+<script>
+// 填入你的jsonbin信息
+const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
+const BIN_ID = "69d8a874856a6821891a601b";
+
+async function submitData(){
+    const qq = document.getElementById("qq").checked ? 1 : 0;
+    const wechat = document.getElementById("wechat").checked ? 1 : 0;
+    const game = document.getElementById("game").checked ? 1 : 0;
+    const study = document.getElementById("study").checked ? 1 : 0;
+    const douyin = document.getElementById("douyin").checked ? 1 : 0;
+
+    try{
+        let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
+            headers:{"X-Master-Key":API_KEY}
+        });
+        let data = await res.json();
+        let old = data.record;
+
+        let newData = {
+            qq: old.qq + qq,
+            wechat: old.wechat + wechat,
+            game: old.game + game,
+            study: old.study + study,
+            douyin: old.douyin + douyin,
+            // 统计总提交人数（用于算平均数）
+            totalStudent: old.totalStudent + 1
+        };
+
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
+            method:"PUT",
+            headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
+            body:JSON.stringify(newData)
+        });
+
+        document.getElementById("msg").style.display = "block";
+        setTimeout(()=>{
+            document.getElementById("msg").style.display = "none";
+            document.querySelectorAll("input").forEach(i=>i.checked=false);
+        },1500);
+    }catch(e){
+        alert("提交失败，请检查密钥");
+    }
+}
+</script>
+</body>
+</html>
