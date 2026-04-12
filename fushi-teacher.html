@@ -6,245 +6,39 @@
 <title>数字身份统计 - 教师端</title>
 <style>
 *{box-sizing:border-box;font-family:"Microsoft YaHei";margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{background:#f7f9fc;padding:8px;font-size:13px}
-.main{max-width:940px;margin:0 auto}
+html,body{height:100%;overflow:hidden;background:#f7f9fc;font-size:13px}
+.main{max-width:940px;margin:0 auto;padding:8px}
 h1{text-align:center;color:#4F46E5;font-size:18px;margin-bottom:4px}
 .hint{text-align:center;color:#666;font-size:12px;margin-bottom:8px}
-
 .card{background:white;border-radius:8px;padding:8px;margin-bottom:6px}
 .title{font-weight:bold;font-size:13px;margin-bottom:6px;color:#4F46E5}
-
-/* 小组布局 */
-.group-row{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr 1fr 60px;
-  gap:4px;
-  margin-bottom:6px;
-  text-align:center;
-  align-items:center;
-}
+.group-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 60px;gap:4px;margin-bottom:6px;text-align:center;align-items:center}
 .group-header{font-weight:bold;font-size:12px}
-.item-box{
-  background:#f4f7ff;
-  padding:6px 2px;
-  border-radius:4px;
-  font-size:13px;
-}
-.sum-box{
-  background:#e0eaff;
-  padding:6px 2px;
-  border-radius:4px;
-  font-weight:bold;
-  font-size:13px;
-  color:#4F46E5;
-}
-
-/* 紧凑双列布局 */
-.items-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-}
-
-/* 汇总信息 */
-.summary{
-  display:flex;
-  justify-content:center;
-  gap:16px;
-  background:#fff;
-  border-radius:8px;
-  padding:8px;
-  margin-bottom:6px;
-  font-size:13px;
-}
-
-/* 分析区：紧凑一行 */
-.analysis{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:10px;
-  background:#fff;
-  border-radius:8px;
-  padding:8px;
-  margin-bottom:6px;
-  flex-wrap:nowrap;
-}
-.analysis-item{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  white-space:nowrap;
-}
+.item-box{background:#f4f7ff;padding:6px 2px;border-radius:4px;font-size:13px}
+.sum-box{background:#e0eaff;padding:6px 2px;border-radius:4px;font-weight:bold;font-size:13px;color:#4F46E5}
+.items-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.summary{display:flex;justify-content:center;gap:16px;background:#fff;border-radius:8px;padding:8px;margin-bottom:6px;font-size:13px}
+.analysis{display:flex;justify-content:center;align-items:center;gap:10px;background:#fff;border-radius:8px;padding:8px;margin-bottom:6px;flex-wrap:nowrap}
+.analysis-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .analysis-label{font-size:13px}
-.blank{
-  width:100px;
-  border-bottom:1px solid #999;
-  text-align:center;
-  font-size:13px;
-}
-.small-btn{
-  padding:3px 6px;
-  background:#4F46E5;
-  color:white;
-  border:none;
-  border-radius:4px;
-  font-size:12px;
-  cursor:pointer;
-}
-
-/* 清空按钮 */
-.btn-clear{
-  width:100%;
-  padding:8px;
-  background:#ef4444;
-  color:white;
-  border:none;
-  border-radius:8px;
-  font-size:14px;
-  cursor:pointer;
-}
+.blank{width:100px;border-bottom:1px solid #999;text-align:center;font-size:13px}
+.small-btn{padding:3px 6px;background:#4F46E5;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer}
+.btn-clear{width:100%;padding:8px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="main">
   <h1>全班数字身份统计</h1>
-  <p class="hint">按4个小组统计 · 每项自动求和</p>
+  <p class="hint">JSONBin 云端实时同步</p>
 
   <div class="items-grid">
-    <!-- 微信 -->
-    <div class="card">
-      <div class="title">微信账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="wx1">0</div>
-        <div class="item-box" id="wx2">0</div>
-        <div class="item-box" id="wx3">0</div>
-        <div class="item-box" id="wx4">0</div>
-        <div class="sum-box" id="wxSum">0</div>
-      </div>
-    </div>
-
-    <!-- QQ -->
-    <div class="card">
-      <div class="title">QQ账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="qq1">0</div>
-        <div class="item-box" id="qq2">0</div>
-        <div class="item-box" id="qq3">0</div>
-        <div class="item-box" id="qq4">0</div>
-        <div class="sum-box" id="qqSum">0</div>
-      </div>
-    </div>
-
-    <!-- 短视频 -->
-    <div class="card">
-      <div class="title">短视频账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="sp1">0</div>
-        <div class="item-box" id="sp2">0</div>
-        <div class="item-box" id="sp3">0</div>
-        <div class="item-box" id="sp4">0</div>
-        <div class="sum-box" id="spSum">0</div>
-      </div>
-    </div>
-
-    <!-- 学习平台 -->
-    <div class="card">
-      <div class="title">学习平台账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="study1">0</div>
-        <div class="item-box" id="study2">0</div>
-        <div class="item-box" id="study3">0</div>
-        <div class="item-box" id="study4">0</div>
-        <div class="sum-box" id="studySum">0</div>
-      </div>
-    </div>
-
-    <!-- 音乐/听书 -->
-    <div class="card">
-      <div class="title">音乐/听书账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="music1">0</div>
-        <div class="item-box" id="music2">0</div>
-        <div class="item-box" id="music3">0</div>
-        <div class="item-box" id="music4">0</div>
-        <div class="sum-box" id="musicSum">0</div>
-      </div>
-    </div>
-
-    <!-- 游戏 -->
-    <div class="card">
-      <div class="title">游戏账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="game1">0</div>
-        <div class="item-box" id="game2">0</div>
-        <div class="item-box" id="game3">0</div>
-        <div class="item-box" id="game4">0</div>
-        <div class="sum-box" id="gameSum">0</div>
-      </div>
-    </div>
-
-    <!-- 绘画/编程 -->
-    <div class="card" style="grid-column:1/3">
-      <div class="title">绘画/编程账号</div>
-      <div class="group-row">
-        <div class="group-header">1组</div>
-        <div class="group-header">2组</div>
-        <div class="group-header">3组</div>
-        <div class="group-header">4组</div>
-        <div class="group-header">合计</div>
-      </div>
-      <div class="group-row">
-        <div class="item-box" id="art1">0</div>
-        <div class="item-box" id="art2">0</div>
-        <div class="item-box" id="art3">0</div>
-        <div class="item-box" id="art4">0</div>
-        <div class="sum-box" id="artSum">0</div>
-      </div>
-    </div>
+    <div class="card"><div class="title">微信账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="wx1">0</div><div class="item-box" id="wx2">0</div><div class="item-box" id="wx3">0</div><div class="item-box" id="wx4">0</div><div class="sum-box" id="wxSum">0</div></div></div>
+    <div class="card"><div class="title">QQ账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="qq1">0</div><div class="item-box" id="qq2">0</div><div class="item-box" id="qq3">0</div><div class="item-box" id="qq4">0</div><div class="sum-box" id="qqSum">0</div></div></div>
+    <div class="card"><div class="title">短视频账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="sp1">0</div><div class="item-box" id="sp2">0</div><div class="item-box" id="sp3">0</div><div class="item-box" id="sp4">0</div><div class="sum-box" id="spSum">0</div></div></div>
+    <div class="card"><div class="title">学习平台账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="study1">0</div><div class="item-box" id="study2">0</div><div class="item-box" id="study3">0</div><div class="item-box" id="study4">0</div><div class="sum-box" id="studySum">0</div></div></div>
+    <div class="card"><div class="title">音乐/听书账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="music1">0</div><div class="item-box" id="music2">0</div><div class="item-box" id="music3">0</div><div class="item-box" id="music4">0</div><div class="sum-box" id="musicSum">0</div></div></div>
+    <div class="card"><div class="title">游戏账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="game1">0</div><div class="item-box" id="game2">0</div><div class="item-box" id="game3">0</div><div class="item-box" id="game4">0</div><div class="sum-box" id="gameSum">0</div></div></div>
+    <div class="card" style="grid-column:1/3"><div class="title">绘画/编程账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="art1">0</div><div class="item-box" id="art2">0</div><div class="item-box" id="art3">0</div><div class="item-box" id="art4">0</div><div class="sum-box" id="artSum">0</div></div></div>
   </div>
 
   <div class="summary">
@@ -253,95 +47,86 @@ h1{text-align:center;color:#4F46E5;font-size:18px;margin-bottom:4px}
   </div>
 
   <div class="analysis">
-    <div class="analysis-item">
-      <span class="analysis-label">人数最多的数字身份：</span>
-      <span class="blank" id="most"></span>
-      <button class="small-btn" onclick="showMost()">显示</button>
-    </div>
-    <div class="analysis-item">
-      <span class="analysis-label">人数最少的数字身份：</span>
-      <span class="blank" id="least"></span>
-      <button class="small-btn" onclick="showLeast()">显示</button>
-    </div>
-    <div class="analysis-item">
-      <span class="analysis-label">平均每人拥有的身份数：</span>
-      <span class="blank" id="avg"></span>
-      <button class="small-btn" onclick="showAvg()">显示</button>
-    </div>
+    <div class="analysis-item"><span class="analysis-label">人数最多：</span><span class="blank" id="most"></span><button class="small-btn" onclick="showMost()">显示</button></div>
+    <div class="analysis-item"><span class="analysis-label">人数最少：</span><span class="blank" id="least"></span><button class="small-btn" onclick="showLeast()">显示</button></div>
+    <div class="analysis-item"><span class="analysis-label">平均每人：</span><span class="blank" id="avg"></span><button class="small-btn" onclick="showAvg()">显示</button></div>
   </div>
 
-  <button class="btn-clear" onclick="clearAll()">清空所有数据（重新上课）</button>
+  <button class="btn-clear" onclick="clearAll()">清空所有数据</button>
 </div>
 
 <script>
-let data = {
-  wx:    [0,0,0,0],
-  qq:    [0,0,0,0],
-  sp:    [0,0,0,0],
-  study: [0,0,0,0],
-  music: [0,0,0,0],
-  game:  [0,0,0,0],
-  art:   [0,0,0,0],
-  totalStu: 0
-};
+// ====================== 你只需要填这里 ======================
+const BIN_ID = "你的JSONBin BIN_ID";
+const API_KEY = "你的JSONBin API_KEY";
+// ===========================================================
 
-function sum(arr){return arr.reduce((a,b)=>a+b,0)}
+function sum(arr) { return arr.reduce((a,b)=>a+b,0); }
 
-function load(){
-  function set(id,arr){
-    document.getElementById(id+'1').innerText=arr[0]
-    document.getElementById(id+'2').innerText=arr[1]
-    document.getElementById(id+'3').innerText=arr[2]
-    document.getElementById(id+'4').innerText=arr[3]
-    document.getElementById(id+'Sum').innerText=sum(arr)
-  }
-  set('wx',data.wx)
-  set('qq',data.qq)
-  set('sp',data.sp)
-  set('study',data.study)
-  set('music',data.music)
-  set('game',data.game)
-  set('art',data.art)
+async function load() {
+  try {
+    let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    let d = (await res.json()).record || {
+      wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],study:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0
+    };
 
-  document.getElementById('totalStu').innerText=data.totalStu
-  let all=sum(data.wx)+sum(data.qq)+sum(data.sp)+sum(data.study)+sum(data.music)+sum(data.game)+sum(data.art)
-  document.getElementById('totalAll').innerText=all
+    document.getElementById('wx1').innerText=d.wx[0];document.getElementById('wx2').innerText=d.wx[1];document.getElementById('wx3').innerText=d.wx[2];document.getElementById('wx4').innerText=d.wx[3];document.getElementById('wxSum').innerText=sum(d.wx);
+    document.getElementById('qq1').innerText=d.qq[0];document.getElementById('qq2').innerText=d.qq[1];document.getElementById('qq3').innerText=d.qq[2];document.getElementById('qq4').innerText=d.qq[3];document.getElementById('qqSum').innerText=sum(d.qq);
+    document.getElementById('sp1').innerText=d.sp[0];document.getElementById('sp2').innerText=d.sp[1];document.getElementById('sp3').innerText=d.sp[2];document.getElementById('sp4').innerText=d.sp[3];document.getElementById('spSum').innerText=sum(d.sp);
+    document.getElementById('study1').innerText=d.study[0];document.getElementById('study2').innerText=d.study[1];document.getElementById('study3').innerText=d.study[2];document.getElementById('study4').innerText=d.study[3];document.getElementById('studySum').innerText=sum(d.study);
+    document.getElementById('music1').innerText=d.music[0];document.getElementById('music2').innerText=d.music[1];document.getElementById('music3').innerText=d.music[2];document.getElementById('music4').innerText=d.music[3];document.getElementById('musicSum').innerText=sum(d.music);
+    document.getElementById('game1').innerText=d.game[0];document.getElementById('game2').innerText=d.game[1];document.getElementById('game3').innerText=d.game[2];document.getElementById('game4').innerText=d.game[3];document.getElementById('gameSum').innerText=sum(d.game);
+    document.getElementById('art1').innerText=d.art[0];document.getElementById('art2').innerText=d.art[1];document.getElementById('art3').innerText=d.art[2];document.getElementById('art4').innerText=d.art[3];document.getElementById('artSum').innerText=sum(d.art);
+
+    document.getElementById('totalStu').innerText=d.totalStu;
+    let all = sum(d.wx)+sum(d.qq)+sum(d.sp)+sum(d.study)+sum(d.music)+sum(d.game)+sum(d.art);
+    document.getElementById('totalAll').innerText=all;
+  }catch(e){console.log(e)}
 }
 
 function showMost(){
-  let list=[
-    {n:"微信",v:sum(data.wx)},{n:"QQ",v:sum(data.qq)},{n:"短视频",v:sum(data.sp)},
-    {n:"学习平台",v:sum(data.study)},{n:"音乐/听书",v:sum(data.music)},{n:"游戏",v:sum(data.game)},{n:"绘画/编程",v:sum(data.art)}
-  ]
-  let max=Math.max(...list.map(i=>i.v))
-  document.getElementById('most').innerText=list.find(i=>i.v==max)?.n||'无'
+  load().then(()=>{
+    let d = JSON.parse(JSON.stringify(localStorage.getItem('tmpdata'))) || {};
+    let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
+    let m=Math.max(...list.map(i=>i.v));
+    document.getElementById('most').innerText=list.find(i=>i.v==m)?.n||'无';
+  })
 }
 
 function showLeast(){
-  let list=[
-    {n:"微信",v:sum(data.wx)},{n:"QQ",v:sum(data.qq)},{n:"短视频",v:sum(data.sp)},
-    {n:"学习平台",v:sum(data.study)},{n:"音乐/听书",v:sum(data.music)},{n:"游戏",v:sum(data.game)},{n:"绘画/编程",v:sum(data.art)}
-  ]
-  let min=Math.min(...list.map(i=>i.v))
-  document.getElementById('least').innerText=list.find(i=>i.v==min)?.n||'无'
+  load().then(()=>{
+    let d = JSON.parse(JSON.stringify(localStorage.getItem('tmpdata'))) || {};
+    let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
+    let m=Math.min(...list.map(i=>i.v));
+    document.getElementById('least').innerText=list.find(i=>i.v==m)?.n||'无';
+  })
 }
 
 function showAvg(){
-  let all=sum(data.wx)+sum(data.qq)+sum(data.sp)+sum(data.study)+sum(data.music)+sum(data.game)+sum(data.art)
-  let avg=data.totalStu>0?(all/data.totalStu).toFixed(1):0
-  document.getElementById('avg').innerText=avg
+  load().then(()=>{
+    let d = JSON.parse(JSON.stringify(localStorage.getItem('tmpdata'))) || {totalStu:0};
+    let all=sum(d.wx||[0])+sum(d.qq||[0])+sum(d.sp||[0])+sum(d.study||[0])+sum(d.music||[0])+sum(d.game||[0])+sum(d.art||[0]);
+    let avg=d.totalStu>0?(all/d.totalStu).toFixed(1):0;
+    document.getElementById('avg').innerText=avg;
+  })
 }
 
-function clearAll(){
-  if(!confirm("确定清空？"))return
-  data={wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],study:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0}
-  document.getElementById('most').innerText=''
-  document.getElementById('least').innerText=''
-  document.getElementById('avg').innerText=''
-  load()
+async function clearAll(){
+  if(!confirm("确定清空云端数据？"))return;
+  let empty = {
+    wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],study:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0
+  };
+  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+    method:"PUT", headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
+    body:JSON.stringify(empty)
+  });
+  load();
 }
 
-load()
+load();
+setInterval(load,2000);
 </script>
 </body>
 </html>
