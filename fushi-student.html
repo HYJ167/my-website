@@ -55,20 +55,22 @@ input[type="checkbox"]{width:22px;height:22px}
 </div>
 
 <script>
-// ====================== 你只需要填这里 ======================
+// ====================== 已填好你的 JSONBin ======================
 const BIN_ID = "69d8a874856a6821891a601b";
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
-// ===========================================================
+// ===============================================================
 
-const SUBMIT_PREFIX = "submitted_id_";
 let currentNum = null;
+
+// 每次打开页面，自动清空本次提交记录（上课全新开始）
+sessionStorage.clear();
 
 function formatTwoDigits(num) {
   return num.toString().padStart(2, '0');
 }
 
 function isSubmitted(idStr) {
-  return localStorage.getItem(SUBMIT_PREFIX + idStr) === "true";
+  return sessionStorage.getItem("submitted_id_" + idStr) === "true";
 }
 
 function bindId() {
@@ -77,7 +79,7 @@ function bindId() {
   let num = parseInt(val, 10);
   if (isNaN(num) || num < 1 || num > 99) { alert("请输入01~99的编号"); return; }
   let idStr = formatTwoDigits(num);
-  if (isSubmitted(idStr)) { alert("该编号已提交"); return; }
+  if (isSubmitted(idStr)) { alert("该编号已提交，不能重复提交！"); return; }
 
   currentNum = num;
   document.querySelectorAll("input[type=checkbox]").forEach(c => c.disabled = false);
@@ -90,7 +92,6 @@ function getGroup(num) {
   return (num - 1) % 4;
 }
 
-// 提交到 JSONBin
 async function submit() {
   if (!currentNum) return;
   let btn = document.getElementById("btn");
@@ -98,13 +99,11 @@ async function submit() {
   btn.innerText = "提交中...";
 
   try {
-    // 1. 获取云端数据
     let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
       headers: { "X-Master-Key": API_KEY }
     });
     let data = (await res.json()).record;
 
-    // 2. 初始化数据结构
     if (!data || !data.wx) {
       data = {
         wx: [0,0,0,0], qq: [0,0,0,0], sp: [0,0,0,0],
@@ -113,7 +112,6 @@ async function submit() {
       };
     }
 
-    // 3. 分组更新数据
     let g = getGroup(currentNum);
     if (a1.checked) data.wx[g]++;
     if (a2.checked) data.qq[g]++;
@@ -124,7 +122,6 @@ async function submit() {
     if (a7.checked) data.art[g]++;
     data.totalStu++;
 
-    // 4. 保存回 JSONBin
     await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: "PUT",
       headers: {
@@ -134,8 +131,7 @@ async function submit() {
       body: JSON.stringify(data)
     });
 
-    // 5. 标记已提交
-    localStorage.setItem(SUBMIT_PREFIX + formatTwoDigits(currentNum), "true");
+    sessionStorage.setItem("submitted_id_" + formatTwoDigits(currentNum), "true");
     document.getElementById("msg").style.display = "block";
     btn.innerText = "已提交";
 
