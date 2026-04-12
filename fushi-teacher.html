@@ -21,7 +21,7 @@ h1{text-align:center;color:#4F46E5;font-size:18px;margin-bottom:4px}
 .analysis{display:flex;justify-content:center;align-items:center;gap:10px;background:#fff;border-radius:8px;padding:8px;margin-bottom:6px;flex-wrap:nowrap}
 .analysis-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .analysis-label{font-size:13px}
-.blank{width:100px;border-bottom:1px solid #999;text-align:center;font-size:13px}
+.blank{width:120px;border-bottom:1px solid #999;text-align:center;font-size:13px;white-space:pre-line}
 .small-btn{padding:3px 6px;background:#4F46E5;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer}
 .btn-clear{width:100%;padding:8px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer}
 </style>
@@ -56,10 +56,8 @@ h1{text-align:center;color:#4F46E5;font-size:18px;margin-bottom:4px}
 </div>
 
 <script>
-// ====================== 已填好你的 JSONBin ======================
 const BIN_ID = "69d8a874856a6821891a601b";
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
-// ===============================================================
 
 function sum(arr) { return arr.reduce((a,b)=>a+b,0); }
 
@@ -89,17 +87,35 @@ async function load() {
 async function showMost(){
   let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
   let d = (await res.json()).record||{};
-  let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
-  let m=Math.max(...list.map(i=>i.v));
-  document.getElementById('most').innerText=list.find(i=>i.v==m)?.n||'无';
+  let list=[
+    {n:"微信",v:sum(d.wx||[0])},
+    {n:"QQ",v:sum(d.qq||[0])},
+    {n:"短视频",v:sum(d.sp||[0])},
+    {n:"学习平台",v:sum(d.study||[0])},
+    {n:"音乐/听书",v:sum(d.music||[0])},
+    {n:"游戏",v:sum(d.game||[0])},
+    {n:"绘画/编程",v:sum(d.art||[0])}
+  ];
+  let maxVal = Math.max(...list.map(i=>i.v));
+  let maxList = list.filter(i=>i.v==maxVal).map(i=>i.n);
+  document.getElementById('most').innerText = maxList.join("、");
 }
 
 async function showLeast(){
   let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
   let d = (await res.json()).record||{};
-  let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
-  let m=Math.min(...list.map(i=>i.v));
-  document.getElementById('least').innerText=list.find(i=>i.v==m)?.n||'无';
+  let list=[
+    {n:"微信",v:sum(d.wx||[0])},
+    {n:"QQ",v:sum(d.qq||[0])},
+    {n:"短视频",v:sum(d.sp||[0])},
+    {n:"学习平台",v:sum(d.study||[0])},
+    {n:"音乐/听书",v:sum(d.music||[0])},
+    {n:"游戏",v:sum(d.game||[0])},
+    {n:"绘画/编程",v:sum(d.art||[0])}
+  ];
+  let minVal = Math.min(...list.map(i=>i.v));
+  let minList = list.filter(i=>i.v==minVal).map(i=>i.n);
+  document.getElementById('least').innerText = minList.join("、");
 }
 
 async function showAvg(){
