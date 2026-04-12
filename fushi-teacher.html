@@ -29,7 +29,7 @@ h1{text-align:center;color:#4F46E5;font-size:18px;margin-bottom:4px}
 <body>
 <div class="main">
   <h1>全班数字身份统计</h1>
-  <p class="hint">JSONBin 云端实时同步</p>
+  <p class="hint">JSONBin 云端实时同步 · 4组自动统计</p>
 
   <div class="items-grid">
     <div class="card"><div class="title">微信账号</div><div class="group-row"><div class="group-header">1组</div><div class="group-header">2组</div><div class="group-header">3组</div><div class="group-header">4组</div><div class="group-header">合计</div></div><div class="group-row"><div class="item-box" id="wx1">0</div><div class="item-box" id="wx2">0</div><div class="item-box" id="wx3">0</div><div class="item-box" id="wx4">0</div><div class="sum-box" id="wxSum">0</div></div></div>
@@ -52,14 +52,14 @@ h1{text-align:center;color:#4F46E5;font-size:18px;margin-bottom:4px}
     <div class="analysis-item"><span class="analysis-label">平均每人：</span><span class="blank" id="avg"></span><button class="small-btn" onclick="showAvg()">显示</button></div>
   </div>
 
-  <button class="btn-clear" onclick="clearAll()">清空所有数据</button>
+  <button class="btn-clear" onclick="clearAll()">清空所有数据（重新上课）</button>
 </div>
 
 <script>
-// ====================== 你只需要填这里 ======================
+// ====================== 已填好你的 JSONBin ======================
 const BIN_ID = "69d8a874856a6821891a601b";
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
-// ===========================================================
+// ===============================================================
 
 function sum(arr) { return arr.reduce((a,b)=>a+b,0); }
 
@@ -86,35 +86,32 @@ async function load() {
   }catch(e){console.log(e)}
 }
 
-function showMost(){
-  load().then(()=>{
-    let d = JSON.parse(JSON.stringify(localStorage.getItem('tmpdata'))) || {};
-    let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
-    let m=Math.max(...list.map(i=>i.v));
-    document.getElementById('most').innerText=list.find(i=>i.v==m)?.n||'无';
-  })
+async function showMost(){
+  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+  let d = (await res.json()).record||{};
+  let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
+  let m=Math.max(...list.map(i=>i.v));
+  document.getElementById('most').innerText=list.find(i=>i.v==m)?.n||'无';
 }
 
-function showLeast(){
-  load().then(()=>{
-    let d = JSON.parse(JSON.stringify(localStorage.getItem('tmpdata'))) || {};
-    let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
-    let m=Math.min(...list.map(i=>i.v));
-    document.getElementById('least').innerText=list.find(i=>i.v==m)?.n||'无';
-  })
+async function showLeast(){
+  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+  let d = (await res.json()).record||{};
+  let list=[{n:"微信",v:sum(d.wx||[0])},{n:"QQ",v:sum(d.qq||[0])},{n:"短视频",v:sum(d.sp||[0])},{n:"学习平台",v:sum(d.study||[0])},{n:"音乐/听书",v:sum(d.music||[0])},{n:"游戏",v:sum(d.game||[0])},{n:"绘画/编程",v:sum(d.art||[0])}];
+  let m=Math.min(...list.map(i=>i.v));
+  document.getElementById('least').innerText=list.find(i=>i.v==m)?.n||'无';
 }
 
-function showAvg(){
-  load().then(()=>{
-    let d = JSON.parse(JSON.stringify(localStorage.getItem('tmpdata'))) || {totalStu:0};
-    let all=sum(d.wx||[0])+sum(d.qq||[0])+sum(d.sp||[0])+sum(d.study||[0])+sum(d.music||[0])+sum(d.game||[0])+sum(d.art||[0]);
-    let avg=d.totalStu>0?(all/d.totalStu).toFixed(1):0;
-    document.getElementById('avg').innerText=avg;
-  })
+async function showAvg(){
+  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+  let d = (await res.json()).record||{totalStu:0};
+  let all=sum(d.wx||[0])+sum(d.qq||[0])+sum(d.sp||[0])+sum(d.study||[0])+sum(d.music||[0])+sum(d.game||[0])+sum(d.art||[0]);
+  let avg=d.totalStu>0?(all/d.totalStu).toFixed(1):0;
+  document.getElementById('avg').innerText=avg;
 }
 
 async function clearAll(){
-  if(!confirm("确定清空云端数据？"))return;
+  if(!confirm("确定清空云端所有数据？"))return;
   let empty = {
     wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],study:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0
   };
