@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信用大闯关</title>
+    <script src="https://metis-online.fbcontent.cn/metis-misc/zgLDUdmazTYc0B4K6Cor.js"></script>
+    <script src="https://metis-online.fbcontent.cn/metis-misc/zZZY40t7WJC7UdQCPACm.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { primary:'#3B82F6' },
+                fontFamily: { sans: ['Noto Sans SC','sans-serif'] }
+            }}
+        }
+    </script>
+    <style>
+        body{font-family:'Noto Sans SC',sans-serif;background:#F3F4F6}
+        .flip-card{perspective:1000px}
+        .flip-card-inner{position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d}
+        .flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+        .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:0.75rem}
+        .flip-card-back{transform:rotateY(180deg)}
+    </style>
+</head>
+<body class="min-h-screen">
+<main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="text-center mb-5">
+        <h2 class="text-2xl font-bold mb-1">🏆 信用大闯关</h2>
+        <p class="text-sm text-gray-600">点击卡片判断行为是否会影响信用</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="extension-grid"></div>
+</main>
+
+<script>
+const extensionCases=[
+    {id:1,title:"规范停车",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/5iU6saRYbK6GuKK5DujhGC.jpg",desc:"整齐停放共享单车",effect:"positive",score:20,feedback:"遵守规则，信用加分！"},
+    {id:2,title:"网络诈骗",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/scUhVoSGp8s9FiL4C5BWLK.jpg",desc:"点击中奖链接输密码",effect:"negative",score:-50,feedback:"危险！会造成信息泄露"},
+    {id:3,title:"沉迷游戏",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/AUmZaBaBmV6Z9kMnSzEYii.jpg",desc:"用他人身份证绕过防沉迷",effect:"negative",score:-40,feedback:"违反实名制，失信行为"},
+    {id:4,title:"诚信交易",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/7Hw2y3CrctEN4xVcJkrhwW.jpg",desc:"二手商品如实描述",effect:"positive",score:30,feedback:"诚实守信，加分！"},
+    {id:5,title:"恶意差评",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/Av9ckdKFHWB7aGryrXC9M7.jpg",desc:"给商家写虚假差评",effect:"negative",score:-30,feedback:"损害他人，扣分！"},
+    {id:6,title:"爱心捐赠",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/4buLGoJnMySZe9AsKyJSHk.jpg",desc:"参与网络公益捐赠",effect:"positive",score:40,feedback:"爱心行为，加分！"},
+    {id:7,title:"网络刷票",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/HcqRP8yknV8NzrqhGWDbEc.jpg",desc:"花钱找机器人刷票",effect:"negative",score:-60,feedback:"作弊行为，严重扣分！"},
+    {id:8,title:"泄露密码",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/PLofC67no8yGoisvKkPfAk.jpg",desc:"把账号密码告诉网友",effect:"negative",score:-40,feedback:"安全意识不足，扣分！"},
+    {id:9,title:"学术抄袭",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/EE4nRwASdKX7hp7HKi4DBW.jpg",desc:"复制文章当作业",effect:"negative",score:-50,feedback:"不诚信，扣分！"},
+    {id:10,title:"违约超时",img:"https://musk-online.fbcontent.cn/pub-musk-ai-studio/workflow/file/picture/5EuRwU5TjUbZuW4vaButkd.jpg",desc:"占座不去也不取消",effect:"negative",score:-20,feedback:"浪费公共资源，扣分！"}
+];
+
+document.addEventListener('DOMContentLoaded',()=>{renderCards();anime({targets:'.flip-card',translateY:[30,0],opacity:[0,1],delay:anime.stagger(80),duration:500})});
+function renderCards(){
+    const g=document.getElementById('extension-grid');
+    extensionCases.forEach(item=>{
+        const c=document.createElement('div');
+        c.className='flip-card h-56 cursor-pointer';
+        c.innerHTML=`
+        <div class="flip-card-inner shadow rounded-xl">
+            <div class="flip-card-front bg-white p-3 flex flex-col items-center justify-between">
+                <div class="w-full h-28 rounded-lg overflow-hidden mb-2">
+                    <img src="${item.img}" class="w-full h-full object-cover">
+                </div>
+                <h3 class="text-sm font-bold">${item.title}</h3>
+                <p class="text-xs text-gray-500">${item.desc}</p>
+                <div class="text-xs text-blue-500 animate-pulse">点击判断</div>
+            </div>
+            <div class="flip-card-back bg-gray-50 p-3 flex flex-col items-center justify-center">
+                <h3 class="text-sm font-bold mb-3">你的判断？</h3>
+                <div class="flex gap-2 w-full">
+                    <button onclick="go(event,${item.id},'positive')" class="flex-1 py-1.5 bg-green-500 text-white rounded text-xs font-bold">👍 加分</button>
+                    <button onclick="go(event,${item.id},'negative')" class="flex-1 py-1.5 bg-red-500 text-white rounded text-xs font-bold">👎 减分</button>
+                </div>
+                <div id="r${item.id}" class="mt-2 text-xs hidden text-center"></div>
+            </div>
+        </div>`;
+        c.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')c.classList.toggle('flipped')});
+        g.appendChild(c);
+    });
+}
+function go(e,id,ch){
+    e.stopPropagation();
+    const i=extensionCases.find(x=>x.id===id);
+    const r=document.getElementById('r'+id);
+    const ok=ch===i.effect;
+    r.classList.remove('hidden');
+    r.innerHTML=ok?'✅ 正确！':'❌ 错误';
+    e.target.parentElement.querySelectorAll('button').forEach(b=>{b.disabled=1;b.classList.add('opacity-50')});
+}
+</script>
+</body>
+</html>
