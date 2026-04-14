@@ -2,35 +2,108 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>教师数据监控看板 (最终修复版)</title>
+    <title>教师数据监控看板 (含成绩条形图)</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #F3F4F6; padding: 20px; margin: 0; }
         .dashboard { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         h1 { color: #4F46E5; display: flex; justify-content: space-between; align-items: center; }
         
-        .stats { display: flex; gap: 20px; margin: 20px 0; }
-        .stat-box { flex: 1; background: #EEF2FF; padding: 20px; border-radius: 15px; text-align: center; }
+        .stats { display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
+        .stat-box { flex: 1; min-width: 140px; background: #EEF2FF; padding: 20px; border-radius: 15px; text-align: center; }
         .stat-num { font-size: 32px; font-weight: bold; color: #4F46E5; }
         
-        .analysis-section {
-            background: linear-gradient(to right, #ffffff, #f9fafb);
+        /* 条形图区域 */
+        .chart-section {
+            background: #fff;
             border: 1px solid #e5e7eb;
             border-radius: 15px;
             padding: 25px;
             margin: 25px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
-        .analysis-header { font-size: 18px; font-weight: bold; color: #1F2937; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .analysis-card { background: #fff; padding: 15px; border-radius: 10px; border-left: 4px solid #4F46E5; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .analysis-card.warning { border-left-color: #F59E0B; }
-        .analysis-card.danger { border-left-color: #EF4444; }
-        .analysis-title { font-size: 14px; color: #6B7280; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .analysis-content { font-size: 15px; color: #374151; line-height: 1.6; }
-        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-right: 5px; }
-        .tag-blue { background: #DBEAFE; color: #1E40AF; }
-        .tag-green { background: #D1FAE5; color: #065F46; }
-        .tag-red { background: #FEE2E2; color: #991B1B; }
+        .chart-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1F2937;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            height: 260px;
+            gap: 6px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+            position: relative;
+        }
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            min-height: 10px;
+        }
+        .bar {
+            width: 80%;
+            background: #6366F1;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.4s;
+            position: relative;
+        }
+        .bar-label {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        .bar-count {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #374151;
+            white-space: nowrap;
+        }
+
+        /* 颜色分段 */
+        .bar-excel { background: #10B981; } /* 90-100 */
+        .bar-good { background: #3B82F6; }   /* 80-89 */
+        .bar-normal { background: #F59E0B; } /* 70-79 */
+        .bar-pass { background: #EC4899; }   /* 60-69 */
+        .bar-bad { background: #EF4444; }    /* 0-59 */
+
+        .analysis-section {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .analysis-header { font-size: 18px; font-weight: bold; color: #1F2937; margin-bottom: 15px; }
+        
+        .data-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
+        .data-table th {
+            background: #4F46E5;
+            color: white;
+            padding: 14px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .data-table td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+        }
+        .data-table tr:nth-child(even) { background: #F9FAFB; }
+
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 14px; font-weight: bold; }
+        .tag-excel { background: #D1FAE5; color: #065F46; }
+        .tag-good { background: #DBEAFE; color: #1E40AF; }
+        .tag-normal { background: #FEF3C7; color: #92400E; }
+        .tag-bad { background: #FEE2E2; color: #991B1B; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background: #F9FAFB; text-align: left; padding: 15px; color: #6B7280; font-weight: 600; }
@@ -56,8 +129,8 @@
         .close-modal { float: right; cursor: pointer; font-size: 24px; color: #999; }
         
         @media (max-width: 768px) {
-            .analysis-grid { grid-template-columns: 1fr; }
             .stats { flex-direction: column; }
+            .bar-label { font-size: 10px; }
         }
     </style>
 </head>
@@ -76,20 +149,50 @@
         <div class="stat-box"><div class="stat-num" id="count">0</div><div>已交卷人数</div></div>
         <div class="stat-box"><div class="stat-num" id="avg">0</div><div>班级平均分</div></div>
         <div class="stat-box"><div class="stat-num" id="highest">0</div><div>最高分</div></div>
+        <div class="stat-box"><div class="stat-num" id="fullScore">0</div><div>100分人数</div></div>
+        <div class="stat-box"><div class="stat-num" id="failCount">0</div><div>不及格人数</div></div>
+    </div>
+
+    <!-- 条形统计图 -->
+    <div class="chart-section" id="chart-section" style="display:none;">
+        <div class="chart-header">📊 全班成绩分布条形图</div>
+        <div class="chart-container" id="chart-container"></div>
     </div>
 
     <div class="analysis-section" id="analysis-panel" style="display:none;">
-        <div class="analysis-header"><span></span> 教学分析与智能建议</div>
-        <div class="analysis-grid">
-            <div class="analysis-card">
-                <div class="analysis-title"><span class="tag tag-blue">学情分析</span> 整体掌握情况</div>
-                <div class="analysis-content" id="learning-analysis">暂无数据，等待学生提交...</div>
-            </div>
-            <div class="analysis-card warning" id="suggestion-card">
-                <div class="analysis-title"><span class="tag tag-green">教学建议</span> 改进策略</div>
-                <div class="analysis-content" id="teaching-suggestion">暂无数据...</div>
-            </div>
-        </div>
+        <div class="analysis-header">📋 全班成绩数据分析</div>
+        <table class="data-table">
+            <tr>
+                <th>项目</th>
+                <th>数值</th>
+                <th>学情评价</th>
+            </tr>
+            <tr>
+                <td>实考人数</td>
+                <td id="a_total">0</td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>平均分</td>
+                <td id="a_avg">0</td>
+                <td id="a_avg_text" class="tag tag-normal">待数据</td>
+            </tr>
+            <tr>
+                <td>100分人数</td>
+                <td id="a_full">0</td>
+                <td id="a_full_text" class="tag tag-good">待数据</td>
+            </tr>
+            <tr>
+                <td>不及格人数（＜60）</td>
+                <td id="a_fail">0</td>
+                <td id="a_fail_text" class="tag tag-bad">待数据</td>
+            </tr>
+            <tr>
+                <td>及格率</td>
+                <td id="a_pass_rate">0%</td>
+                <td id="a_pass_text" class="tag tag-normal">待数据</td>
+            </tr>
+        </table>
     </div>
 
     <table>
@@ -126,252 +229,218 @@
 </div>
 
 <script>
-    // ================= ⚠️ 配置区域 ⚠️ =================
     const BIN_ID = '69c0965eaa77b81da90c9aeb'; 
     const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u'; 
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const API_LATEST_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
-    // =======================================================
 
     let allData = [];
 
+    // 确认清空
     function confirmClearData() {
         document.getElementById('clear-confirm-modal').classList.add('active');
     }
 
-    // 🚀 终极修复方案：两步走策略
+    // 执行清空
     async function executeClearData() {
         const btn = document.getElementById('btn-execute-clear');
-        const originalText = btn.innerText;
         btn.disabled = true;
         btn.innerText = "清空中...";
-
         try {
-            // 第一步：写入一个“假”的空记录（因为 JSONBin 不允许真正的空）
-            // 我们写入一条名字叫 "System_Reset" 的记录，稍后在显示时过滤掉它
-            const dummyData = [{
-                name: "System_Reset",
-                score: 0,
-                date: new Date().toLocaleString(),
-                isDummy: true // 标记为假数据
-            }];
-
-            const res = await fetch(API_URL, {
+            const dummyData = [{ name: "System_Reset", score: 0, date: new Date().toLocaleString(), isDummy: true }];
+            await fetch(API_URL, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY,
-                    'X-Bin-Meta': 'false'
-                },
-                body: JSON.stringify({ record: dummyData })
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(dummyData)
             });
-
-            const result = await res.json();
-
-            if (!res.ok) {
-                throw new Error(result.message || `HTTP Error ${res.status}`);
-            }
-
-            // 第二步：本地立即重置，并重新加载（加载时会过滤掉那条假数据）
             allData = [];
             renderTable();
             updateStats();
             updateAnalysis();
-            
+            renderChart();
             document.getElementById('clear-confirm-modal').classList.remove('active');
-            alert("✅ 数据已成功清空！（后台保留了一条系统重置记录以绕过限制）");
-            
+            alert("✅ 数据已清空");
         } catch (e) {
-            console.error("清空详细错误:", e);
-            alert(" 清空失败：" + e.message);
+            alert("清空失败：" + e.message);
         } finally {
             btn.disabled = false;
-            btn.innerText = originalText;
+            btn.innerText = "确认清空";
         }
     }
 
+    // 绘制条形图
+    function renderChart() {
+        const container = document.getElementById('chart-container');
+        const chartSection = document.getElementById('chart-section');
+
+        const real = allData.filter(i =>
+            i.name && i.name.trim() !== '' && i.name !== "System_Reset" && !i.isDummy &&
+            typeof i.score === 'number' && !isNaN(i.score)
+        );
+
+        if (real.length === 0) {
+            chartSection.style.display = 'none';
+            return;
+        }
+        chartSection.style.display = 'block';
+
+        // 分数段
+        const ranges = [
+            { name: '0-59', min: 0, max: 59, cls: 'bar-bad' },
+            { name: '60-69', min: 60, max: 69, cls: 'bar-pass' },
+            { name: '70-79', min: 70, max: 79, cls: 'bar-normal' },
+            { name: '80-89', min: 80, max: 89, cls: 'bar-good' },
+            { name: '90-100', min: 90, max: 100, cls: 'bar-excel' },
+        ];
+
+        // 统计每个分段人数
+        ranges.forEach(r => {
+            r.count = real.filter(s => s.score >= r.min && s.score <= r.max).length;
+        });
+
+        const maxCount = Math.max(...ranges.map(r => r.count), 1);
+
+        // 渲染柱子
+        container.innerHTML = ranges.map(r => {
+            const h = r.count / maxCount * 200;
+            return `
+            <div class="bar-item">
+                <div class="bar ${r.cls}" style="height:${h}px">
+                    <div class="bar-count">${r.count}</div>
+                </div>
+                <div class="bar-label">${r.name}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // 分析数据
     function updateAnalysis() {
         const panel = document.getElementById('analysis-panel');
-        const analysisText = document.getElementById('learning-analysis');
-        const suggestionText = document.getElementById('teaching-suggestion');
-        const suggestionCard = document.getElementById('suggestion-card');
-
-        // 过滤掉假数据后再分析
-        const realData = allData.filter(i => !i.isDummy && i.name !== "System_Reset");
-
-        if (realData.length === 0) {
-            panel.style.display = 'none';
-            return;
-        }
+        const real = allData.filter(i =>
+            i.name && i.name.trim() !== '' && i.name !== "System_Reset" && !i.isDummy &&
+            typeof i.score === 'number' && !isNaN(i.score)
+        );
+        if (real.length === 0) { panel.style.display = 'none'; return; }
         panel.style.display = 'block';
 
-        const scores = realData.map(i => i.score || 0);
-        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-        const max = Math.max(...scores);
-        const min = Math.min(...scores);
-        const passCount = scores.filter(s => s >= 60).length;
-        const excellentCount = scores.filter(s => s >= 90).length;
-        const passRate = (passCount / scores.length * 100).toFixed(1);
-        const excellentRate = (excellentCount / scores.length * 100).toFixed(1);
+        const total = real.length;
+        const scores = real.map(i => i.score);
+        const sum = scores.reduce((a, b) => a + b, 0);
+        const avg = Math.round(sum / total);
+        const fullScoreCnt = scores.filter(s => s == 100).length;
+        const failCnt = scores.filter(s => s < 60).length;
+        const passCnt = total - failCnt;
+        const passRate = (passCnt / total * 100).toFixed(1);
 
-        let analysisHtml = `<div>本次共 <strong>${scores.length}</strong> 人提交。</div>`;
-        analysisHtml += `<div style="margin-top:8px;">平均分：<strong>${Math.round(avg)}</strong>分 | 最高分：<strong>${max}</strong>分 | 最低分：<strong>${min}</strong>分</div>`;
-        analysisHtml += `<div style="margin-top:8px;">及格率：<span class="tag ${passRate>=80?'tag-green':'tag-red'}">${passRate}%</span> | 优秀率：<span class="tag ${excellentRate>=50?'tag-green':'tag-blue'}">${excellentRate}%</span></div>`;
-        
-        if (avg >= 85) analysisHtml += `<div style="margin-top:10px; color:#059669;">🎉 <strong>整体掌握优秀：</strong>大部分学生对数字身份概念理解透彻。</div>`;
-        else if (avg >= 70) analysisHtml += `<div style="margin-top:10px; color:#D97706;">⚠️ <strong>整体掌握良好：</strong>基础知识扎实，但部分细节需加强。</div>`;
-        else analysisHtml += `<div style="margin-top:10px; color:#DC2626;">🚨 <strong>掌握情况欠佳：</strong>普遍存在概念混淆，需重点复习。</div>`;
+        document.getElementById('a_total').innerText = total;
+        document.getElementById('a_avg').innerText = avg;
+        document.getElementById('a_full').innerText = fullScoreCnt;
+        document.getElementById('a_fail').innerText = failCnt;
+        document.getElementById('a_pass_rate').innerText = passRate + '%';
 
-        analysisText.innerHTML = analysisHtml;
+        document.getElementById('a_avg_text').className = avg >= 85 ? 'tag tag-excel' : avg >= 70 ? 'tag tag-good' : 'tag tag-bad';
+        document.getElementById('a_avg_text').innerText = avg >= 85 ? '优秀' : avg >= 70 ? '良好' : '薄弱';
 
-        let suggestionHtml = "";
-        if (avg < 70) {
-            suggestionCard.className = "analysis-card danger";
-            suggestionHtml = `<ul style="padding-left:20px; margin:0;"><li><strong>全班重讲：</strong>建议下节课花 15 分钟重新梳理核心概念。</li><li><strong>错题攻关：</strong>统计错误率最高的 3 道题，制作专题讲解课件。</li></ul>`;
-        } else if (passRate < 90) {
-            suggestionCard.className = "analysis-card warning";
-            suggestionHtml = `<ul style="padding-left:20px; margin:0;"><li><strong>小组互助：</strong>安排高分学生与及格线边缘的学生结对子。</li></ul>`;
-        } else {
-            suggestionCard.className = "analysis-card";
-            suggestionHtml = `<ul style="padding-left:20px; margin:0;"><li><strong>拓展延伸：</strong>班级整体表现优异，可引入进阶话题讨论。</li></ul>`;
-        }
-        suggestionText.innerHTML = suggestionHtml;
+        document.getElementById('a_full_text').className = fullScoreCnt > 0 ? 'tag tag-excel' : 'tag tag-normal';
+        document.getElementById('a_full_text').innerText = fullScoreCnt > 0 ? '表现突出' : '暂无满分';
+
+        document.getElementById('a_fail_text').className = failCnt > 0 ? 'tag tag-bad' : 'tag tag-excel';
+        document.getElementById('a_fail_text').innerText = failCnt > 0 ? '需重点辅导' : '全员及格';
+
+        document.getElementById('a_pass_text').className = passRate >= 90 ? 'tag tag-excel' : passRate >= 70 ? 'tag tag-good' : 'tag tag-bad';
+        document.getElementById('a_pass_text').innerText = passRate >= 90 ? '整体优秀' : passRate >= 70 ? '基本达标' : '整体薄弱';
     }
 
+    // 加载数据
     async function loadData() {
-        if (BIN_ID === '在此处填入你的_BIN_ID') {
-            console.error("❌ 配置错误");
-            return;
-        }
-
-        const tbody = document.getElementById('table-body');
-        if (allData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">正在从云端加载数据...</td></tr>';
-        }
-
         try {
-            const res = await fetch(API_LATEST_URL, {
-                method: 'GET',
-                headers: { 'X-Master-Key': API_KEY }
-            });
-
-            if (!res.ok) throw new Error(`服务器响应错误：${res.status}`);
-            
-            const jsonResponse = await res.json();
-            let data = jsonResponse.record;
-
-            if (!data) data = [];
-            else if (!Array.isArray(data)) data = [data];
-
+            const res = await fetch(API_LATEST_URL, { headers: { 'X-Master-Key': API_KEY } });
+            const json = await res.json();
+            let data = json.record || [];
+            if (!Array.isArray(data)) data = [data];
             allData = data;
             renderTable();
             updateStats();
             updateAnalysis();
-
-        } catch (e) {
-            console.error("加载失败:", e);
-            if (allData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">加载失败<br><small>${e.message}</small></td></tr>`;
-            }
-        }
+            renderChart();
+        } catch (e) { console.error(e); }
     }
 
+    // 表格
     function renderTable() {
         const tbody = document.getElementById('table-body');
-        
-        // 🔥 关键过滤：排除掉 "System_Reset" 和空名字的数据
-        const cleanData = allData.filter(row => {
-            return row.name && 
-                   row.name.trim() !== '' && 
-                   row.name !== "System_Reset" && 
-                   !row.isDummy &&
-                   typeof row.score === 'number' && 
-                   !isNaN(row.score);
-        });
-        
-        if (cleanData.length === 0) {
+        const clean = allData.filter(row =>
+            row.name && row.name.trim() && row.name !== "System_Reset" && !row.isDummy &&
+            typeof row.score === 'number' && !isNaN(row.score)
+        );
+        if (clean.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="empty-state">等待学生提交数据...</td></tr>';
             return;
         }
-
-        const displayData = [...cleanData].reverse();
-
-        tbody.innerHTML = displayData.map((row, index) => {
-            const name = row.name;
+        tbody.innerHTML = [...clean].reverse().map(row => {
             const score = row.score;
-            const total = typeof row.total === 'number' && row.total > 0 ? row.total : 100;
-            const percent = Math.round((score / total) * 100);
-            const badgeClass = percent >= 60 ? 'badge-good' : 'badge-bad';
-            const timeStr = row.date ? row.date : '<span style="color:#999">刚刚</span>';
-            const answersData = row.userAnswers || row.details; 
-            
-            let detailBtn = '';
-            if (answersData && Array.isArray(answersData)) {
-                const safeData = encodeURIComponent(JSON.stringify(answersData));
-                detailBtn = `<button onclick="showDetail('${safeData}', '${name}')" style="cursor:pointer; background:none; border:none; color:#4F46E5; font-weight:bold; text-decoration:underline;">查看</button>`;
-            } else {
-                detailBtn = `<span style="color:#ccc; font-size:12px;">暂无详情</span>`;
-            }
-
+            const percent = Math.round((score / 100) * 100);
+            const badge = percent >= 60 ? 'badge-good' : 'badge-bad';
+            const time = row.date || '刚刚';
+            const detail = row.userAnswers
+                ? `<button onclick="showDetail('${encodeURIComponent(JSON.stringify(row.userAnswers))}','${row.name}')" style="color:#4F46E5;border:none;background:none;cursor:pointer;text-decoration:underline">查看</button>`
+                : '<span style="color:#ccc">无详情</span>';
             return `
-                <tr>
-                    <td><strong>${name}</strong></td>
-                    <td><span class="badge ${badgeClass}">${score}分</span></td>
-                    <td>${percent}%</td>
-                    <td style="font-size:13px; color:#666;">${timeStr}</td>
-                    <td>${detailBtn}</td>
-                </tr>
-            `;
+            <tr>
+                <td><strong>${row.name}</strong></td>
+                <td><span class="badge ${badge}">${score}分</span></td>
+                <td>${percent}%</td>
+                <td style="font-size:13px;color:#666">${time}</td>
+                <td>${detail}</td>
+            </tr>`;
         }).join('');
     }
 
+    // 统计卡片
     function updateStats() {
-        // 同样过滤掉假数据
-        const cleanData = allData.filter(row => {
-            return row.name && 
-                   row.name.trim() !== '' && 
-                   row.name !== "System_Reset" && 
-                   !row.isDummy &&
-                   typeof row.score === 'number' && 
-                   !isNaN(row.score);
-        });
-        
-        document.getElementById('count').innerText = cleanData.length;
-        if (cleanData.length > 0) {
-            const totalScore = cleanData.reduce((sum, item) => sum + item.score, 0);
-            const validScores = cleanData.map(i => i.score);
-            const maxScore = validScores.length > 0 ? Math.max(...validScores) : 0;
-            
-            document.getElementById('avg').innerText = Math.round(totalScore / cleanData.length);
-            document.getElementById('highest').innerText = maxScore;
-        } else {
+        const clean = allData.filter(row =>
+            row.name && row.name.trim() && row.name !== "System_Reset" && !row.isDummy &&
+            typeof row.score === 'number' && !isNaN(row.score)
+        );
+        const total = clean.length;
+        document.getElementById('count').innerText = total;
+        if (total === 0) {
             document.getElementById('avg').innerText = 0;
             document.getElementById('highest').innerText = 0;
+            document.getElementById('fullScore').innerText = 0;
+            document.getElementById('failCount').innerText = 0;
+            return;
         }
+        const scores = clean.map(i => i.score);
+        const sum = scores.reduce((a, b) => a + b, 0);
+        const avg = Math.round(sum / total);
+        const max = Math.max(...scores);
+        const full = scores.filter(s => s == 100).length;
+        const fail = scores.filter(s => s < 60).length;
+
+        document.getElementById('avg').innerText = avg;
+        document.getElementById('highest').innerText = max;
+        document.getElementById('fullScore').innerText = full;
+        document.getElementById('failCount').innerText = fail;
     }
 
-    function showDetail(encodedData, name) {
+    // 详情弹窗
+    function showDetail(enc, name) {
         try {
-            const data = JSON.parse(decodeURIComponent(encodedData));
-            const modal = document.getElementById('detail-modal');
-            const content = document.getElementById('detail-content');
-            
-            let html = `<h3>学生：${name}</h3><ul style="padding-left:20px;">`;
-            data.forEach((item, idx) => {
-                const status = item.isCorrect ? '✅ 正确' : '❌ 错误';
-                const qText = item.q || `第${idx+1}题`;
-                const uText = item.user || '未作答';
-                html += `<li style="margin-bottom:12px; border-bottom:1px solid #f0f0f0; padding-bottom:8px;">
-                    <div style="font-weight:bold; color:#333;">${qText}</div>
-                    <div style="font-size:14px; margin-top:4px;">${status} &nbsp; 你的回答：${uText}</div>
+            const d = JSON.parse(decodeURIComponent(enc));
+            const m = document.getElementById('detail-modal');
+            const c = document.getElementById('detail-content');
+            let html = `<h3>${name}</h3><ul style="padding-left:20px">`;
+            d.forEach((i, idx) => {
+                const ok = i.isCorrect ? '✅ 正确' : '❌ 错误';
+                html += `<li style="margin-bottom:10px;border-bottom:1px solid #f0f0f0;padding-bottom:6px">
+                    <div>${i.q || '第' + (idx + 1) + '题'}</div>
+                    <div style="font-size:14px">${ok} 答：${i.user || '未选'}</div>
                 </li>`;
             });
-            html += '</ul>';
-            content.innerHTML = html;
-            modal.classList.add('active');
-        } catch (e) {
-            alert("解析详情失败：" + e.message);
-        }
+            c.innerHTML = html + '</ul>';
+            m.classList.add('active');
+        } catch (e) { alert('解析失败'); }
     }
 
     function closeDetailModal() {
