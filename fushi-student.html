@@ -40,11 +40,13 @@ input[type="checkbox"]{width:22px;height:22px}
 const BIN_ID = "69d8a874856a6821891a601b";
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u";
 let currentNum=null;
+let submitting = false; // 防重复提交
 
 function formatTwoDigits(num){return num.toString().padStart(2,'0');}
 function getGroup(num){return (num-1)%4;}
 
 async function bindId(){
+  if(submitting) return;
   let val=document.getElementById("stuId").value.trim();
   if(!val||isNaN(val)||val<1||val>99){alert("请输入01-99");return;}
   currentNum=parseInt(val);
@@ -55,6 +57,17 @@ async function bindId(){
 }
 
 async function submit(){
+  // 防止重复提交
+  if(submitting) return;
+  submitting = true;
+
+  let btn = document.getElementById("btn");
+  let msg = document.getElementById("msg");
+  
+  // 显示提交中，并禁用按钮
+  btn.innerText = "正在提交中...";
+  btn.disabled = true;
+
   let g=getGroup(currentNum);
   let a1=document.getElementById("a1").checked;
   let a2=document.getElementById("a2").checked;
@@ -63,25 +76,32 @@ async function submit(){
   let a5=document.getElementById("a5").checked;
   let a6=document.getElementById("a6").checked;
 
-  let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
-  let data=(await res.json()).record||{wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0};
+  try {
+    let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+    let data=(await res.json()).record||{wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0};
 
-  if(a1)data.wx[g]++;
-  if(a2)data.qq[g]++;
-  if(a3)data.sp[g]++;
-  if(a4)data.music[g]++;
-  if(a5)data.game[g]++;
-  if(a6)data.art[g]++;
-  data.totalStu++;
+    if(a1)data.wx[g]++;
+    if(a2)data.qq[g]++;
+    if(a3)data.sp[g]++;
+    if(a4)data.music[g]++;
+    if(a5)data.game[g]++;
+    if(a6)data.art[g]++;
+    data.totalStu++;
 
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
-    method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
-    body:JSON.stringify(data)
-  });
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
+      method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
+      body:JSON.stringify(data)
+    });
 
-  document.getElementById("msg").style.display="block";
-  document.getElementById("btn").disabled=true;
-  document.getElementById("btn").innerText="已提交";
+    // 成功
+    msg.style.display="block";
+    btn.innerText = "提交完成";
+  } catch (e) {
+    alert("提交失败，请刷新重试");
+    btn.innerText = "提交";
+    btn.disabled = false;
+    submitting = false;
+  }
 }
 </script>
 </body>
