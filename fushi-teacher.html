@@ -84,7 +84,7 @@ h1{text-align:center;color:#4F46E5;font-size:20px;margin-bottom:6px}
     background: #27A866 !important;
 }
 
-/* 复式统计表样式 (保留原有样式) */
+/* 复式统计表样式 */
 .composite-view {
     display: block;
 }
@@ -97,40 +97,49 @@ h1{text-align:center;color:#4F46E5;font-size:20px;margin-bottom:6px}
 .items-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .summary{display:flex;justify-content:center;gap:24px;background:#fff;border-radius:8px;padding:12px;margin-bottom:8px;font-size:14px}
 
-/* ========== 这里修复字体被覆盖问题 ========== */
 .analysis{
   display:flex;
   justify-content:center;
-  align-items:center;
-  gap:12px;
+  align-items:flex-start;
+  gap:16px;
   background:#fff;
   border-radius:8px;
-  padding:12px;
+  padding:15px;
   margin-bottom:8px;
   flex-wrap:wrap;
 }
 .analysis-item{
   display:flex;
-  align-items:center;
-  gap:6px;
-  white-space:nowrap;
+  align-items:flex-start;
+  gap:8px;
 }
 .analysis-label{
   font-size:14px;
+  white-space:nowrap;
 }
+/* 重点优化：长文字自动换行、高度自适应、宽度加宽 */
 .blank{
-  width:160px;        /* 加宽 */
-  min-height:22px;   /* 保证高度 */
+  width:220px;
+  min-height:26px;
   border-bottom:1px solid #999;
   text-align:center;
   font-size:14px;
-  padding:2px 4px;
-  line-height:1.3;
-  word-break:break-word; /* 自动换行 */
+  padding:3px 6px;
+  line-height:1.5;
+  word-break:break-all;
+  white-space:normal;
 }
-/* ======================================== */
 
-.small-btn{padding:4px 8px;background:#4F46E5;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer}
+.small-btn{
+  padding:5px 10px;
+  background:#4F46E5;
+  color:white;
+  border:none;
+  border-radius:4px;
+  font-size:12px;
+  cursor:pointer;
+  white-space:nowrap;
+}
 .btn-clear{width:100%;padding:10px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:4px}
 </style>
 </head>
@@ -167,7 +176,7 @@ h1{text-align:center;color:#4F46E5;font-size:20px;margin-bottom:6px}
     </div>
   </div>
 
-  <!-- 复式统计表视图 (原有代码) -->
+  <!-- 复式统计表视图 -->
   <div class="composite-view" id="compositeView">
     <div class="items-grid">
       <div class="card">
@@ -314,11 +323,10 @@ async function load() {
     let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
       headers: { "X-Master-Key": API_KEY }
     });
-    let d = (await res.json()).record || {
-      wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0
-    };
+    let d = (await res.json()).record;
+    if (!d) return;
     
-    // 保存当前数据供单式表格使用
+    // 保存当前数据到全局，供按钮立即使用
     window.currentData = d;
 
     // 更新复式表格
@@ -341,9 +349,9 @@ async function load() {
   }catch(e){console.log(e)}
 }
 
-async function showMost(){
-  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
-  let d = (await res.json()).record||{};
+// 无延迟 本地读取 秒显示
+function showMost(){
+  let d = window.currentData || {};
   let list=[
     {n:"社交账号",v:sum(d.wx||[0])},
     {n:"购物账号",v:sum(d.qq||[0])},
@@ -357,9 +365,8 @@ async function showMost(){
   document.getElementById('most').innerText = maxList.join("、");
 }
 
-async function showLeast(){
-  let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
-  let d = (await res.json()).record||{};
+function showLeast(){
+  let d = window.currentData || {};
   let list=[
     {n:"社交账号",v:sum(d.wx||[0])},
     {n:"购物账号",v:sum(d.qq||[0])},
