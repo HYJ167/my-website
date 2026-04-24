@@ -3,85 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>你曾经用过的数字身份</title>
+<title>学生提交 - 数字身份</title>
 <style>
-*{box-sizing:border-box;font-family:"Microsoft YaHei"}
+*{box-sizing:border-box;font-family:Microsoft YaHei}
 body{background:#f7f9fc;padding:20px}
-.box{max-width:500px;margin:0 auto;background:white;border-radius:16px;padding:28px;box-shadow:0 2px 20px rgba(0,0,0,0.05)}
-h2{text-align:center;color:#4F46E5;margin-bottom:24px}
-.input-row{display:flex; gap:10px; margin-bottom:24px; align-items:center; justify-content:center}
-.input-row input{width:160px; padding:12px; font-size:16px; border:1px solid #ddd; border-radius:8px; text-align:center}
-.input-row button{padding:12px 20px; background:#4F46E5; color:white; border:none; border-radius:8px; cursor:pointer}
-.item{margin:16px 0; display:flex; align-items:center; gap:12px; font-size:16px}
-input[type="checkbox"]{width:22px;height:22px}
-.btn{background:#4F46E5; color:white; border:none; width:100%; padding:16px; border-radius:12px; font-size:16px; margin-top:24px; cursor:pointer}
-.btn:disabled{background:#ccc; cursor:not-allowed}
-.tip{text-align:center; color:#059669; margin-top:16px; font-size:16px; display:none; font-weight:bold}
+.box{max-width:500px;margin:0 auto;background:#fff;padding:28px;border-radius:16px;box-shadow:0 0 10px rgba(0,0,0,0.05)}
+h2{text-align:center;color:#4E73ED;margin-bottom:20px}
+.line{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:20px}
+#num{width:100px;padding:10px;text-align:center;font-size:16px}
+button{padding:10px 16px;background:#4E73ED;color:white;border:none;border-radius:8px}
+.item{margin:14px 0;display:flex;align-items:center;gap:10px;font-size:16px}
+input[type="checkbox"]{width:20px;height:20px}
+.submit{width:100%;padding:16px;background:#27A866;color:white;border:none;border-radius:12px;font-size:16px;margin-top:20px}
+.submit:disabled{background:#ccc}
+.ok{text-align:center;color:#059669;margin-top:16px;font-size:16px;display:none}
 </style>
 </head>
 <body>
 <div class="box">
-  <h2>你曾经用过的数字身份</h2>
-  <div class="input-row">
-    <input type="text" placeholder="请输入编号（如02）" id="stuId" maxlength="2">
-    <button onclick="bindId()">确定</button>
+  <h2>我的数字身份</h2>
+  <div class="line">
+    <input type="number" id="num" placeholder="座位号" min="1" max="50">
+    <button onclick="bind()">确定</button>
   </div>
-  <div class="item"><input type="checkbox" id="a1" disabled><label>社交账号（微信、QQ）</label></div>
-  <div class="item"><input type="checkbox" id="a2" disabled><label>购物账号（淘宝、拼多多）</label></div>
-  <div class="item"><input type="checkbox" id="a3" disabled><label>短视频账号（抖音、B站、快手等）</label></div>
-  <div class="item"><input type="checkbox" id="a4" disabled><label>音乐/听书账号（网易云、喜马拉雅等）</label></div>
-  <div class="item"><input type="checkbox" id="a5" disabled><label>游戏账号（王者荣耀、迷你世界等）</label></div>
-  <div class="item"><input type="checkbox" id="a6" disabled><label>学习类账号（作业帮、一起学等）</label></div>
-  <button class="btn" id="btn" disabled onclick="submit()">提交</button>
-  <div class="tip" id="msg">提交成功！</div>
+  <div class="item"><input type="checkbox" id="c1" disabled><label>社交账号（微信/QQ）</label></div>
+  <div class="item"><input type="checkbox" id="c2" disabled><label>购物账号（淘宝/拼多多）</label></div>
+  <div class="item"><input type="checkbox" id="c3" disabled><label>短视频账号</label></div>
+  <div class="item"><input type="checkbox" id="c4" disabled><label>音乐/听书账号</label></div>
+  <div class="item"><input type="checkbox" id="c5" disabled><label>游戏账号</label></div>
+  <div class="item"><input type="checkbox" id="c6" disabled><label>学习类账号</label></div>
+  <button class="submit" id="submit" disabled onclick="post()">提交</button>
+  <div class="ok" id="ok">✅ 提交成功！</div>
 </div>
 
 <script>
 const BIN_ID = "69d8a874856a6821891a601b";
 const API_KEY = "$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavX9y0nmP3rXnGvndnBP9C6u";
-let currentNum=null;
 
-function formatTwoDigits(num){return num.toString().padStart(2,'0');}
-function getGroup(num){return (num-1)%4;}
-
-async function bindId(){
-  let val=document.getElementById("stuId").value.trim();
-  if(!val||isNaN(val)||val<1||val>99){alert("请输入01-99");return;}
-  currentNum=parseInt(val);
-  document.querySelectorAll("input[type=checkbox]").forEach(c=>c.disabled=false);
-  document.getElementById("btn").disabled=false;
-  document.getElementById("stuId").disabled=true;
-  document.querySelector(".input-row button").disabled=true;
+let seat=0;
+function bind(){
+  seat=parseInt(document.getElementById('num').value);
+  if(!seat||seat<1||seat>50){alert('请输入正确座位号');return}
+  document.querySelectorAll('input[type="checkbox"]').forEach(c=>c.disabled=false);
+  document.getElementById('submit').disabled=false;
+  document.getElementById('num').disabled=true;
 }
 
-async function submit(){
-  let g=getGroup(currentNum);
-  let a1=document.getElementById("a1").checked;
-  let a2=document.getElementById("a2").checked;
-  let a3=document.getElementById("a3").checked;
-  let a4=document.getElementById("a4").checked;
-  let a5=document.getElementById("a5").checked;
-  let a6=document.getElementById("a6").checked;
+async function post(){
+  let g=(seat-1)%4;
+  let v=[c1.checked,c2.checked,c3.checked,c4.checked,c5.checked,c6.checked];
+  try{
+    let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+    let data=(await res.json()).record||{wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0};
+    if(v[0])data.wx[g]++;
+    if(v[1])data.qq[g]++;
+    if(v[2])data.sp[g]++;
+    if(v[3])data.music[g]++;
+    if(v[4])data.game[g]++;
+    if(v[5])data.art[g]++;
+    data.totalStu++;
 
-  let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
-  let data=(await res.json()).record||{wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0};
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
+      method:'PUT',
+      headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
+      body:JSON.stringify(data)
+    });
 
-  if(a1)data.wx[g]++;
-  if(a2)data.qq[g]++;
-  if(a3)data.sp[g]++;
-  if(a4)data.music[g]++;
-  if(a5)data.game[g]++;
-  if(a6)data.art[g]++;
-  data.totalStu++;
-
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
-    method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
-    body:JSON.stringify(data)
-  });
-
-  document.getElementById("msg").style.display="block";
-  document.getElementById("btn").disabled=true;
-  document.getElementById("btn").innerText="已提交";
+    document.getElementById('ok').style.display='block';
+    document.getElementById('submit').disabled=true;
+  }catch(e){alert('提交失败：'+e.message)}
 }
 </script>
 </body>
