@@ -117,7 +117,6 @@ h1{text-align:center;color:#4F46E5;font-size:20px;margin-bottom:6px}
   font-size:14px;
   white-space:nowrap;
 }
-/* 重点优化：长文字自动换行、高度自适应、宽度加宽 */
 .blank{
   width:220px;
   min-height:26px;
@@ -141,6 +140,7 @@ h1{text-align:center;color:#4F46E5;font-size:20px;margin-bottom:6px}
   white-space:nowrap;
 }
 .btn-clear{width:100%;padding:10px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:4px}
+.btn-clear:disabled{background:#f8a0a0;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -250,7 +250,7 @@ h1{text-align:center;color:#4F46E5;font-size:20px;margin-bottom:6px}
         <button class="small-btn" onclick="showLeast()">显示</button>
       </div>
     </div>
-    <button class="btn-clear" onclick="clearAll()">清空所有数据（重新上课）</button>
+    <button class="btn-clear" id="clearBtn" onclick="clearAll()">清空所有数据（重新上课）</button>
   </div>
 </div>
 
@@ -380,16 +380,30 @@ function showLeast(){
   document.getElementById('least').innerText = minList.join("、");
 }
 
+// 极速清空：本地先秒清，后台异步同步，不等待
 async function clearAll(){
   if(!confirm("确定清空云端所有数据？"))return;
-  let empty = {
+  const btn = document.getElementById('clearBtn');
+  btn.disabled = true;
+  btn.innerText = "清空中...";
+
+  // 1. 本地直接置0，秒更新界面（用户无感知延迟）
+  const empty = {
     wx:[0,0,0,0],qq:[0,0,0,0],sp:[0,0,0,0],music:[0,0,0,0],game:[0,0,0,0],art:[0,0,0,0],totalStu:0
   };
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+  window.currentData = empty;
+  // 手动清空所有DOM
+  document.querySelectorAll('.item-box,.sum-box,#totalStu,#totalAll,.blank').forEach(el=>el.innerText='0');
+
+  // 2. 后台异步同步到云端，不阻塞界面
+  fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
     method:"PUT", headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
     body:JSON.stringify(empty)
+  }).catch(e=>console.log("云端同步失败：",e))
+  .finally(()=>{
+    btn.disabled = false;
+    btn.innerText = "清空所有数据（重新上课）";
   });
-  load();
 }
 
 // 初始化加载
