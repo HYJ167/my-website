@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>教师数据监控看板 (修复版)</title>
+    <title>教师数据监控看板 (图文)</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #F3F4F6; padding: 20px; margin: 0; }
         .dashboard { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -188,25 +188,31 @@ function confirmClearData() {
     document.getElementById('clear-confirm-modal').classList.add('active');
 }
 
+// 彻底重写清空逻辑
 async function executeClearData() {
     try {
-        await fetch(API_URL, {
+        // 直接覆盖为空数组，强制写入
+        let res = await fetch(API_URL, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Master-Key': API_KEY
+                'X-Master-Key': API_KEY,
+                'X-Bin-Versioning': 'false'
             },
             body: JSON.stringify([])
         });
+        if(!res.ok) throw new Error('接口返回异常');
+        
         allData = [];
         renderTable();
         updateStats();
         updateAnalysis();
         renderChart();
         document.getElementById('clear-confirm-modal').classList.remove('active');
-        alert("✅ 数据已清空");
+        alert("✅ 数据已成功清空！");
     } catch (e) {
-        alert("清空失败：" + e.message);
+        alert("❌ 清空失败：" + e.message);
+        console.error(e);
     }
 }
 
