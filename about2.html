@@ -124,7 +124,6 @@ const quizData = [
         q:"2. 注册账号时，常用于实名认证的方式？",
         opts:[
             {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="52" r="20" fill="#d1c4e9"/></svg>`},
-            // 修复：手机+人脸 居中规整SVG
             {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><g transform="translate(24,16)"><rect x="12" y="8" width="32" height="56" rx="8" fill="#64b5f6"/><circle cx="68" cy="36" r="22" fill="#81c784"/></g></svg>`},
             {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="40" width="64" height="48" rx="4" fill="#ffcc80"/></svg>`},
             {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/></svg>`}
@@ -228,6 +227,7 @@ class QuizApp {
         this.score=0;
         this.userName="";
         this.userAnswers=[];
+        this.isSubmitting = false; // 提交防抖锁
     }
     startQuiz(){
         const n=document.getElementById("studentName").value.trim();
@@ -284,6 +284,10 @@ class QuizApp {
         this.showResult(false);
     }
     async submitToTeacher(){
+        // 防抖：正在提交中直接拦截
+        if(this.isSubmitting) return;
+        this.isSubmitting = true;
+
         document.getElementById("submit-modal").classList.remove("active");
         this.switchScreen("screen-submit");
         try {
@@ -309,9 +313,12 @@ class QuizApp {
                 body: JSON.stringify(records)
             });
         }catch(e){
-            console.error("提交失败",e);
+            console.log("提交静默失败");
         }
-        setTimeout(()=>this.showResult(true),1000);
+        setTimeout(()=>{
+            this.showResult(true);
+            this.isSubmitting = false;
+        },1000);
     }
     showResult(up){
         this.switchScreen("screen-success");
