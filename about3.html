@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>教师数据监控看板 一键清空稳定版</title>
+    <title>教师数据监控看板 课堂专用版</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #F3F4F6; padding: 20px; margin: 0; }
         .dashboard { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -180,43 +180,26 @@
 const BIN_ID = '69c0965eaa77b81da90c9aeb';
 const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';
 const API_LATEST = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
-const API_PUT = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 let allData = [];
 let isLoading = false;
-let clearCooldown = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('clearBtn').addEventListener('click', function() {
-        if (clearCooldown) return;
         document.getElementById('clear-confirm-modal').classList.add('active');
     });
     document.getElementById('confirmClearBtn').addEventListener('click', executeClearData);
 });
 
+// 只清前端，不写云端（课堂专用）
 async function executeClearData() {
     document.getElementById('clear-confirm-modal').classList.remove('active');
-    if (clearCooldown) return;
-    clearCooldown = true;
-
+    // 立刻清空前端显示
     allData = [];
     renderTable();
     updateStats();
     updateAnalysis();
     renderChart();
-
-    try {
-        await fetch(API_PUT, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': API_KEY
-            },
-            body: JSON.stringify([])
-        });
-    } catch (e) {}
-
-    setTimeout(() => clearCooldown = false, 3000);
 }
 
 async function loadData() {
@@ -338,7 +321,7 @@ function renderChart() {
         { name: '60-69', min: 60, max: 69, cls: 'bar-pass' },
         { name: '70-79', min: 70, max: 79, cls: 'bar-normal' },
         { name: '80-89', min: 80, max: 89, cls: 'bar-good' },
-        { name: 90, max: 100, cls: 'bar-excel' },
+        { name: '90-100', min: 90, max: 100, cls: 'bar-excel' },
     ];
 
     ranges.forEach(r => {
