@@ -17,7 +17,7 @@
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0,0,0.1);
         }
         .header{
             background:linear-gradient(135deg,#4F46E5,#81CFE8);
@@ -109,66 +109,117 @@ const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 const API_LATEST = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
 
 const quizData = [
-    {q:"1. 数字身份指的是什么？",opts:[
-        {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="20" y="30" width="88" height="68" fill="#ffe0b2"/></svg>`},
-        {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" fill="#81c784"/></svg>`},
-        {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="32" width="72" height="64" fill="#90caf9"/></svg>`},
-        {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 32L32 64v48h64V64L64 32z" fill="#f48fb1"/></svg>`}
-    ],ans:"B",exp:"数字身份是我们在网络世界的通行证。"},
-    {q:"2. 注册账号时，常用于实名认证的方式？",opts:[
-        {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="46" r="18" fill="#d1c4e9"/></svg>`},
-        {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 128 128"><rect x="42" y="18" width="44" height="92" fill="#64b5f6"/></svg>`},
-        {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#ffcc80"/></svg>`},
-        {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/></svg>`}
-    ],ans:"B",exp:"手机号验证、人脸识别能确认是你本人。"},
-    {q:"3. 数字身份具有唯一性的原因？",opts:[
-        {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#b39ddb"/></svg>`},
-        {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffcc80"/></svg>`},
-        {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/></svg>`},
-        {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#eee"/></svg>`}
-    ],ans:"C",exp:"实名认证让一个账号对应一个真实的人。"},
-    {q:"4. 小智妈妈网购快速退款因为？",opts:[
-        {text:"A. 衣服贵",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M32 64h64l8 48H24l8-48z" fill="#f48fb1"/></svg>`},
-        {text:"B. 信用分高",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#ffeb3b"/></svg>`},
-        {text:"C. 是亲戚",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="48" r="16" fill="#90caf9"/></svg>`},
-        {text:"D. 常退货",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="48" fill="#ef9a9a"/></svg>`}
-    ],ans:"B",exp:"信用分高，代表诚信记录好。"},
-    {q:"5. 哪种行为损害信用价值？",opts:[
-        {text:"A. 按时作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#81d4fa"/></svg>`},
-        {text:"B. 发布虚假信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`},
-        {text:"C. 帮助同学",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="64" r="16" fill="#81c784"/></svg>`},
-        {text:"D. 每天登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#b39ddb"/></svg>`}
-    ],ans:"B",exp:"发布虚假信息是不诚信行为。"},
-    {q:"6. 数字身份的作用类似于？",opts:[
-        {text:"A. 学生证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#90caf9"/></svg>`},
-        {text:"B. 网络通行证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="32" width="48" height="64" fill="#81c784"/></svg>`},
-        {text:"C. 钥匙",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="80" r="16" fill="#ffcc80"/></svg>`},
-        {text:"D. 公交卡",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="32" fill="#64b5f6"/></svg>`}
-    ],ans:"B",exp:"数字身份是我们上网的凭证。"},
-    {q:"7. 以下属于数字身份的是？",opts:[
-        {text:"A. 社交账号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" fill="#64b5f6"/></svg>`},
-        {text:"B. 户口本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffe0b2"/></svg>`},
-        {text:"C. 日记本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#f8bbd0"/></svg>`},
-        {text:"D. 书包",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="48" fill="#d1c4e9"/></svg>`}
-    ],ans:"A",exp:"微信、QQ等社交账号都是数字身份。"},
-    {q:"8. 网友被封号通常因为？",opts:[
-        {text:"A. 不常登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#eee"/></svg>`},
-        {text:"B. 发布虚假/不良信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`},
-        {text:"C. 没实名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="32" width="48" height="64" fill="#eee"/></svg>`},
-        {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#eee"/></svg>`}
-    ],ans:"B",exp:"违规发布内容会被平台处罚。"},
-    {q:"9. 信用价值体现在？",opts:[
-        {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="80" width="96" height="32" fill="#81c784"/></svg>`},
-        {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffcc80"/></svg>`},
-        {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" fill="#90caf9"/></svg>`},
-        {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`}
-    ],ans:"A",exp:"信用好可以享受免押金等便利。"},
-    {q:"10. 实名认证的主要目的？",opts:[
-        {text:"A. 好记",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffe0b2"/></svg>`},
-        {text:"B. 增加数量",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#b39ddb"/></svg>`},
-        {text:"C. 关联现实，责任追溯",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/></svg>`},
-        {text:"D. 美观",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#f8bbd0"/></svg>`}
-    ],ans:"C",exp:"实名认证方便找到责任人，保障网络安全。"}
+    {
+        q:"1. 数字身份指的是什么？",
+        opts:[
+            {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="24" y="32" width="80" height="64" rx="6" fill="#ffe0b2"/></svg>`},
+            {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="36" fill="#81c784"/></svg>`},
+            {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="36" width="72" height="56" rx="4" fill="#90caf9"/></svg>`},
+            {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 28L28 60v48h72V60L64 28z" fill="#f48fb1"/></svg>`}
+        ],
+        ans:"B",
+        exp:"数字身份是我们在网络世界的通行证。"
+    },
+    {
+        q:"2. 注册账号时，常用于实名认证的方式？",
+        opts:[
+            {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="52" r="20" fill="#d1c4e9"/></svg>`},
+            // 修复：手机+人脸 居中规整SVG
+            {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><g transform="translate(24,16)"><rect x="12" y="8" width="32" height="56" rx="8" fill="#64b5f6"/><circle cx="68" cy="36" r="22" fill="#81c784"/></g></svg>`},
+            {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="40" width="64" height="48" rx="4" fill="#ffcc80"/></svg>`},
+            {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/></svg>`}
+        ],
+        ans:"B",
+        exp:"手机号验证、人脸识别能确认是你本人。"
+    },
+    {
+        q:"3. 数字身份具有唯一性的原因？",
+        opts:[
+            {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="32" width="44" height="52" rx="4" fill="#b39ddb"/></svg>`},
+            {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="36" y="36" width="56" height="56" rx="6" fill="#ffcc80"/></svg>`},
+            {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="28" fill="#81c784"/></svg>`},
+            {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#eee"/></svg>`}
+        ],
+        ans:"C",
+        exp:"实名认证让一个账号对应一个真实的人。"
+    },
+    {
+        q:"4. 小智妈妈网购快速退款因为？",
+        opts:[
+            {text:"A. 衣服贵",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M36 60h56l6 40H30l6-40z" fill="#f48fb1"/></svg>`},
+            {text:"B. 信用分高",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="42" fill="#ffeb3b"/></svg>`},
+            {text:"C. 是亲戚",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="48" r="18" fill="#90caf9"/></svg>`},
+            {text:"D. 常退货",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="44" width="64" height="44" rx="4" fill="#ef9a9a"/></svg>`}
+        ],
+        ans:"B",
+        exp:"信用分高，代表诚信记录好。"
+    },
+    {
+        q:"5. 哪种行为损害信用价值？",
+        opts:[
+            {text:"A. 按时作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#81d4fa"/></svg>`},
+            {text:"B. 发布虚假信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="52" r="30" fill="#e57373"/></svg>`},
+            {text:"C. 帮助同学",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="50" cy="64" r="18" fill="#81c784"/></svg>`},
+            {text:"D. 每天登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="36" fill="#b39ddb"/></svg>`}
+        ],
+        ans:"B",
+        exp:"发布虚假信息是不诚信行为。"
+    },
+    {
+        q:"6. 数字身份的作用类似于？",
+        opts:[
+            {text:"A. 学生证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="6" fill="#90caf9"/></svg>`},
+            {text:"B. 网络通行证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="38" y="28" width="52" height="68" rx="8" fill="#81c784"/></svg>`},
+            {text:"C. 钥匙",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="46" cy="78" r="14" fill="#ffcc80"/></svg>`},
+            {text:"D. 公交卡",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="46" width="64" height="34" rx="4" fill="#64b5f6"/></svg>`}
+        ],
+        ans:"B",
+        exp:"数字身份是我们上网的凭证。"
+    },
+    {
+        q:"7. 以下属于数字身份的是？",
+        opts:[
+            {text:"A. 社交账号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="36" y="20" width="56" height="84" rx="8" fill="#64b5f6"/></svg>`},
+            {text:"B. 户口本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#ffe0b2"/></svg>`},
+            {text:"C. 日记本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#f8bbd0"/></svg>`},
+            {text:"D. 书包",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="46" width="64" height="42" rx="4" fill="#d1c4e9"/></svg>`}
+        ],
+        ans:"A",
+        exp:"微信、QQ等社交账号都是数字身份。"
+    },
+    {
+        q:"8. 网友被封号通常因为？",
+        opts:[
+            {text:"A. 不常登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="38" fill="#eee"/></svg>`},
+            {text:"B. 发布虚假/不良信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="28" fill="#e57373"/></svg>`},
+            {text:"C. 没实名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="38" y="32" width="52" height="64" fill="#eee"/></svg>`},
+            {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#eee"/></svg>`}
+        ],
+        ans:"B",
+        exp:"违规发布内容会被平台处罚。"
+    },
+    {
+        q:"9. 信用价值体现在？",
+        opts:[
+            {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="14" y="76" width="100" height="36" rx="6" fill="#81c784"/></svg>`},
+            {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="6" fill="#ffcc80"/></svg>`},
+            {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" rx="4" fill="#90caf9"/></svg>`},
+            {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="28" fill="#e57373"/></svg>`}
+        ],
+        ans:"A",
+        exp:"信用好可以享受免押金等便利。"
+    },
+    {
+        q:"10. 实名认证的主要目的？",
+        opts:[
+            {text:"A. 好记",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#ffe0b2"/></svg>`},
+            {text:"B. 增加数量",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="4" fill="#b39ddb"/></svg>`},
+            {text:"C. 关联现实，责任追溯",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="20" fill="#81c784"/></svg>`},
+            {text:"D. 美观",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#f8bbd0"/></svg>`}
+        ],
+        ans:"C",
+        exp:"实名认证方便找到责任人，保障网络安全。"
+    }
 ];
 
 class QuizApp {
