@@ -20,7 +20,7 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         .header{
-            background:linear-gradient(135deg,#4F46E5,#818CF8);
+            background:linear-gradient(135deg,#4F46E5,#81CFE8);
             color:white;
             padding:16px 16px;
             text-align:center;
@@ -106,23 +106,24 @@
 const BIN_ID = '69c0965eaa77b81da90c9aeb';
 const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';
 const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const API_LATEST = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
 
 const quizData = [
     {q:"1. 数字身份指的是什么？",opts:[
-        {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="20" y="30" width="88" height="68" rx="6" fill="#ffe0b2"/></svg>`},
-        {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" rx="10" fill="#81c784"/></svg>`},
-        {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="32" width="72" height="64" rx="8" fill="#90caf9"/></svg>`},
+        {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="20" y="30" width="88" height="68" fill="#ffe0b2"/></svg>`},
+        {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" fill="#81c784"/></svg>`},
+        {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="32" width="72" height="64" fill="#90caf9"/></svg>`},
         {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 32L32 64v48h64V64L64 32z" fill="#f48fb1"/></svg>`}
     ],ans:"B",exp:"数字身份是我们在网络世界的通行证。"},
     {q:"2. 注册账号时，常用于实名认证的方式？",opts:[
         {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="46" r="18" fill="#d1c4e9"/></svg>`},
-        {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="42" y="18" width="44" height="92" rx="8" fill="#64b5f6"/></svg>`},
+        {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 128 128"><rect x="42" y="18" width="44" height="92" fill="#64b5f6"/></svg>`},
         {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#ffcc80"/></svg>`},
         {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/></svg>`}
     ],ans:"B",exp:"手机号验证、人脸识别能确认是你本人。"},
     {q:"3. 数字身份具有唯一性的原因？",opts:[
-        {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="8" fill="#b39ddb"/></svg>`},
-        {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#ffcc80"/></svg>`},
+        {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#b39ddb"/></svg>`},
+        {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffcc80"/></svg>`},
         {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/></svg>`},
         {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#eee"/></svg>`}
     ],ans:"C",exp:"实名认证让一个账号对应一个真实的人。"},
@@ -157,7 +158,7 @@ const quizData = [
         {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#eee"/></svg>`}
     ],ans:"B",exp:"违规发布内容会被平台处罚。"},
     {q:"9. 信用价值体现在？",opts:[
-        {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="80" width="96" height="32" rx="16" fill="#81c784"/></svg>`},
+        {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="80" width="96" height="32" fill="#81c784"/></svg>`},
         {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffcc80"/></svg>`},
         {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" fill="#90caf9"/></svg>`},
         {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`}
@@ -171,20 +172,101 @@ const quizData = [
 ];
 
 class QuizApp {
-    constructor(){this.currentIdx=0;this.score=0;this.userName="";this.userAnswers=[];}
-    startQuiz(){const n=document.getElementById("studentName").value.trim();if(!n)return alert("请输入电脑编号！");this.userName=n;this.switchScreen("screen-quiz");this.loadQuestion()}
-    switchScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active")}
-    loadQuestion(){const d=quizData[this.currentIdx];document.getElementById("q-progress").innerText=`题目 ${this.currentIdx+1}/10`;document.getElementById("question-text").innerText=d.q;document.getElementById("feedback-area").style.display="none";document.getElementById("next-btn").disabled=true;const b=document.getElementById("options-area");b.innerHTML="";d.opts.forEach((o,i)=>{let div=document.createElement("div");div.className="option";div.innerHTML=`${o.svg}<span>${o.text}</span>`;div.onclick=()=>this.select(div,o.text);b.appendChild(div)})}
-    select(el,t){if(!document.getElementById("next-btn").disabled)return;document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));el.classList.add("selected");const d=quizData[this.currentIdx];const ok=t.startsWith(d.ans);if(ok)this.score+=10;const f=document.getElementById("feedback-area");f.style.display="block";f.innerHTML=`<strong>${ok?"✅ 正确":"❌ 错误"}</strong><br>${d.exp}`;f.style.background=ok?"#ECFDF5":"#FEF2F2";el.classList.add(ok?"correct":"wrong");document.getElementById("next-btn").disabled=false;
-    this.userAnswers[this.currentIdx]={q:d.q,user:t,isCorrect:ok}}
-    nextQuestion(){this.currentIdx++;this.currentIdx>=10?document.getElementById("submit-modal").classList.add("active"):this.loadQuestion()}
-    closeModalAndShowResult(){document.getElementById("submit-modal").classList.remove("active");this.showResult(false)}
-    async submitToTeacher(){document.getElementById("submit-modal").classList.remove("active");this.switchScreen("screen-submit");
-    try{const res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`);const json=await res.json();let records=json.record||[];if(!Array.isArray(records))records=[];
-    const newRecord={name:this.userName,score:this.score,date:new Date().toLocaleString(),userAnswers:this.userAnswers};
-    records.push(newRecord);await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(records)});}catch(e){console.error(e);}
-    setTimeout(()=>this.showResult(true),1200)}
-    showResult(up){this.switchScreen("screen-success");document.getElementById("final-score").innerText=`得分：${this.score} / 100`;document.getElementById("upload-status").innerText=up?"✅ 成绩已提交老师":"⚠️ 成绩未提交"}
+    constructor(){
+        this.currentIdx=0;
+        this.score=0;
+        this.userName="";
+        this.userAnswers=[];
+    }
+    startQuiz(){
+        const n=document.getElementById("studentName").value.trim();
+        if(!n)return alert("请输入电脑编号！");
+        this.userName=n;
+        this.switchScreen("screen-quiz");
+        this.loadQuestion();
+    }
+    switchScreen(id){
+        document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+    }
+    loadQuestion(){
+        const d=quizData[this.currentIdx];
+        document.getElementById("q-progress").innerText=`题目 ${this.currentIdx+1}/10`;
+        document.getElementById("question-text").innerText=d.q;
+        document.getElementById("feedback-area").style.display="none";
+        document.getElementById("next-btn").disabled=true;
+        const b=document.getElementById("options-area");
+        b.innerHTML="";
+        d.opts.forEach((o,i)=>{
+            let div=document.createElement("div");
+            div.className="option";
+            div.innerHTML=`${o.svg}<span>${o.text}</span>`;
+            div.onclick=()=>this.select(div,o.text);
+            b.appendChild(div);
+        });
+    }
+    select(el,t){
+        if(!document.getElementById("next-btn").disabled)return;
+        document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));
+        el.classList.add("selected");
+        const d=quizData[this.currentIdx];
+        const ok=t.startsWith(d.ans);
+        if(ok)this.score+=10;
+        const f=document.getElementById("feedback-area");
+        f.style.display="block";
+        f.innerHTML=`<strong>${ok?"✅ 正确":"❌ 错误"}</strong><br>${d.exp}`;
+        f.style.background=ok?"#ECFDF5":"#FEF2F2";
+        el.classList.add(ok?"correct":"wrong");
+        document.getElementById("next-btn").disabled=false;
+        this.userAnswers[this.currentIdx]={q:d.q,user:t,isCorrect:ok};
+    }
+    nextQuestion(){
+        this.currentIdx++;
+        if(this.currentIdx>=10){
+            document.getElementById("submit-modal").classList.add("active");
+        }else{
+            this.loadQuestion();
+        }
+    }
+    closeModalAndShowResult(){
+        document.getElementById("submit-modal").classList.remove("active");
+        this.showResult(false);
+    }
+    async submitToTeacher(){
+        document.getElementById("submit-modal").classList.remove("active");
+        this.switchScreen("screen-submit");
+        try {
+            let res = await fetch(API_LATEST, { headers: { 'X-Master-Key': API_KEY } });
+            let json = await res.json();
+            let records = json.record || [];
+            if (!Array.isArray(records)) records = [];
+            
+            const newRecord = {
+                name: this.userName,
+                score: this.score,
+                date: new Date().toLocaleString(),
+                userAnswers: this.userAnswers
+            };
+            records.push(newRecord);
+            
+            await fetch(API_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify(records)
+            });
+        }catch(e){
+            console.error("提交失败",e);
+        }
+        setTimeout(()=>this.showResult(true),1000);
+    }
+    showResult(up){
+        this.switchScreen("screen-success");
+        document.getElementById("final-score").innerText=`得分：${this.score} / 100`;
+        document.getElementById("upload-status").innerText=up?"✅ 成绩已提交老师":"⚠️ 成绩未提交";
+    }
 }
 const app=new QuizApp();
 </script>
