@@ -12,8 +12,6 @@
             justify-content: center;
             padding: 15px 0;
         }
-
-        /* 扩大10%：80vw → 88vw */
         .container{
             width: 88vw;
             background: white;
@@ -21,7 +19,6 @@
             overflow: hidden;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
-
         .header{
             background:linear-gradient(135deg,#4F46E5,#818CF8);
             color:white;
@@ -29,112 +26,53 @@
             text-align:center;
         }
         .header h1{font-size:24px;margin-bottom:4px}
-        .header p{font-size:14px;opacity:0.9}
-
         .content{padding:15px 20px}
         .screen{display:none}
         .screen.active{display:block}
-
         input{
-            width:100%;
-            padding:14px;
-            border:2px solid #eee;
-            border-radius:12px;
-            font-size:16px;
-            margin-top:10px;
+            width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:16px;margin-top:10px;
         }
         .btn{
-            width:100%;
-            padding:16px;
-            background:#4F46E5;
-            color:white;
-            border:none;
-            border-radius:12px;
-            font-size:17px;
-            font-weight:bold;
-            margin-top:12px;
+            width:100%;padding:16px;background:#4F46E5;color:white;border:none;border-radius:12px;font-size:17px;font-weight:bold;margin-top:12px;
         }
-
         .options-grid{
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:12px;
-            margin-top:12px
+            display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px
         }
         .option{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            background:white;
-            border:3px solid #E5E7EB;
-            border-radius:14px;
-            padding:12px 8px;
-            cursor:pointer
+            display:flex;flex-direction:column;align-items:center;justify-content:center;background:white;border:3px solid #E5E7EB;border-radius:14px;padding:12px 8px;cursor:pointer
         }
         .option svg{
-            width:100%;
-            height:90px;
-            object-fit:contain;
-            margin-bottom:8px;
-            border-radius:6px
+            width:100%;height:90px;object-fit:contain;margin-bottom:8px;border-radius:6px
         }
-        .option span{font-size:15px;font-weight:bold;color:#222}
-
         .option.selected{border-color:#4F46E5;background:#EEF2FF}
         .option.correct{border-color:#10B981;background:#ECFDF5}
         .option.wrong{border-color:#EF4444;background:#FEF2F2}
-
         .feedback{
-            margin-top:12px;
-            padding:12px;
-            border-radius:12px;
-            font-size:14px;
-            display:none
+            margin-top:12px;padding:12px;border-radius:12px;font-size:14px;display:none
         }
-
         #q-progress{font-size:14px;color:#666}
-        #question-text{font-size:16px;margin:8px 0 12px !important}
-
+        #question-text{font-size:16px;margin:8px 0 12px}
         .modal-overlay{
-            position:fixed;
-            top:0;left:0;
-            width:100%;height:100%;
-            background:rgba(0,0,0,0.5);
-            display:none;
-            justify-content:center;
-            align-items:center
+            position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center
         }
         .modal-overlay.active{display:flex}
         .modal-content{
-            background:white;
-            padding:25px;
-            border-radius:16px;
-            width:90%;
-            max-width:420px;
-            text-align:center
-        }
-
-        #screen-submit, #screen-success{
-            padding:30px 0 !important;
+            background:white;padding:25px;border-radius:16px;width:90%;max-width:420px;text-align:center
         }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header">
         <h1>🎓 数字身份大闯关</h1>
         <p>成绩实时同步给老师</p>
     </div>
-
     <div class="content">
         <div id="screen-login" class="screen active">
-            <h3 style="font-size:18px;margin-bottom:8px">请输入你的电脑编号：</h3>
+            <h3>请输入电脑编号：</h3>
             <input type="text" id="studentName" placeholder="例如：01">
             <button class="btn" onclick="app.startQuiz()">开始挑战 🚀</button>
         </div>
-
         <div id="screen-quiz" class="screen">
             <div id="q-progress">题目 1/10</div>
             <h3 id="question-text"></h3>
@@ -142,26 +80,23 @@
             <div id="feedback-area" class="feedback"></div>
             <button id="next-btn" class="btn" onclick="app.nextQuestion()" disabled>下一题 ➡️</button>
         </div>
-
         <div id="screen-submit" class="screen" style="text-align:center">
             <div style="font-size:60px">📡</div>
-            <h3 style="font-size:18px;margin-top:10px">正在上传成绩...</h3>
+            <h3>正在上传成绩...</h3>
         </div>
-
         <div id="screen-success" class="screen" style="text-align:center">
             <div style="font-size:70px">🎉</div>
-            <h2 style="font-size:22px;margin-top:10px">闯关完成！</h2>
+            <h2>闯关完成！</h2>
             <div style="font-size:24px;font-weight:bold;color:#4F46E5;margin:12px 0" id="final-score"></div>
             <div id="upload-status" style="font-size:16px;font-weight:bold;margin-bottom:12px"></div>
             <button class="btn" onclick="location.reload()">再玩一次</button>
         </div>
     </div>
 </div>
-
 <div id="submit-modal" class="modal-overlay">
     <div class="modal-content">
-        <h2 style="font-size:20px">提交成绩</h2>
-        <p style="margin:12px 0;font-size:15px">是否将成绩提交给老师？</p>
+        <h2>提交成绩</h2>
+        <p>是否将成绩提交给老师？</p>
         <button class="btn" style="background:#10B981" onclick="app.submitToTeacher()">✅ 确认提交</button>
         <button class="btn" style="background:#eee;color:#333;margin-top:10px" onclick="app.closeModalAndShowResult()">❌ 暂不提交</button>
     </div>
@@ -173,127 +108,82 @@ const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';
 const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 const quizData = [
-    {
-        q:"1. 数字身份指的是什么？",
-        opts:[
-            {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="20" y="30" width="88" height="68" rx="6" fill="#ffe0b2"/><rect x="30" y="45" width="28" height="14" rx="3" fill="#ffcc80"/><rect x="30" y="70" width="56" height="6" rx="3" fill="#fff"/><rect x="30" y="85" width="42" height="6" rx="3" fill="#fff"/></svg>`},
-            {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" rx="10" fill="#81c784"/><circle cx="64" cy="52" r="12" fill="#fff"/><rect x="48" y="76" width="32" height="8" rx="4" fill="#fff"/><rect x="48" y="92" width="16" height="4" rx="2" fill="#fff"/></svg>`},
-            {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="32" width="72" height="64" rx="8" fill="#90caf9"/><circle cx="64" cy="56" r="12" fill="#fff"/><rect x="44" y="80" width="40" height="6" rx="3" fill="#fff"/></svg>`},
-            {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 32L32 64v48h64V64L64 32z" fill="#f48fb1"/><circle cx="64" cy="80" r="12" fill="#fff"/></svg>`}
-        ],
-        ans:"B",
-        exp:"数字身份是我们在网络世界的通行证。"
-    },
-    {
-        q:"2. 注册账号时，常用于实名认证的方式？",
-        opts:[
-            {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="46" r="18" fill="#d1c4e9"/><circle cx="52" cy="42" r="4" fill="#333"/><circle cx="76" cy="42" r="4" fill="#333"/><path d="M58 58c4 6 8 6 12 0" stroke="#333" stroke-width="2" fill="none"/><rect x="40" y="70" width="48" height="24" rx="12" fill="#d1c4e9"/></svg>`},
-            {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="42" y="18" width="44" height="92" rx="8" fill="#64b5f6"/><circle cx="64" cy="34" r="8" fill="#fff"/><rect x="50" y="58" width="28" height="4" rx="2" fill="#fff"/><rect x="50" y="66" width="28" height="4" rx="2" fill="#fff"/></svg>`},
-            {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#ffcc80"/><rect x="36" y="72" width="56" height="36" rx="8" fill="#ffe0b2"/></svg>`},
-            {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/><circle cx="32" cy="32" r="16" fill="#ffeb3b"/><path d="M0 96c32-32 96-32 128 0v32H0V96z" fill="#81c784"/></svg>`}
-        ],
-        ans:"B",
-        exp:"手机号验证、人脸识别能确认是你本人。"
-    },
-    {
-        q:"3. 数字身份具有唯一性的原因？",
-        opts:[
-            {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="8" fill="#b39ddb"/><rect x="70" y="32" width="40" height="56" rx="8" fill="#b39ddb"/></svg>`},
-            {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#ffcc80"/><path d="M48 48h32M48 64h32M48 80h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`},
-            {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/><rect x="40" y="72" width="48" height="40" rx="8" fill="#81c784"/></svg>`},
-            {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#eeeeee"/></svg>`}
-        ],
-        ans:"C",
-        exp:"实名认证让一个账号对应一个真实的人。"
-    },
-    {
-        q:"4. 小智妈妈网购快速退款因为？",
-        opts:[
-            {text:"A. 衣服贵",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M32 64h64l8 48H24l8-48z" fill="#f48fb1"/><rect x="48" y="32" width="32" height="32" rx="8" fill="#f8bbd0"/></svg>`},
-            {text:"B. 信用分高",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#ffeb3b"/><path d="M44 64l16 16 24-32" stroke="#333" stroke-width="6" fill="none"/></svg>`},
-            {text:"C. 是亲戚",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="48" r="16" fill="#90caf9"/><circle cx="80" cy="48" r="16" fill="#90caf9"/></svg>`},
-            {text:"D. 常退货",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="48" rx="8" fill="#ef9a9a"/></svg>`}
-        ],
-        ans:"B",
-        exp:"信用分高，代表诚信记录好。"
-    },
-    {
-        q:"5. 哪种行为损害信用价值？",
-        opts:[
-            {text:"A. 按时作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#81d4fa"/><path d="M48 48h32M48 64h32M48 80h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`},
-            {text:"B. 发布虚假信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/><path d="M56 40v16M56 64h16" stroke="#fff" stroke-width="6" stroke-linecap="round"/></svg>`},
-            {text:"C. 帮助同学",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="64" r="16" fill="#81c784"/><circle cx="80" cy="64" r="16" fill="#81c784"/></svg>`},
-            {text:"D. 每天登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#b39ddb"/></svg>`}
-        ],
-        ans:"B",
-        exp:"发布虚假信息是不诚信行为。"
-    },
-    {
-        q:"6. 数字身份的作用类似于？",
-        opts:[
-            {text:"A. 学生证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#90caf9"/><circle cx="64" cy="52" r="12" fill="#fff"/></svg>`},
-            {text:"B. 网络通行证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="32" width="48" height="64" rx="8" fill="#81c784"/><circle cx="64" cy="48" r="8" fill="#fff"/></svg>`},
-            {text:"C. 钥匙",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="80" r="16" fill="#ffcc80"/><rect x="64" y="72" width="32" height="16" rx="8" fill="#ffcc80"/></svg>`},
-            {text:"D. 公交卡",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="32" rx="8" fill="#64b5f6"/></svg>`}
-        ],
-        ans:"B",
-        exp:"数字身份是我们上网的凭证。"
-    },
-    {
-        q:"7. 以下属于数字身份的是？",
-        opts:[
-            {text:"A. 社交账号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" rx="10" fill="#64b5f6"/><circle cx="64" cy="52" r="12" fill="#fff"/></svg>`},
-            {text:"B. 户口本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#ffe0b2"/></svg>`},
-            {text:"C. 日记本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#f8bbd0"/></svg>`},
-            {text:"D. 书包",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="48" rx="8" fill="#d1c4e9"/></svg>`}
-        ],
-        ans:"A",
-        exp:"微信、QQ等社交账号都是数字身份。"
-    },
-    {
-        q:"8. 网友被封号通常因为？",
-        opts:[
-            {text:"A. 不常登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#eeeeee"/></svg>`},
-            {text:"B. 发布虚假/不良信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/><path d="M56 40v16M56 64h16" stroke="#fff" stroke-width="6" stroke-linecap="round"/></svg>`},
-            {text:"C. 没实名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="32" width="48" height="64" rx="8" fill="#eeeeee"/></svg>`},
-            {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="8" fill="#eeeeee"/><rect x="70" y="32" width="40" height="56" rx="8" fill="#eeeeee"/></svg>`}
-        ],
-        ans:"B",
-        exp:"违规发布内容会被平台处罚。"
-    },
-    {
-        q:"9. 信用价值体现在？",
-        opts:[
-            {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="80" width="96" height="32" rx="16" fill="#81c784"/><circle cx="40" cy="96" r="12" fill="#fff"/><circle cx="88" cy="96" r="12" fill="#fff"/></svg>`},
-            {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#ffcc80"/></svg>`},
-            {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" rx="8" fill="#90caf9"/></svg>`},
-            {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`}
-        ],
-        ans:"A",
-        exp:"信用好可以享受免押金等便利。"
-    },
-    {
-        q:"10. 实名认证的主要目的？",
-        opts:[
-            {text:"A. 好记",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#ffe0b2"/></svg>`},
-            {text:"B. 增加数量",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="8" fill="#b39ddb"/><rect x="70" y="32" width="40" height="56" rx="8" fill="#b39ddb"/></svg>`},
-            {text:"C. 关联现实，责任追溯",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/><rect x="40" y="72" width="48" height="40" rx="8" fill="#81c784"/></svg>`},
-            {text:"D. 美观",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#f8bbd0"/></svg>`}
-        ],
-        ans:"C",
-        exp:"实名认证方便找到责任人，保障网络安全。"
-    }
+    {q:"1. 数字身份指的是什么？",opts:[
+        {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="20" y="30" width="88" height="68" rx="6" fill="#ffe0b2"/></svg>`},
+        {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" rx="10" fill="#81c784"/></svg>`},
+        {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="32" width="72" height="64" rx="8" fill="#90caf9"/></svg>`},
+        {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 32L32 64v48h64V64L64 32z" fill="#f48fb1"/></svg>`}
+    ],ans:"B",exp:"数字身份是我们在网络世界的通行证。"},
+    {q:"2. 注册账号时，常用于实名认证的方式？",opts:[
+        {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="46" r="18" fill="#d1c4e9"/></svg>`},
+        {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="42" y="18" width="44" height="92" rx="8" fill="#64b5f6"/></svg>`},
+        {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#ffcc80"/></svg>`},
+        {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/></svg>`}
+    ],ans:"B",exp:"手机号验证、人脸识别能确认是你本人。"},
+    {q:"3. 数字身份具有唯一性的原因？",opts:[
+        {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="8" fill="#b39ddb"/></svg>`},
+        {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="8" fill="#ffcc80"/></svg>`},
+        {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/></svg>`},
+        {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#eee"/></svg>`}
+    ],ans:"C",exp:"实名认证让一个账号对应一个真实的人。"},
+    {q:"4. 小智妈妈网购快速退款因为？",opts:[
+        {text:"A. 衣服贵",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M32 64h64l8 48H24l8-48z" fill="#f48fb1"/></svg>`},
+        {text:"B. 信用分高",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#ffeb3b"/></svg>`},
+        {text:"C. 是亲戚",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="48" r="16" fill="#90caf9"/></svg>`},
+        {text:"D. 常退货",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="48" fill="#ef9a9a"/></svg>`}
+    ],ans:"B",exp:"信用分高，代表诚信记录好。"},
+    {q:"5. 哪种行为损害信用价值？",opts:[
+        {text:"A. 按时作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#81d4fa"/></svg>`},
+        {text:"B. 发布虚假信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`},
+        {text:"C. 帮助同学",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="64" r="16" fill="#81c784"/></svg>`},
+        {text:"D. 每天登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#b39ddb"/></svg>`}
+    ],ans:"B",exp:"发布虚假信息是不诚信行为。"},
+    {q:"6. 数字身份的作用类似于？",opts:[
+        {text:"A. 学生证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#90caf9"/></svg>`},
+        {text:"B. 网络通行证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="32" width="48" height="64" fill="#81c784"/></svg>`},
+        {text:"C. 钥匙",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="80" r="16" fill="#ffcc80"/></svg>`},
+        {text:"D. 公交卡",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="32" fill="#64b5f6"/></svg>`}
+    ],ans:"B",exp:"数字身份是我们上网的凭证。"},
+    {q:"7. 以下属于数字身份的是？",opts:[
+        {text:"A. 社交账号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="24" width="64" height="80" fill="#64b5f6"/></svg>`},
+        {text:"B. 户口本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffe0b2"/></svg>`},
+        {text:"C. 日记本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#f8bbd0"/></svg>`},
+        {text:"D. 书包",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="48" width="64" height="48" fill="#d1c4e9"/></svg>`}
+    ],ans:"A",exp:"微信、QQ等社交账号都是数字身份。"},
+    {q:"8. 网友被封号通常因为？",opts:[
+        {text:"A. 不常登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#eee"/></svg>`},
+        {text:"B. 发布虚假/不良信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`},
+        {text:"C. 没实名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="32" width="48" height="64" fill="#eee"/></svg>`},
+        {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#eee"/></svg>`}
+    ],ans:"B",exp:"违规发布内容会被平台处罚。"},
+    {q:"9. 信用价值体现在？",opts:[
+        {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="80" width="96" height="32" rx="16" fill="#81c784"/></svg>`},
+        {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffcc80"/></svg>`},
+        {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" fill="#90caf9"/></svg>`},
+        {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="32" fill="#e57373"/></svg>`}
+    ],ans:"A",exp:"信用好可以享受免押金等便利。"},
+    {q:"10. 实名认证的主要目的？",opts:[
+        {text:"A. 好记",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#ffe0b2"/></svg>`},
+        {text:"B. 增加数量",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#b39ddb"/></svg>`},
+        {text:"C. 关联现实，责任追溯",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="48" r="16" fill="#81c784"/></svg>`},
+        {text:"D. 美观",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#f8bbd0"/></svg>`}
+    ],ans:"C",exp:"实名认证方便找到责任人，保障网络安全。"}
 ];
 
 class QuizApp {
-    constructor(){this.currentIdx=0;this.score=0;this.userName=""}
+    constructor(){this.currentIdx=0;this.score=0;this.userName="";this.userAnswers=[];}
     startQuiz(){const n=document.getElementById("studentName").value.trim();if(!n)return alert("请输入电脑编号！");this.userName=n;this.switchScreen("screen-quiz");this.loadQuestion()}
     switchScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active")}
     loadQuestion(){const d=quizData[this.currentIdx];document.getElementById("q-progress").innerText=`题目 ${this.currentIdx+1}/10`;document.getElementById("question-text").innerText=d.q;document.getElementById("feedback-area").style.display="none";document.getElementById("next-btn").disabled=true;const b=document.getElementById("options-area");b.innerHTML="";d.opts.forEach((o,i)=>{let div=document.createElement("div");div.className="option";div.innerHTML=`${o.svg}<span>${o.text}</span>`;div.onclick=()=>this.select(div,o.text);b.appendChild(div)})}
-    select(el,t){if(!document.getElementById("next-btn").disabled)return;document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));el.classList.add("selected");const d=quizData[this.currentIdx];const ok=t.startsWith(d.ans);if(ok)this.score+=10;const f=document.getElementById("feedback-area");f.style.display="block";f.innerHTML=`<strong>${ok?"✅ 正确":"❌ 错误"}</strong><br>${d.exp}`;f.style.background=ok?"#ECFDF5":"#FEF2F2";f.style.color=ok?"#065F46":"#991B1B";el.classList.add(ok?"correct":"wrong");document.getElementById("next-btn").disabled=false}
+    select(el,t){if(!document.getElementById("next-btn").disabled)return;document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));el.classList.add("selected");const d=quizData[this.currentIdx];const ok=t.startsWith(d.ans);if(ok)this.score+=10;const f=document.getElementById("feedback-area");f.style.display="block";f.innerHTML=`<strong>${ok?"✅ 正确":"❌ 错误"}</strong><br>${d.exp}`;f.style.background=ok?"#ECFDF5":"#FEF2F2";el.classList.add(ok?"correct":"wrong");document.getElementById("next-btn").disabled=false;
+    this.userAnswers[this.currentIdx]={q:d.q,user:t,isCorrect:ok}}
     nextQuestion(){this.currentIdx++;this.currentIdx>=10?document.getElementById("submit-modal").classList.add("active"):this.loadQuestion()}
     closeModalAndShowResult(){document.getElementById("submit-modal").classList.remove("active");this.showResult(false)}
-    async submitToTeacher(){document.getElementById("submit-modal").classList.remove("active");this.switchScreen("screen-submit");setTimeout(()=>this.showResult(true),1200)}
+    async submitToTeacher(){document.getElementById("submit-modal").classList.remove("active");this.switchScreen("screen-submit");
+    try{const res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`);const json=await res.json();let records=json.record||[];if(!Array.isArray(records))records=[];
+    const newRecord={name:this.userName,score:this.score,date:new Date().toLocaleString(),userAnswers:this.userAnswers};
+    records.push(newRecord);await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(records)});}catch(e){console.error(e);}
+    setTimeout(()=>this.showResult(true),1200)}
     showResult(up){this.switchScreen("screen-success");document.getElementById("final-score").innerText=`得分：${this.score} / 100`;document.getElementById("upload-status").innerText=up?"✅ 成绩已提交老师":"⚠️ 成绩未提交"}
 }
 const app=new QuizApp();
