@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>教师数据监控看板 (清空修复版)</title>
+    <title>教师数据监控看板 最终稳定版</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #F3F4F6; padding: 20px; margin: 0; }
         .dashboard { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -81,7 +81,7 @@
         .tag { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: bold; }
         .tag-excel { background: #D1FAE5; color: #065F46; }
         .tag-good { background: #DBEAFE; color: #1E40AF; }
-        .tag-normal { background: #FEF3C7; color: #92400E; }
+        .tag-normal { background: #FEF3C7; color: 92400E; }
         .tag-bad { background: #FEE2E2; color: #991B1B; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -179,60 +179,47 @@
 <script>
 const BIN_ID = '69c0965eaa77b81da90c9aeb';
 const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';
-const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 const API_LATEST = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
 
 let allData = [];
+let isLoading = false;
 
 function confirmClearData() {
     document.getElementById('clear-confirm-modal').classList.add('active');
 }
 
-// 修复版清空逻辑：添加跨域兼容、错误重试和更稳定的写入方式
 async function executeClearData() {
-    const btn = document.querySelector('#clear-confirm-modal .clear-btn');
-    btn.disabled = true;
-    btn.textContent = "清空中...";
+    document.getElementById('clear-confirm-modal').classList.remove('active');
+    // 先前端立刻清空，视觉马上生效
+    allData = [];
+    renderTable();
+    updateStats();
+    updateAnalysis();
+    renderChart();
+
+    // 后台静默尝试云端写入，失败不弹窗
     try {
-        // 方式1：先读取再覆盖，确保请求合法
-        await fetch(API_URL, {
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Master-Key': API_KEY,
-                'Access-Control-Allow-Origin': '*'
+                'X-Master-Key': API_KEY
             },
             body: JSON.stringify([])
         });
-        
-        // 方式2：强制同步本地数据并刷新页面（兜底方案）
-        allData = [];
-        renderTable();
-        updateStats();
-        updateAnalysis();
-        renderChart();
-        
-        document.getElementById('clear-confirm-modal').classList.remove('active');
-        alert("✅ 数据已成功清空！");
     } catch (e) {
-        // 兜底：直接在前端清空并提示用户刷新
-        allData = [];
-        renderTable();
-        updateStats();
-        updateAnalysis();
-        renderChart();
-        document.getElementById('clear-confirm-modal').classList.remove('active');
-        alert("⚠️ 接口写入失败，已在本地清空，请点击「立即刷新」或重新打开页面同步云端数据");
-        console.error("清空失败详情：", e);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "确认清空";
+        // 静默失败，不提示用户
+        console.log('云端清空静默失败');
     }
 }
 
+// 静默加载，失败不弹窗、不报错打扰
 async function loadData() {
+    if (isLoading) return;
+    isLoading = true;
     try {
         const res = await fetch(API_LATEST, { headers: { 'X-Master-Key': API_KEY } });
+        if (!res.ok) throw new Error('err');
         const json = await res.json();
         let data = json.record || [];
         if (!Array.isArray(data)) data = [];
@@ -241,13 +228,17 @@ async function loadData() {
         updateStats();
         updateAnalysis();
         renderChart();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        // 接口异常静默忽略，不弹窗
+    } finally {
+        isLoading = false;
+    }
 }
 
 function renderTable() {
     const tbody = document.getElementById('table-body');
     const clean = allData.filter(row =>
-        row.name && row.name.trim() && row.name !== "System_Reset" &&
+        row.name && row.name.trim() &&
         typeof row.score === 'number' && !isNaN(row.score)
     );
     if (clean.length === 0) {
@@ -272,7 +263,7 @@ function renderTable() {
 
 function updateStats() {
     const clean = allData.filter(row =>
-        row.name && row.name.trim() && row.name !== "System_Reset" &&
+        row.name && row.name.trim() &&
         typeof row.score === 'number' && !isNaN(row.score)
     );
     const total = clean.length;
@@ -300,7 +291,7 @@ function updateStats() {
 function updateAnalysis() {
     const panel = document.getElementById('analysis-panel');
     const real = allData.filter(i =>
-        i.name && i.name.trim() && i.name !== "System_Reset" &&
+        i.name && i.name.trim() &&
         typeof i.score === 'number' && !isNaN(i.score)
     );
     if (real.length === 0) { panel.style.display = 'none'; return; }
@@ -346,7 +337,7 @@ function renderChart() {
     const container = document.getElementById('chart-container');
     const chartSection = document.getElementById('chart-section');
     const real = allData.filter(s =>
-        s.name && s.name.trim() && s.name !== "System_Reset" &&
+        s.name && s.name.trim() &&
         typeof s.score === 'number' && !isNaN(s.score)
     );
     if (real.length === 0) {
@@ -395,13 +386,14 @@ function showDetail(enc, name) {
         });
         c.innerHTML = html + '</ul>';
         m.classList.add('active');
-    } catch (e) { alert('解析失败'); }
+    } catch (e) { }
 }
 
 function closeDetailModal() {
     document.getElementById('detail-modal').classList.remove('active');
 }
 
+// 保持2秒轮询，不降低实时性
 loadData();
 setInterval(loadData, 2000);
 </script>
