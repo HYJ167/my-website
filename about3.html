@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>教师数据监控看板 课堂专用版</title>
+    <title>教师数据监控看板 云端稳定版</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #F3F4F6; padding: 20px; margin: 0; }
         .dashboard { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -180,26 +180,48 @@
 const BIN_ID = '69c0965eaa77b81da90c9aeb';
 const API_KEY = '$2a$10$.B7BgbCtQWdTjV4cT0EnoeWEp5QcavXW9y0nmP3rXnGvndnBP9C6u';
 const API_LATEST = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
+const API_PUT = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 let allData = [];
 let isLoading = false;
+let clearCooldown = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('clearBtn').addEventListener('click', function() {
+        if (clearCooldown) return;
         document.getElementById('clear-confirm-modal').classList.add('active');
     });
     document.getElementById('confirmClearBtn').addEventListener('click', executeClearData);
 });
 
-// 只清前端，不写云端（课堂专用）
 async function executeClearData() {
     document.getElementById('clear-confirm-modal').classList.remove('active');
-    // 立刻清空前端显示
+    if (clearCooldown) return;
+    clearCooldown = true;
+
+    // 1. 前端立刻清空
     allData = [];
     renderTable();
     updateStats();
     updateAnalysis();
     renderChart();
+
+    // 2. 写入假数据，骗过JSONBin的非空校验
+    const dummyData = [{"name":"clear","score":0,"date":"2000-01-01","userAnswers":[]}];
+    try {
+        await fetch(API_PUT, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify(dummyData)
+        });
+    } catch (e) {
+        console.log("云端写入失败");
+    }
+
+    setTimeout(() => clearCooldown = false, 3000);
 }
 
 async function loadData() {
@@ -208,12 +230,16 @@ async function loadData() {
     try {
         const res = await fetch(API_LATEST, { headers: { 'X-Master-Key': API_KEY } });
         const json = await res.json();
-        allData = Array.isArray(json.record) ? json.record : [];
+        let rawData = Array.isArray(json.record) ? json.record : [];
+        // 过滤掉假数据，保证界面干净
+        allData = rawData.filter(item => item.name !== "clear");
         renderTable();
         updateStats();
         updateAnalysis();
         renderChart();
-    } catch (e) {}
+    } catch (e) {
+        console.log("加载失败");
+    }
     isLoading = false;
 }
 
