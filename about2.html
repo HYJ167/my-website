@@ -17,7 +17,7 @@
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0.1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         .header{
             background:linear-gradient(135deg,#4F46E5,#81CFE8);
@@ -112,10 +112,10 @@ const quizData = [
     {
         q:"1. 数字身份指的是什么？",
         opts:[
-            {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="24" y="32" width="80" height="64" rx="6" fill="#ffe0b2"/></svg>`},
-            {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="36" fill="#81c784"/></svg>`},
-            {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="36" width="72" height="56" rx="4" fill="#90caf9"/></svg>`},
-            {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 28L28 60v48h72V60L64 28z" fill="#f48fb1"/></svg>`}
+            {text:"A. 现实身份证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="20" y="30" width="88" height="68" rx="8" fill="#ffccbc"/><circle cx="44" cy="56" r="12" fill="#ff8a65"/><rect x="64" y="50" width="32" height="6" rx="2" fill="#795548"/><rect x="64" y="62" width="24" height="6" rx="2" fill="#795548"/></svg>`},
+            {text:"B. 网络在线身份",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#81c784"/><circle cx="64" cy="48" r="10" fill="#fff"/><path d="M46 72c0-10 8-18 18-18s18 8 18 18" stroke="#fff" stroke-width="6" fill="none"/></svg>`},
+            {text:"C. 学籍号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="24" y="32" width="80" height="64" rx="6" fill="#90caf9"/><rect x="40" y="48" width="48" height="8" rx="2" fill="#42a5f5"/><rect x="40" y="64" width="40" height="8" rx="2" fill="#42a5f5"/><rect x="40" y="80" width="32" height="8" rx="2" fill="#42a5f5"/></svg>`},
+            {text:"D. 家庭住址",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M64 24L32 52v64h64V52L64 24z" fill="#f48fb1"/><rect x="48" y="60" width="32" height="28" rx="4" fill="#fff"/></svg>`}
         ],
         ans:"B",
         exp:"数字身份是我们在网络世界的通行证。"
@@ -123,10 +123,10 @@ const quizData = [
     {
         q:"2. 注册账号时，常用于实名认证的方式？",
         opts:[
-            {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="52" r="20" fill="#d1c4e9"/></svg>`},
-            {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><g transform="translate(24,16)"><rect x="12" y="8" width="32" height="56" rx="8" fill="#64b5f6"/><circle cx="68" cy="36" r="22" fill="#81c784"/></g></svg>`},
-            {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="40" width="64" height="48" rx="4" fill="#ffcc80"/></svg>`},
-            {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/></svg>`}
+            {text:"A. 宠物名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="18" fill="#d1c4e9"/><circle cx="56" cy="46" r="3" fill="#333"/><circle cx="72" cy="46" r="3" fill="#333"/><path d="M54 60q10 8 20 0" fill="#333"/></svg>`},
+            {text:"B. 手机号或刷脸",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="24" width="28" height="64" rx="8" fill="#64b5f6"/><circle cx="84" cy="44" r="16" fill="#81c784"/><circle cx="78" cy="40" r="2" fill="#333"/><circle cx="90" cy="40" r="2" fill="#333"/><path d="M78 52q6 6 12 0" fill="#333"/></svg>`},
+            {text:"C. 自我介绍",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="40" width="64" height="48" rx="4" fill="#ffcc80"/><line x1="48" y1="56" x2="80" y2="56" stroke="#fff" stroke-width="4"/><line x1="48" y1="68" x2="72" y2="68" stroke="#fff" stroke-width="4"/><line x1="48" y1="80" x2="64" y2="80" stroke="#fff" stroke-width="4"/></svg>`},
+            {text:"D. 风景照",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#81d4fa"/><circle cx="32" cy="32" r="16" fill="#ffeb3b"/><path d="M0 96c32-20 64-20 96 0v32H0z" fill="#81c784"/></svg>`}
         ],
         ans:"B",
         exp:"手机号验证、人脸识别能确认是你本人。"
@@ -134,10 +134,10 @@ const quizData = [
     {
         q:"3. 数字身份具有唯一性的原因？",
         opts:[
-            {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="32" width="44" height="52" rx="4" fill="#b39ddb"/></svg>`},
-            {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="36" y="36" width="56" height="56" rx="6" fill="#ffcc80"/></svg>`},
-            {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="28" fill="#81c784"/></svg>`},
-            {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#eee"/></svg>`}
+            {text:"A. 可注册多号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="32" width="36" height="48" rx="4" fill="#b39ddb"/><rect x="56" y="36" width="36" height="48" rx="4" fill="#b39ddb" opacity="0.7"/></svg>`},
+            {text:"B. 名字可变",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="36" y="36" width="56" height="56" rx="6" fill="#ffcc80"/><path d="M48 56h32M48 72h24M48 88h16" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`},
+            {text:"C. 实名认证锁定真人",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="56" r="22" fill="#81c784"/><path d="M44 92c0-11 8-20 20-20s20 9 20 20" stroke="#66bb6a" stroke-width="6" fill="none"/></svg>`},
+            {text:"D. 平台不记录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" fill="#f5f5f5"/><path d="M48 48l32 32M80 48L48 80" stroke="#9e9e9e" stroke-width="4" stroke-linecap="round"/></svg>`}
         ],
         ans:"C",
         exp:"实名认证让一个账号对应一个真实的人。"
@@ -145,10 +145,10 @@ const quizData = [
     {
         q:"4. 小智妈妈网购快速退款因为？",
         opts:[
-            {text:"A. 衣服贵",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M36 60h56l6 40H30l6-40z" fill="#f48fb1"/></svg>`},
-            {text:"B. 信用分高",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="42" fill="#ffeb3b"/></svg>`},
-            {text:"C. 是亲戚",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="48" r="18" fill="#90caf9"/></svg>`},
-            {text:"D. 常退货",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="44" width="64" height="44" rx="4" fill="#ef9a9a"/></svg>`}
+            {text:"A. 衣服贵",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path d="M40 64h48l6 32H34l6-32z" fill="#f48fb1"/><rect x="56" y="32" width="16" height="24" fill="#f06292"/></svg>`},
+            {text:"B. 信用分高",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="36" fill="#ffeb3b"/><path d="M50 52l6 6 12-12 12 12 6-6" stroke="#f57f17" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`},
+            {text:"C. 是亲戚",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="44" cy="52" r="16" fill="#90caf9"/><circle cx="84" cy="52" r="16" fill="#90caf9"/><path d="M44 72c0 8 16 8 40 0" stroke="#64b5f6" stroke-width="4" fill="none"/></svg>`},
+            {text:"D. 常退货",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="44" width="64" height="40" rx="4" fill="#ef9a9a"/><path d="M48 64l16-16 16 16" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`}
         ],
         ans:"B",
         exp:"信用分高，代表诚信记录好。"
@@ -156,10 +156,10 @@ const quizData = [
     {
         q:"5. 哪种行为损害信用价值？",
         opts:[
-            {text:"A. 按时作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#81d4fa"/></svg>`},
-            {text:"B. 发布虚假信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="52" r="30" fill="#e57373"/></svg>`},
-            {text:"C. 帮助同学",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="50" cy="64" r="18" fill="#81c784"/></svg>`},
-            {text:"D. 每天登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="36" fill="#b39ddb"/></svg>`}
+            {text:"A. 按时作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#81d4fa"/><path d="M48 48v16M64 48v16M80 48v16M48 68v16M64 68v16" stroke="#fff" stroke-width="3"/></svg>`},
+            {text:"B. 发布虚假信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="52" r="26" fill="#e57373"/><path d="M50 52h28M50 68h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`},
+            {text:"C. 帮助同学",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="50" cy="64" r="16" fill="#81c784"/><circle cx="78" cy="64" r="16" fill="#81c784"/><path d="M58 64h12" stroke="#66bb6a" stroke-width="4"/></svg>`},
+            {text:"D. 每天登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="32" fill="#b39ddb"/><path d="M64 40v12M64 76v12M88 64H76M40 64h12" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`}
         ],
         ans:"B",
         exp:"发布虚假信息是不诚信行为。"
@@ -167,10 +167,10 @@ const quizData = [
     {
         q:"6. 数字身份的作用类似于？",
         opts:[
-            {text:"A. 学生证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="6" fill="#90caf9"/></svg>`},
-            {text:"B. 网络通行证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="38" y="28" width="52" height="68" rx="8" fill="#81c784"/></svg>`},
-            {text:"C. 钥匙",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="46" cy="78" r="14" fill="#ffcc80"/></svg>`},
-            {text:"D. 公交卡",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="46" width="64" height="34" rx="4" fill="#64b5f6"/></svg>`}
+            {text:"A. 学生证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="6" fill="#90caf9"/><circle cx="48" cy="48" r="8" fill="#fff"/><rect x="64" y="48" width="20" height="6" rx="2" fill="#fff"/><rect x="64" y="60" width="16" height="6" rx="2" fill="#fff"/></svg>`},
+            {text:"B. 网络通行证",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="40" y="28" width="48" height="72" rx="8" fill="#81c784"/><circle cx="64" cy="48" r="10" fill="#fff"/><rect x="52" cy="68" width="24" height="6" rx="2" fill="#66bb6a"/></svg>`},
+            {text:"C. 钥匙",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="48" cy="80" r="12" fill="#ffcc80"/><rect x="60" y="76" width="28" height="8" rx="2" fill="#ffb74d"/><rect x="80" y="72" width="4" height="16" fill="#ffb74d"/></svg>`},
+            {text:"D. 公交卡",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="46" width="64" height="36" rx="4" fill="#64b5f6"/><path d="M48 56h8v8h-8z" fill="#fff"/><rect x="64" y="56" width="24" height="4" rx="1" fill="#fff"/><rect x="64" y="64" width="16" height="4" rx="1" fill="#fff"/></svg>`}
         ],
         ans:"B",
         exp:"数字身份是我们上网的凭证。"
@@ -178,10 +178,10 @@ const quizData = [
     {
         q:"7. 以下属于数字身份的是？",
         opts:[
-            {text:"A. 社交账号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="36" y="20" width="56" height="84" rx="8" fill="#64b5f6"/></svg>`},
-            {text:"B. 户口本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#ffe0b2"/></svg>`},
-            {text:"C. 日记本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#f8bbd0"/></svg>`},
-            {text:"D. 书包",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="46" width="64" height="42" rx="4" fill="#d1c4e9"/></svg>`}
+            {text:"A. 社交账号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="36" y="20" width="56" height="88" rx="8" fill="#64b5f6"/><circle cx="64" cy="44" r="12" fill="#fff"/><rect x="48" cy="64" width="32" height="4" rx="1" fill="#fff"/><rect x="48" cy="72" width="24" height="4" rx="1" fill="#fff"/></svg>`},
+            {text:"B. 户口本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#ffe0b2"/><rect x="48" y="48" width="32" height="4" rx="1" fill="#cc8a56"/><rect x="48" y="56" width="28" height="4" rx="1" fill="#cc8a56"/><rect x="48" y="64" width="24" height="4" rx="1" fill="#cc8a56"/></svg>`},
+            {text:"C. 日记本",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#f8bbd0"/><path d="M48 48v32M64 48v32M80 48v32" stroke="#fff" stroke-width="2"/></svg>`},
+            {text:"D. 书包",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="46" width="64" height="42" rx="4" fill="#d1c4e9"/><rect x="48" y="32" width="32" height="14" rx="4" fill="#b39ddb"/></svg>`}
         ],
         ans:"A",
         exp:"微信、QQ等社交账号都是数字身份。"
@@ -189,10 +189,10 @@ const quizData = [
     {
         q:"8. 网友被封号通常因为？",
         opts:[
-            {text:"A. 不常登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="38" fill="#eee"/></svg>`},
-            {text:"B. 发布虚假/不良信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="28" fill="#e57373"/></svg>`},
-            {text:"C. 没实名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="38" y="32" width="52" height="64" fill="#eee"/></svg>`},
-            {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" fill="#eee"/></svg>`}
+            {text:"A. 不常登录",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="32" fill="#f5f5f5"/><path d="M52 64a12 12 0 0124 0" stroke="#9e9e9e" stroke-width="4" fill="none"/></svg>`},
+            {text:"B. 发布虚假/不良信息",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="24" fill="#e57373"/><path d="M50 50h28M50 66h28" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>`},
+            {text:"C. 没实名",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="38" y="32" width="52" height="64" fill="#f5f5f5"/><path d="M50 48h28M50 64h28" stroke="#9e9e9e" stroke-width="3" stroke-linecap="round"/></svg>`},
+            {text:"D. 用别人号",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="36" height="48" rx="4" fill="#f5f5f5"/><rect x="64" y="36" width="36" height="48" rx="4" fill="#f5f5f5"/><path d="M44 48l16 8" stroke="#9e9e9e" stroke-width="3"/></svg>`}
         ],
         ans:"B",
         exp:"违规发布内容会被平台处罚。"
@@ -200,10 +200,10 @@ const quizData = [
     {
         q:"9. 信用价值体现在？",
         opts:[
-            {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="14" y="76" width="100" height="36" rx="6" fill="#81c784"/></svg>`},
-            {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="6" fill="#ffcc80"/></svg>`},
-            {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" rx="4" fill="#90caf9"/></svg>`},
-            {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="28" fill="#e57373"/></svg>`}
+            {text:"A. 免押金租车",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="16" y="72" width="96" height="40" rx="6" fill="#81c784"/><circle cx="32" cy="96" r="8" fill="#388e3c"/><circle cx="88" cy="96" r="8" fill="#388e3c"/></svg>`},
+            {text:"B. 游戏皮肤",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="6" fill="#ffcc80"/><path d="M48 48l16 16 16-16M48 80l16-16 16 16" stroke="#fff" stroke-width="3"/></svg>`},
+            {text:"C. 免费电影",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="48" rx="4" fill="#90caf9"/><rect x="16" y="40" width="16" height="32" fill="#64b5f6"/><rect x="96" y="40" width="16" height="32" fill="#64b5f6"/></svg>`},
+            {text:"D. 不写作业",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="24" fill="#e57373"/><path d="M50 50h28" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>`}
         ],
         ans:"A",
         exp:"信用好可以享受免押金等便利。"
@@ -211,10 +211,10 @@ const quizData = [
     {
         q:"10. 实名认证的主要目的？",
         opts:[
-            {text:"A. 好记",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#ffe0b2"/></svg>`},
-            {text:"B. 增加数量",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="40" height="56" rx="4" fill="#b39ddb"/></svg>`},
-            {text:"C. 关联现实，责任追溯",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="20" fill="#81c784"/></svg>`},
-            {text:"D. 美观",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="40" fill="#f8bbd0"/></svg>`}
+            {text:"A. 好记",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="32" y="32" width="64" height="64" rx="4" fill="#ffe0b2"/><path d="M48 48h32M48 64h24" stroke="#cc8a56" stroke-width="4" stroke-linecap="round"/></svg>`},
+            {text:"B. 增加数量",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="18" y="32" width="36" height="48" rx="4" fill="#b39ddb"/><rect x="64" y="36" width="36" height="48" rx="4" fill="#b39ddb"/><rect x="100" y="40" width="20" height="48" rx="4" fill="#b39ddb"/></svg>`},
+            {text:"C. 关联现实，责任追溯",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="50" r="18" fill="#81c784"/><path d="M64 68v20M48 84h32" stroke="#66bb6a" stroke-width="4"/></svg>`},
+            {text:"D. 美观",svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle cx="64" cy="64" r="36" fill="#f8bbd0"/><circle cx="64" cy="64" r="24" fill="#f48fb1"/><circle cx="64" cy="64" r="12" fill="#ec407a"/></svg>`}
         ],
         ans:"C",
         exp:"实名认证方便找到责任人，保障网络安全。"
@@ -227,7 +227,7 @@ class QuizApp {
         this.score=0;
         this.userName="";
         this.userAnswers=[];
-        this.isSubmitting = false; // 提交防抖锁
+        this.isSubmitting = false;
     }
     startQuiz(){
         const n=document.getElementById("studentName").value.trim();
@@ -284,7 +284,6 @@ class QuizApp {
         this.showResult(false);
     }
     async submitToTeacher(){
-        // 防抖：正在提交中直接拦截
         if(this.isSubmitting) return;
         this.isSubmitting = true;
 
