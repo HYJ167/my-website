@@ -345,6 +345,15 @@
             </div>
 
             <div class="input-group">
+                <label>性别</label>
+                <select id="input-gender" class="input-control" onchange="app.saveCurrentData()">
+                    <option value="">请选择性别</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+            </div>
+
+            <div class="input-group">
                 <label>入学年份（提示：统一填写2024）</label>
                 <input type="text" id="input-entryYear" class="input-control" placeholder="请填写2024，可自行修改" value="2024" oninput="app.saveCurrentData()">
             </div>
@@ -500,10 +509,10 @@
         constructor() {
             this.currentScene = 'social';
             this.data = {
-                social: { name: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[0], hobby: '' },
-                shopping: { name: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[1], city: '' },
-                email: { name: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[2], email_addr: '' },
-                school: { name: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[3], school_name: '' }
+                social: { name: '', gender: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[0], hobby: '' },
+                shopping: { name: '', gender: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[1], city: '' },
+                email: { name: '', gender: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[2], email_addr: '' },
+                school: { name: '', gender: '', entryYear: '2024', className: '', avatar: SVG_ASSETS.avatars[3], school_name: '' }
             };
             this.achievements = new Set();
             this.init();
@@ -515,7 +524,6 @@
             document.getElementById('icon-email').src = SVG_ASSETS.icons.email;
             document.getElementById('icon-school').src = SVG_ASSETS.icons.school;
 
-            // 班级下拉：三年级1班～16班
             const classSelect = document.getElementById('input-class');
             for(let i=1; i<=16; i++){
                 const opt = document.createElement('option');
@@ -537,20 +545,21 @@
             this.updatePreview();
         }
 
-        // 学号规则：入学年份4位 + 固定年级3 + 班级2位 + 编号2位
+        // 新学号规则：入学年份4位 + 性别1位(1男2女) + 年级1位(3) + 班级2位 + 编号2位
         generateStudentId() {
             const entryYear = document.getElementById('input-entryYear').value.trim();
+            const gender = document.getElementById('input-gender').value.trim();
             const cls = document.getElementById('input-class').value.trim();
             const code = document.getElementById('input-name').value.trim();
             
-            if (!entryYear || !cls || !code) {
-                this.showToast('请填写完整：电脑编号、入学年份、所在班级', 'error');
+            if (!entryYear || !gender || !cls || !code) {
+                this.showToast('请填写完整：编号、性别、入学年份、班级', 'error');
                 return '';
             }
             const grade = '3';
             const clsStr = cls.padStart(2, '0');
             const codeStr = code.padStart(2, '0');
-            return entryYear + grade + clsStr + codeStr;
+            return entryYear + gender + grade + clsStr + codeStr;
         }
 
         showToast(msg, type) {
@@ -596,6 +605,7 @@
         saveCurrentData() {
             const data = this.data[this.currentScene];
             data.name = document.getElementById('input-name').value;
+            data.gender = document.getElementById('input-gender').value;
             data.entryYear = document.getElementById('input-entryYear').value;
             data.className = document.getElementById('input-class').value;
             
@@ -614,6 +624,7 @@
             document.getElementById('scene-desc').innerText = config.desc;
             document.getElementById('tip-content').innerText = config.tip;
             document.getElementById('input-name').value = data.name;
+            document.getElementById('input-gender').value = data.gender || '';
             document.getElementById('input-entryYear').value = data.entryYear;
             document.getElementById('input-class').value = data.className || '';
 
