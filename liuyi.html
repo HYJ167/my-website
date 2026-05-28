@@ -144,7 +144,7 @@
             display: inline-block;
         }
 
-        /* 彩蛋弹窗样式 */
+        /* 彩蛋弹窗样式 - 针对手机优化 */
         .mask{
             position: fixed;
             top: 0;
@@ -159,10 +159,10 @@
         }
         .egg-coupon{
             width: 90%;
-            max-width: 360px;
+            max-width: 340px;
             background: #fff;
             border-radius: 28px;
-            padding: 40px 25px;
+            padding: 35px 20px;
             border: 2px solid #ffd79d;
             box-shadow: 0 10px 35px rgba(255, 150, 180, 0.35), 0 0 15px rgba(255, 215, 157, 0.4);
             text-align: center;
@@ -192,16 +192,16 @@
             color: #fff;
         }
         .egg-title{
-            font-size: 24px;
+            font-size: 22px;
             color: #e65c8b;
             font-weight: bold;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
         }
+        /* 核心修改：调整字体大小和行间距，防止手机端换行割裂 */
         .egg-text{
-            font-size: 16px;
-            line-height: 2.6;
+            font-size: 15px;
+            line-height: 2.0;
             color: #555;
             text-align: center;
         }
