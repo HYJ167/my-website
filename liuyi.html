@@ -40,8 +40,8 @@
             width:100%;
             height:100%;
             position:absolute;
-            border-radius:20px;
-            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+            border-radius:24px;
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.25);
             backface-visibility: hidden;
             display:flex;
             flex-direction:column;
@@ -59,12 +59,18 @@
             text-align:center;
             line-height:1.5;
             margin-bottom:40px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
         }
         .tip-text{
             font-size:16px;
             opacity:0.9;
             animation: bounce 1.5s infinite;
+            transition: opacity 0.5s ease;
+        }
+        /* 点击后隐藏提示文字 */
+        .coupon-box.open .tip-text{
+            opacity: 0;
+            pointer-events: none;
         }
         @keyframes bounce{
             0%,100%{transform: translateY(0);}
@@ -122,7 +128,7 @@
         .inner-tip.show{
             display: block;
         }
-        /* 券内解锁按钮（在方框内） */
+        /* 券内解锁按钮 */
         .inner-unlock-btn{
             padding: 8px 22px;
             background: #ff5b8c;
@@ -137,6 +143,7 @@
         .inner-unlock-btn.show{
             display: inline-block;
         }
+
         /* 彩蛋弹窗样式 */
         .mask{
             position: fixed;
@@ -144,33 +151,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.4);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 999;
-            animation: fadeIn 0.4s ease;
         }
         .egg-coupon{
             width: 90%;
-            max-width: 340px;
-            background: #fffef0;
-            border-radius: 20px;
-            padding: 35px 20px;
-            border: 3px solid #ffc845;
-            box-shadow: 0 0 30px #ffd700;
+            max-width: 360px;
+            background: #fff;
+            border-radius: 28px;
+            padding: 40px 25px;
+            border: 2px solid #ffd79d;
+            box-shadow: 0 10px 35px rgba(255, 150, 180, 0.35), 0 0 15px rgba(255, 215, 157, 0.4);
             text-align: center;
             position: relative;
-            animation: scalePop 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            animation: popUp 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
             z-index: 1000;
         }
-        @keyframes scalePop {
-            0%{transform: scale(0.3) rotate(-10deg); opacity: 0;}
-            100%{transform: scale(1) rotate(0deg); opacity: 1;}
-        }
-        @keyframes fadeIn {
-            from{opacity:0;}
-            to{opacity:1;}
+        @keyframes popUp {
+            0%{transform: scale(0.8) translateY(20px); opacity: 0;}
+            100%{transform: scale(1) translateY(0); opacity: 1;}
         }
         .close-btn{
             position: absolute;
@@ -179,51 +181,42 @@
             font-size: 22px;
             color: #999;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
         }
-        .close-btn:hover{color:#ff5b8c;}
+        .close-btn:hover{
+            background: #ff9ac1;
+            color: #fff;
+        }
         .egg-title{
-            font-size: 22px;
-            color: #e68900;
+            font-size: 24px;
+            color: #e65c8b;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .egg-text{
             font-size: 16px;
-            line-height: 2.2;
-            color: #444;
+            line-height: 2.6;
+            color: #555;
             text-align: center;
         }
+        .egg-text .label{
+            color: #e65c8b;
+            font-weight: 600;
+        }
         .egg-high{
-            color: #ff5b8c;
+            color: #e65c8b;
             font-weight: bold;
-        }
-        /* 爱心样式 硬件加速防卡顿 */
-        .heart{
-            position: fixed;
-            top: -20px;
-            color: #ff78a8;
-            font-size: 20px;
-            user-select: none;
-            z-index: 998;
-            will-change: transform;
-            transform: translateZ(0);
-            animation: heartFall linear forwards;
-        }
-        @keyframes heartFall{
-            0%{
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100%{
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- 主兑换券 提拉米苏 -->
+    <!-- 主兑换券 -->
     <div class="coupon-box" id="coupon">
         <div class="coupon-card">
             <div class="card-front">
@@ -238,11 +231,8 @@
                     <div class="line"></div>
                     兑换条件：<br>
                     <span class="condition">亲吻 + 耳边说 BB你真棒</span>
-                    <!-- 蓝色闪烁文字 -->
                     <div class="flash-tip" id="flashTip">完成上述动作后再次点击页面</div>
-                    <!-- 提示文字 -->
                     <div class="inner-tip" id="innerTip">已完成兑换条件，等待解锁彩蛋✨</div>
-                    <!-- 解锁按钮（券内底部） -->
                     <button class="inner-unlock-btn" id="unlockBtn">点击解锁彩蛋</button>
                 </div>
             </div>
@@ -256,10 +246,9 @@
             <div class="egg-title">🎉 惊喜彩蛋券 🎉</div>
             <div class="egg-text">
                 持券人：<span class="egg-high">我的婉怡BB</span><br>
-                兑换内容：SUPER MIMISO（利和）新店开业体验官<br>
-                心仪好物直接加入购物车<br>
-                兑换条件：带上你的笑容，牵着我的手<br>
-                有效期：今日有效，过期不候哦～<br>
+                <span class="label">兑换内容：</span>SUPER MIMISO（利和）新店开业体验官，心仪好物直接加入购物车<br>
+                <span class="label">兑换条件：</span>带上你的笑容，牵着我的手<br>
+                <span class="label">有效期：</span>今日有效，过期不候哦～<br>
                 兑奖人：<span class="egg-high">黄泳杰</span>
             </div>
         </div>
@@ -276,32 +265,7 @@
         let step1 = false;
         let step2 = false;
 
-        // 单次生成30个爱心，不循环
-        function createHeart() {
-            const heartNum = 30;
-            for(let i = 0; i < heartNum; i++){
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.innerHTML = '❤';
-                const leftPos = Math.random() * 100 + 'vw';
-                const size = 14 + Math.random() * 16 + 'px';
-                const delay = Math.random() * 2;
-                const duration = 4 + Math.random() * 3;
-
-                heart.style.left = leftPos;
-                heart.style.fontSize = size;
-                heart.style.animationDelay = delay + 's';
-                heart.style.animationDuration = duration + 's';
-
-                document.body.appendChild(heart);
-                // 动画结束自动移除，避免堆积
-                setTimeout(()=>{
-                    heart.remove();
-                }, (duration + delay) * 1000);
-            }
-        }
-
-        // 点击主券逻辑
+        // 点击主券翻转
         coupon.addEventListener('click', function(){
             if(!step1){
                 coupon.classList.add('open');
@@ -316,10 +280,9 @@
             }
         });
 
-        // 打开彩蛋弹窗 → 执行单次爱心雨
+        // 打开彩蛋弹窗
         unlockBtn.addEventListener('click', function(){
             mask.style.display = 'flex';
-            createHeart();
         });
 
         // 关闭弹窗
