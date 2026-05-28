@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六一儿童节专属兑换券</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif;}
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background: #fef2f8;
+            padding:20px;
+            overflow: hidden;
+        }
+        /* 主兑换券容器 */
+        .coupon-box{
+            width:100%;
+            max-width:360px;
+            aspect-ratio: 3/4;
+            position:relative;
+            perspective: 1000px;
+            z-index: 1;
+        }
+        .coupon-card{
+            width:100%;
+            height:100%;
+            position:absolute;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out;
+            cursor:pointer;
+        }
+        .coupon-box.open .coupon-card{
+            transform: rotateY(180deg);
+        }
+        /* 主券正反面 */
+        .card-front,.card-back{
+            width:100%;
+            height:100%;
+            position:absolute;
+            border-radius:20px;
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+            backface-visibility: hidden;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            padding:30px 20px;
+        }
+        .card-front{
+            background: linear-gradient(135deg, #ff9ac1, #ff78a8);
+            color:#fff;
+        }
+        .front-title{
+            font-size:28px;
+            font-weight:bold;
+            text-align:center;
+            line-height:1.5;
+            margin-bottom:40px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .tip-text{
+            font-size:16px;
+            opacity:0.9;
+            animation: bounce 1.5s infinite;
+        }
+        @keyframes bounce{
+            0%,100%{transform: translateY(0);}
+            50%{transform: translateY(-8px);}
+        }
+        .card-back{
+            background:#fff;
+            color:#333;
+            transform: rotateY(180deg);
+            border:2px dashed #ff78a8;
+        }
+        .back-title{
+            font-size:24px;
+            color:#ff5b8c;
+            font-weight:bold;
+            margin-bottom:30px;
+        }
+        .content{
+            font-size:17px;
+            line-height:2;
+            text-align:center;
+        }
+        .line{
+            width:80%;
+            height:1px;
+            background:#ddd;
+            margin:25px auto;
+        }
+        .condition{
+            color:#ff5b8c;
+            font-weight:bold;
+        }
+        /* 蓝色闪烁提示文字 */
+        .flash-tip{
+            font-size: 18px;
+            color: #2176ff;
+            font-weight: bold;
+            margin-top: 15px;
+            animation: flash 1s infinite;
+        }
+        .flash-tip.hide{
+            display: none;
+        }
+        @keyframes flash {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        /* 券内提示文字 */
+        .inner-tip{
+            font-size: 15px;
+            color: #ff5b8c;
+            margin: 8px 0;
+            display: none;
+        }
+        .inner-tip.show{
+            display: block;
+        }
+        /* 券内解锁按钮（在方框内） */
+        .inner-unlock-btn{
+            padding: 8px 22px;
+            background: #ff5b8c;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 5px;
+            display: none;
+        }
+        .inner-unlock-btn.show{
+            display: inline-block;
+        }
+        /* 彩蛋弹窗样式 */
+        .mask{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            animation: fadeIn 0.4s ease;
+        }
+        .egg-coupon{
+            width: 90%;
+            max-width: 340px;
+            background: #fffef0;
+            border-radius: 20px;
+            padding: 35px 25px;
+            border: 3px solid #ffc845;
+            box-shadow: 0 0 30px #ffd700;
+            text-align: center;
+            position: relative;
+            animation: scalePop 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+        @keyframes scalePop {
+            0%{transform: scale(0.3) rotate(-10deg); opacity: 0;}
+            100%{transform: scale(1) rotate(0deg); opacity: 1;}
+        }
+        @keyframes fadeIn {
+            from{opacity:0;}
+            to{opacity:1;}
+        }
+        .close-btn{
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .close-btn:hover{color:#ff5b8c;}
+        .egg-title{
+            font-size: 22px;
+            color: #e68900;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .egg-text{
+            font-size: 16px;
+            line-height: 2.2;
+            color: #444;
+            text-align: center;
+        }
+        .egg-high{
+            color: #ff5b8c;
+            font-weight: bold;
+        }
+        /* 爱心飘落特效 */
+        .heart{
+            position: fixed;
+            top: -10%;
+            color: #ff78a8;
+            font-size: 20px;
+            user-select: none;
+            z-index: 998;
+            animation: fall linear forwards;
+        }
+        @keyframes fall{
+            0%{
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100%{
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 主兑换券 提拉米苏 -->
+    <div class="coupon-box" id="coupon">
+        <div class="coupon-card">
+            <div class="card-front">
+                <div class="front-title">六一儿童节<br>专属兑换券</div>
+                <div class="tip-text">点击打开 🎁</div>
+            </div>
+            <div class="card-back">
+                <div class="back-title">甜蜜兑换券</div>
+                <div class="content">
+                    可兑换：<br>
+                    任意口味提拉米苏🍰
+                    <div class="line"></div>
+                    兑换条件：<br>
+                    <span class="condition">亲吻 + 耳边说 BB你真棒</span>
+                    <!-- 蓝色闪烁文字 -->
+                    <div class="flash-tip" id="flashTip">完成上述动作后再次点击页面</div>
+                    <!-- 提示文字 -->
+                    <div class="inner-tip" id="innerTip">已完成兑换条件，等待解锁彩蛋✨</div>
+                    <!-- 解锁按钮（券内底部） -->
+                    <button class="inner-unlock-btn" id="unlockBtn">点击解锁彩蛋</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 彩蛋弹窗 -->
+    <div class="mask" id="mask">
+        <div class="egg-coupon">
+            <span class="close-btn" id="close">×</span>
+            <div class="egg-title">🎉 惊喜彩蛋券 🎉</div>
+            <div class="egg-text">
+                持券人：<span class="egg-high">我的婉怡BB</span><br>
+                兑换内容：<br>
+              SUPER MIMISO（利和）新店开业体验官<br>
+                心仪好物直接加入购物车<br>
+                兑换条件：带上你的笑容，牵着我的手<br>
+                有效期：今日有效，过期不候哦～<br>
+                兑奖人：<span class="egg-high">黄泳杰</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const coupon = document.getElementById('coupon');
+        const mask = document.getElementById('mask');
+        const close = document.getElementById('close');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const innerTip = document.getElementById('innerTip');
+        const flashTip = document.getElementById('flashTip');
+
+        let step1 = false;
+        let step2 = false;
+
+        // 点击主券逻辑
+        coupon.addEventListener('click', function(){
+            if(!step1){
+                coupon.classList.add('open');
+                step1 = true;
+                return;
+            }
+            if(step1 && !step2){
+                step2 = true;
+                // 永久隐藏蓝色文字
+                flashTip.style.display = "none";
+                innerTip.classList.add('show');
+                unlockBtn.classList.add('show');
+            }
+        });
+
+        // 解锁按钮点击 → 直接弹出彩蛋+爱心
+        unlockBtn.addEventListener('click', function(){
+            mask.style.display = 'flex';
+            createHeart();
+        });
+
+        // 关闭弹窗
+        close.addEventListener('click',()=>{
+            mask.style.display = 'none';
+        });
+        mask.addEventListener('click',(e)=>{
+            if(e.target === mask) mask.style.display = 'none';
+        });
+
+        // 爱心飘落
+        function createHeart(){
+            const heartNum = 18;
+            for(let i = 0; i < heartNum; i++){
+                let heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                let left = Math.random() * 100 + 'vw';
+                let size = Math.random() * 15 + 15 + 'px';
+                let delay = Math.random() * 2 + 's';
+                let duration = Math.random() * 3 + 4 + 's';
+
+                heart.style.left = left;
+                heart.style.fontSize = size;
+                heart.style.animationDelay = delay;
+                heart.style.animationDuration = duration;
+
+                document.body.appendChild(heart);
+                setTimeout(()=>{
+                    heart.remove();
+                }, parseFloat(duration) * 1000 + parseFloat(delay) * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
