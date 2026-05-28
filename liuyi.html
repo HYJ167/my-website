@@ -156,12 +156,13 @@
             max-width: 340px;
             background: #fffef0;
             border-radius: 20px;
-            padding: 35px 25px;
+            padding: 35px 20px;
             border: 3px solid #ffc845;
             box-shadow: 0 0 30px #ffd700;
             text-align: center;
             position: relative;
             animation: scalePop 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            z-index: 1000;
         }
         @keyframes scalePop {
             0%{transform: scale(0.3) rotate(-10deg); opacity: 0;}
@@ -197,17 +198,19 @@
             color: #ff5b8c;
             font-weight: bold;
         }
-        /* 爱心飘落特效 */
+        /* 爱心样式 硬件加速防卡顿 */
         .heart{
             position: fixed;
-            top: -10%;
+            top: -20px;
             color: #ff78a8;
             font-size: 20px;
             user-select: none;
             z-index: 998;
-            animation: fall linear forwards;
+            will-change: transform;
+            transform: translateZ(0);
+            animation: heartFall linear forwards;
         }
-        @keyframes fall{
+        @keyframes heartFall{
             0%{
                 transform: translateY(0) rotate(0deg);
                 opacity: 1;
@@ -253,8 +256,7 @@
             <div class="egg-title">🎉 惊喜彩蛋券 🎉</div>
             <div class="egg-text">
                 持券人：<span class="egg-high">我的婉怡BB</span><br>
-                兑换内容：<br>
-              SUPER MIMISO（利和）新店开业体验官<br>
+                兑换内容：SUPER MIMISO（利和）新店开业体验官<br>
                 心仪好物直接加入购物车<br>
                 兑换条件：带上你的笑容，牵着我的手<br>
                 有效期：今日有效，过期不候哦～<br>
@@ -274,6 +276,31 @@
         let step1 = false;
         let step2 = false;
 
+        // 单次生成30个爱心，不循环
+        function createHeart() {
+            const heartNum = 30;
+            for(let i = 0; i < heartNum; i++){
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                const leftPos = Math.random() * 100 + 'vw';
+                const size = 14 + Math.random() * 16 + 'px';
+                const delay = Math.random() * 2;
+                const duration = 4 + Math.random() * 3;
+
+                heart.style.left = leftPos;
+                heart.style.fontSize = size;
+                heart.style.animationDelay = delay + 's';
+                heart.style.animationDuration = duration + 's';
+
+                document.body.appendChild(heart);
+                // 动画结束自动移除，避免堆积
+                setTimeout(()=>{
+                    heart.remove();
+                }, (duration + delay) * 1000);
+            }
+        }
+
         // 点击主券逻辑
         coupon.addEventListener('click', function(){
             if(!step1){
@@ -283,14 +310,13 @@
             }
             if(step1 && !step2){
                 step2 = true;
-                // 永久隐藏蓝色文字
                 flashTip.style.display = "none";
                 innerTip.classList.add('show');
                 unlockBtn.classList.add('show');
             }
         });
 
-        // 解锁按钮点击 → 直接弹出彩蛋+爱心
+        // 打开彩蛋弹窗 → 执行单次爱心雨
         unlockBtn.addEventListener('click', function(){
             mask.style.display = 'flex';
             createHeart();
@@ -303,30 +329,6 @@
         mask.addEventListener('click',(e)=>{
             if(e.target === mask) mask.style.display = 'none';
         });
-
-        // 爱心飘落
-        function createHeart(){
-            const heartNum = 18;
-            for(let i = 0; i < heartNum; i++){
-                let heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.innerHTML = '❤';
-                let left = Math.random() * 100 + 'vw';
-                let size = Math.random() * 15 + 15 + 'px';
-                let delay = Math.random() * 2 + 's';
-                let duration = Math.random() * 3 + 4 + 's';
-
-                heart.style.left = left;
-                heart.style.fontSize = size;
-                heart.style.animationDelay = delay;
-                heart.style.animationDuration = duration;
-
-                document.body.appendChild(heart);
-                setTimeout(()=>{
-                    heart.remove();
-                }, parseFloat(duration) * 1000 + parseFloat(delay) * 1000);
-            }
-        }
     </script>
 </body>
 </html>
