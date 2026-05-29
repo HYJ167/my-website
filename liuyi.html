@@ -16,8 +16,8 @@
             overflow: hidden;
             position: relative;
         }
-        /* 爱心雨容器 - 超级流畅版 */
-        .hearts-container {
+        /* Canvas 爱心雨 - 全程丝滑 0 卡顿 */
+        #heartCanvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -25,22 +25,6 @@
             height: 100%;
             pointer-events: none;
             z-index: 9999;
-        }
-        .heart {
-            position: absolute;
-            color: #ff78a8;
-            animation: fall linear forwards;
-            will-change: transform, opacity;
-        }
-        @keyframes fall {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
         }
 
         /* 主兑换券容器 */
@@ -243,8 +227,9 @@
     </style>
 </head>
 <body>
-    <!-- 流畅爱心雨容器 -->
-    <div class="hearts-container" id="hearts"></div>
+
+    <!-- 高性能 Canvas 爱心雨 -->
+    <canvas id="heartCanvas"></canvas>
 
     <!-- 主兑换券 -->
     <div class="coupon-box" id="coupon">
@@ -276,7 +261,7 @@
             <div class="egg-title">🎉 惊喜彩蛋券 🎉</div>
             <div class="egg-text">
                 持券人：<span class="egg-high">我的婉怡BB</span><br>
-                <span class="label">兑换内容：</span>SUPER MINISO 利和新店开业体验官，心仪好物直接加入购物车<br>
+                <span class="label">兑换内容：</span>SUPER MIMISO（利和）新店开业体验官，心仪好物直接加入购物车<br>
                 <span class="label">兑换条件：</span>带上你的笑容，牵着我的手<br>
                 <span class="label">有效期：</span>今日有效，过期不候哦～<br>
                 兑奖人：<span class="egg-high">黄泳杰</span>
@@ -291,12 +276,11 @@
         const unlockBtn = document.getElementById('unlockBtn');
         const innerTip = document.getElementById('innerTip');
         const flashTip = document.getElementById('flashTip');
-        const heartsContainer = document.getElementById('hearts');
 
         let step1 = false;
         let step2 = false;
 
-        // 点击主券翻转
+        // 点击翻转卡片
         coupon.addEventListener('click', function(){
             if(!step1){
                 coupon.classList.add('open');
@@ -311,10 +295,10 @@
             }
         });
 
-        // 打开彩蛋弹窗 + 触发流畅爱心雨（40个，丝滑不卡）
+        // 打开彩蛋 + 启动爱心雨（40个，丝滑不卡）
         unlockBtn.addEventListener('click', function(){
             mask.style.display = 'flex';
-            createHearts(); // 打开彩蛋时播放爱心雨
+            startHeartRain();
         });
 
         // 关闭弹窗
@@ -325,29 +309,70 @@
             if(e.target === mask) mask.style.display = 'none';
         });
 
-        // ========== 流畅爱心雨核心（40个，手机绝不卡顿） ==========
-        function createHearts() {
-            const totalHearts = 40;
-            heartsContainer.innerHTML = '';
+        // ==================== 高性能 Canvas 爱心雨 ====================
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
+        let animationId = null;
 
-            for (let i = 0; i < totalHearts; i++) {
-                const heart = document.createElement('div');
-                heart.classList.add('heart');
-                heart.textContent = '❤';
-                
-                const size = Math.random() * 10 + 10;
-                const startPosX = Math.random() * 100;
-                const duration = Math.random() * 3 + 4;
-                const delay = Math.random() * 2;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-                heart.style.fontSize = `${size}px`;
-                heart.style.left = `${startPosX}%`;
-                heart.style.animationDuration = `${duration}s`;
-                heart.style.animationDelay = `${delay}s`;
+        class Heart {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -100;
+                this.size = Math.random() * 8 + 6;
+                this.speedY = Math.random() * 2 + 2;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.opacity = 1;
+                this.color = '#ff78a8';
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.opacity -= 0.008;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginContext();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
-                heartsContainer.appendChild(heart);
-                
-                setTimeout(() => heart.remove(), duration * 1000 + 2000);
+        function startHeartRain() {
+            if(animationId) cancelAnimationFrame(animationId);
+            hearts = [];
+            
+            // 一次生成 40 个爱心
+            for(let i=0;i<40;i++){
+                hearts.push(new Heart());
+            }
+            
+            animate();
+        }
+
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            hearts = hearts.filter(h => h.opacity > 0);
+            
+            hearts.forEach(h => {
+                h.update();
+                h.draw();
+            });
+            
+            if(hearts.length > 0){
+                animationId = requestAnimationFrame(animate);
+            }else{
+                ctx.clearRect(0,0,canvas.width,canvas.height);
             }
         }
     </script>
