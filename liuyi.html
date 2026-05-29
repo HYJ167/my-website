@@ -14,10 +14,10 @@
             background: #fef2f8;
             padding:20px;
             overflow: hidden;
-            position: relative;
         }
-        /* Canvas 爱心雨 - 全程丝滑 0 卡顿 */
-        #heartCanvas {
+
+        /* 高性能爱心雨 - 手机绝对不卡 */
+        .heart-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -25,6 +25,22 @@
             height: 100%;
             pointer-events: none;
             z-index: 9999;
+        }
+        .heart-fall {
+            position: absolute;
+            color: #ff78a8;
+            will-change: transform;
+            animation: heart-fall linear forwards;
+        }
+        @keyframes heart-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
         }
 
         /* 主兑换券容器 */
@@ -79,7 +95,6 @@
             animation: bounce 1.5s infinite;
             transition: opacity 0.5s ease;
         }
-        /* 点击后隐藏提示文字 */
         .coupon-box.open .tip-text{
             opacity: 0;
             pointer-events: none;
@@ -115,7 +130,6 @@
             color:#ff5b8c;
             font-weight:bold;
         }
-        /* 蓝色闪烁提示文字 */
         .flash-tip{
             font-size: 18px;
             color: #2176ff;
@@ -123,14 +137,10 @@
             margin-top: 15px;
             animation: flash 1s infinite;
         }
-        .flash-tip.hide{
-            display: none;
-        }
         @keyframes flash {
             0%,100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
-        /* 券内提示文字 */
         .inner-tip{
             font-size: 15px;
             color: #ff5b8c;
@@ -140,7 +150,6 @@
         .inner-tip.show{
             display: block;
         }
-        /* 券内解锁按钮 */
         .inner-unlock-btn{
             padding: 8px 22px;
             background: #ff5b8c;
@@ -156,7 +165,7 @@
             display: inline-block;
         }
 
-        /* 彩蛋弹窗样式 */
+        /* 彩蛋弹窗 */
         .mask{
             position: fixed;
             top: 0;
@@ -176,15 +185,15 @@
             border-radius: 28px;
             padding: 35px 20px;
             border: 2px solid #ffd79d;
-            box-shadow: 0 10px 35px rgba(255, 150, 180, 0.35), 0 0 15px rgba(255, 215, 157, 0.4);
+            box-shadow: 0 10px 35px rgba(255, 150, 180, 0.35);
             text-align: center;
             position: relative;
-            animation: popUp 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            animation: popUp 0.5s;
             z-index: 1000;
         }
         @keyframes popUp {
-            0%{transform: scale(0.8) translateY(20px); opacity: 0;}
-            100%{transform: scale(1) translateY(0); opacity: 1;}
+            0%{transform: scale(0.8); opacity: 0;}
+            100%{transform: scale(1); opacity: 1;}
         }
         .close-btn{
             position: absolute;
@@ -193,22 +202,12 @@
             font-size: 22px;
             color: #999;
             cursor: pointer;
-            transition: all 0.2s ease;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            border-radius: 50%;
-        }
-        .close-btn:hover{
-            background: #ff9ac1;
-            color: #fff;
         }
         .egg-title{
             font-size: 22px;
             color: #e65c8b;
             font-weight: bold;
             margin-bottom: 20px;
-            letter-spacing: 1px;
         }
         .egg-text{
             font-size: 11px;
@@ -228,8 +227,7 @@
 </head>
 <body>
 
-    <!-- 高性能 Canvas 爱心雨 -->
-    <canvas id="heartCanvas"></canvas>
+    <div class="heart-container" id="heartBox"></div>
 
     <!-- 主兑换券 -->
     <div class="coupon-box" id="coupon">
@@ -276,11 +274,11 @@
         const unlockBtn = document.getElementById('unlockBtn');
         const innerTip = document.getElementById('innerTip');
         const flashTip = document.getElementById('flashTip');
+        const heartBox = document.getElementById('heartBox');
 
         let step1 = false;
         let step2 = false;
 
-        // 点击翻转卡片
         coupon.addEventListener('click', function(){
             if(!step1){
                 coupon.classList.add('open');
@@ -295,13 +293,12 @@
             }
         });
 
-        // 打开彩蛋 + 启动爱心雨（40个，丝滑不卡）
+        // 打开彩蛋 → 播放流畅爱心雨
         unlockBtn.addEventListener('click', function(){
             mask.style.display = 'flex';
-            startHeartRain();
+            createSmoothHearts();
         });
 
-        // 关闭弹窗
         close.addEventListener('click',()=>{
             mask.style.display = 'none';
         });
@@ -309,70 +306,33 @@
             if(e.target === mask) mask.style.display = 'none';
         });
 
-        // ==================== 高性能 Canvas 爱心雨 ====================
-        const canvas = document.getElementById('heartCanvas');
-        const ctx = canvas.getContext('2d');
-        let hearts = [];
-        let animationId = null;
+        // ==================== 高性能爱心雨（40个，绝对不卡） ====================
+        function createSmoothHearts() {
+            heartBox.innerHTML = '';
+            const count = 40;
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+            for (let i = 0; i < count; i++) {
+                let h = document.createElement('div');
+                h.className = 'heart-fall';
+                h.textContent = '❤';
 
-        class Heart {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * -100;
-                this.size = Math.random() * 8 + 6;
-                this.speedY = Math.random() * 2 + 2;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.opacity = 1;
-                this.color = '#ff78a8';
-            }
-            update() {
-                this.y += this.speedY;
-                this.x += this.speedX;
-                this.opacity -= 0.008;
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = this.color;
-                ctx.beginContext();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
+                // 随机大小、位置、速度
+                let size = Math.random() * 10 + 12;
+                let left = Math.random() * 100;
+                let dur = Math.random() * 2 + 4;
+                let delay = Math.random() * 1.5;
 
-        function startHeartRain() {
-            if(animationId) cancelAnimationFrame(animationId);
-            hearts = [];
-            
-            // 一次生成 40 个爱心
-            for(let i=0;i<40;i++){
-                hearts.push(new Heart());
-            }
-            
-            animate();
-        }
+                h.style.cssText = `
+                    font-size: ${size}px;
+                    left: ${left}%;
+                    animation-duration: ${dur}s;
+                    animation-delay: ${delay}s;
+                `;
 
-        function animate() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            hearts = hearts.filter(h => h.opacity > 0);
-            
-            hearts.forEach(h => {
-                h.update();
-                h.draw();
-            });
-            
-            if(hearts.length > 0){
-                animationId = requestAnimationFrame(animate);
-            }else{
-                ctx.clearRect(0,0,canvas.width,canvas.height);
+                heartBox.appendChild(h);
+
+                // 动画结束自动删除
+                setTimeout(() => h.remove(), (dur + delay) * 1000);
             }
         }
     </script>
