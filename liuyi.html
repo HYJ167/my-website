@@ -1,340 +1,75 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>六一儿童节专属兑换券</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif;}
-        body{
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background: #fef2f8;
-            padding:20px;
-            overflow: hidden;
-        }
+<!-- 沿用上面所有样式，仅替换JS部分即可 -->
+<script>
+    const coupon = document.getElementById('coupon');
+    const mask = document.getElementById('mask');
+    const close = document.getElementById('close');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const innerTip = document.getElementById('innerTip');
+    const flashTip = document.getElementById('flashTip');
+    const heartBox = document.getElementById('heartBox');
 
-        /* 高性能爱心雨 - 手机绝对不卡 */
-        .heart-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-        .heart-fall {
-            position: absolute;
-            color: #ff78a8;
-            will-change: transform;
-            animation: heart-fall linear forwards;
-        }
-        @keyframes heart-fall {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
+    let step1 = false;
+    let step2 = false;
+    // DOM池：预创建10个爱心节点，循环复用，不新增DOM
+    const poolSize = 10;
+    const heartPool = [];
 
-        /* 主兑换券容器 */
-        .coupon-box{
-            width:100%;
-            max-width:360px;
-            aspect-ratio: 3/4;
-            position:relative;
-            perspective: 1000px;
-            z-index: 1;
-        }
-        .coupon-card{
-            width:100%;
-            height:100%;
-            position:absolute;
-            transform-style: preserve-3d;
-            transition: transform 1s ease-in-out;
-            cursor:pointer;
-        }
-        .coupon-box.open .coupon-card{
-            transform: rotateY(180deg);
-        }
-        /* 主券正反面 */
-        .card-front,.card-back{
-            width:100%;
-            height:100%;
-            position:absolute;
-            border-radius:24px;
-            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.25);
-            backface-visibility: hidden;
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-            align-items:center;
-            padding:30px 20px;
-        }
-        .card-front{
-            background: linear-gradient(135deg, #ff9ac1, #ff78a8);
-            color:#fff;
-        }
-        .front-title{
-            font-size:28px;
-            font-weight:bold;
-            text-align:center;
-            line-height:1.5;
-            margin-bottom:40px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-        }
-        .tip-text{
-            font-size:16px;
-            opacity:0.9;
-            animation: bounce 1.5s infinite;
-            transition: opacity 0.5s ease;
-        }
-        .coupon-box.open .tip-text{
-            opacity: 0;
-            pointer-events: none;
-        }
-        @keyframes bounce{
-            0%,100%{transform: translateY(0);}
-            50%{transform: translateY(-8px);}
-        }
-        .card-back{
-            background:#fff;
-            color:#333;
-            transform: rotateY(180deg);
-            border:2px dashed #ff78a8;
-        }
-        .back-title{
-            font-size:24px;
-            color:#ff5b8c;
-            font-weight:bold;
-            margin-bottom:30px;
-        }
-        .content{
-            font-size:17px;
-            line-height:2;
-            text-align:center;
-        }
-        .line{
-            width:80%;
-            height:1px;
-            background:#ddd;
-            margin:25px auto;
-        }
-        .condition{
-            color:#ff5b8c;
-            font-weight:bold;
-        }
-        .flash-tip{
-            font-size: 18px;
-            color: #2176ff;
-            font-weight: bold;
-            margin-top: 15px;
-            animation: flash 1s infinite;
-        }
-        @keyframes flash {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        .inner-tip{
-            font-size: 15px;
-            color: #ff5b8c;
-            margin: 8px 0;
-            display: none;
-        }
-        .inner-tip.show{
-            display: block;
-        }
-        .inner-unlock-btn{
-            padding: 8px 22px;
-            background: #ff5b8c;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 5px;
-            display: none;
-        }
-        .inner-unlock-btn.show{
-            display: inline-block;
-        }
+    // 初始化DOM池
+    for(let i=0; i<poolSize; i++){
+        let h = document.createElement('div');
+        h.className = 'heart-fall';
+        h.textContent = '❤';
+        heartPool.push(h);
+    }
 
-        /* 彩蛋弹窗 */
-        .mask{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
+    coupon.addEventListener('click', function(){
+        if(!step1){
+            coupon.classList.add('open');
+            step1 = true;
+            return;
         }
-        .egg-coupon{
-            width: 90%;
-            max-width: 340px;
-            background: #fff;
-            border-radius: 28px;
-            padding: 35px 20px;
-            border: 2px solid #ffd79d;
-            box-shadow: 0 10px 35px rgba(255, 150, 180, 0.35);
-            text-align: center;
-            position: relative;
-            animation: popUp 0.5s;
-            z-index: 1000;
+        if(step1 && !step2){
+            step2 = true;
+            flashTip.style.display = "none";
+            innerTip.classList.add('show');
+            unlockBtn.classList.add('show');
         }
-        @keyframes popUp {
-            0%{transform: scale(0.8); opacity: 0;}
-            100%{transform: scale(1); opacity: 1;}
+    });
+
+    unlockBtn.addEventListener('click', function(){
+        mask.style.display = 'flex';
+        reuseHeartPool();
+    });
+
+    close.addEventListener('click',()=>{
+        mask.style.display = 'none';
+    });
+    mask.addEventListener('click',(e)=>{
+        if(e.target === mask) mask.style.display = 'none';
+    });
+
+    // 复用DOM池，循环播放40个爱心效果
+    function reuseHeartPool() {
+        heartBox.innerHTML = '';
+        const total = 40;
+        let idx = 0;
+
+        function play() {
+            if(idx >= total) return;
+            const h = heartPool[idx % poolSize];
+            const size = Math.random() * 6 + 10;
+            const left = Math.random() * 100;
+
+            h.style.fontSize = `${size}px`;
+            h.style.left = `${left}%`;
+            h.style.animation = 'none';
+            h.offsetHeight; // 强制刷新样式
+            h.style.animation = 'heart-fall 6s linear forwards';
+
+            heartBox.appendChild(h);
+            idx++;
+            setTimeout(play, 250);
         }
-        .close-btn{
-            position: absolute;
-            top: 12px;
-            right: 15px;
-            font-size: 22px;
-            color: #999;
-            cursor: pointer;
-        }
-        .egg-title{
-            font-size: 22px;
-            color: #e65c8b;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .egg-text{
-            font-size: 11px;
-            line-height: 2.0;
-            color: #555;
-            text-align: center;
-        }
-        .egg-text .label{
-            color: #e65c8b;
-            font-weight: 600;
-        }
-        .egg-high{
-            color: #e65c8b;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="heart-container" id="heartBox"></div>
-
-    <!-- 主兑换券 -->
-    <div class="coupon-box" id="coupon">
-        <div class="coupon-card">
-            <div class="card-front">
-                <div class="front-title">六一儿童节<br>专属兑换券</div>
-                <div class="tip-text">点击打开 🎁</div>
-            </div>
-            <div class="card-back">
-                <div class="back-title">甜蜜兑换券</div>
-                <div class="content">
-                    可兑换：<br>
-                    任意口味提拉米苏🍰
-                    <div class="line"></div>
-                    兑换条件：<br>
-                    <span class="condition">亲吻 + 耳边说 BB你真棒</span>
-                    <div class="flash-tip" id="flashTip">完成上述动作后再次点击页面</div>
-                    <div class="inner-tip" id="innerTip">已完成兑换条件，等待解锁彩蛋✨</div>
-                    <button class="inner-unlock-btn" id="unlockBtn">点击解锁彩蛋</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 彩蛋弹窗 -->
-    <div class="mask" id="mask">
-        <div class="egg-coupon">
-            <span class="close-btn" id="close">×</span>
-            <div class="egg-title">🎉 惊喜彩蛋券 🎉</div>
-            <div class="egg-text">
-                持券人：<span class="egg-high">我的婉怡BB</span><br>
-                <span class="label">兑换内容：</span>SUPER MIMISO（利和）新店开业体验官，心仪好物直接加入购物车<br>
-                <span class="label">兑换条件：</span>带上你的笑容，牵着我的手<br>
-                <span class="label">有效期：</span>今日有效，过期不候哦～<br>
-                兑奖人：<span class="egg-high">黄泳杰</span>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const coupon = document.getElementById('coupon');
-        const mask = document.getElementById('mask');
-        const close = document.getElementById('close');
-        const unlockBtn = document.getElementById('unlockBtn');
-        const innerTip = document.getElementById('innerTip');
-        const flashTip = document.getElementById('flashTip');
-        const heartBox = document.getElementById('heartBox');
-
-        let step1 = false;
-        let step2 = false;
-
-        coupon.addEventListener('click', function(){
-            if(!step1){
-                coupon.classList.add('open');
-                step1 = true;
-                return;
-            }
-            if(step1 && !step2){
-                step2 = true;
-                flashTip.style.display = "none";
-                innerTip.classList.add('show');
-                unlockBtn.classList.add('show');
-            }
-        });
-
-        // 打开彩蛋 → 播放流畅爱心雨
-        unlockBtn.addEventListener('click', function(){
-            mask.style.display = 'flex';
-            createSmoothHearts();
-        });
-
-        close.addEventListener('click',()=>{
-            mask.style.display = 'none';
-        });
-        mask.addEventListener('click',(e)=>{
-            if(e.target === mask) mask.style.display = 'none';
-        });
-
-        // ==================== 高性能爱心雨（40个，绝对不卡） ====================
-        function createSmoothHearts() {
-            heartBox.innerHTML = '';
-            const count = 40;
-
-            for (let i = 0; i < count; i++) {
-                let h = document.createElement('div');
-                h.className = 'heart-fall';
-                h.textContent = '❤';
-
-                // 随机大小、位置、速度
-                let size = Math.random() * 10 + 12;
-                let left = Math.random() * 100;
-                let dur = Math.random() * 2 + 4;
-                let delay = Math.random() * 1.5;
-
-                h.style.cssText = `
-                    font-size: ${size}px;
-                    left: ${left}%;
-                    animation-duration: ${dur}s;
-                    animation-delay: ${delay}s;
-                `;
-
-                heartBox.appendChild(h);
-
-                // 动画结束自动删除
-                setTimeout(() => h.remove(), (dur + delay) * 1000);
-            }
-        }
-    </script>
-</body>
-</html>
+        play();
+    }
+</script>
